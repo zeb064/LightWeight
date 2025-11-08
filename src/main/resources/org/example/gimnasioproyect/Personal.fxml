@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.gimnasioproyect.controllers.PersonalController"
+      spacing="20"
+      style="-fx-background-color: #2c3e50;">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Text text="👔" style="-fx-fill: #3498db;">
+            <font>
+                <Font size="32.0"/>
+            </font>
+        </Text>
+        <VBox>
+            <Text text="Gestión de Personal" style="-fx-fill: #ecf0f1;">
+                <font>
+                    <Font name="System Bold" size="24.0"/>
+                </font>
+            </Text>
+            <Text text="Administra el personal del gimnasio" style="-fx-fill: #bdc3c7;">
+                <font>
+                    <Font size="13.0"/>
+                </font>
+            </Text>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <Button fx:id="btnNuevoPersonal" text="➕ Nuevo Personal" onAction="#handleNuevoPersonal"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 10 20;">
+        </Button>
+    </HBox>
+
+    <!-- Filtros -->
+    <HBox spacing="15" alignment="CENTER_LEFT"
+          style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;">
+
+        <Label text="🔍" style="-fx-text-fill: #bdc3c7;">
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </Label>
+
+        <TextField fx:id="txtBuscar" promptText="Buscar por nombre, documento o usuario..."
+                   HBox.hgrow="ALWAYS"
+                   style="-fx-background-color: #2c3e50; -fx-text-fill: #ecf0f1; -fx-prompt-text-fill: #7f8c8d; -fx-background-radius: 8; -fx-padding: 8;">
+            <font>
+                <Font size="13.0"/>
+            </font>
+        </TextField>
+
+        <VBox spacing="3">
+            <Label text="Tipo de Personal" style="-fx-text-fill: #bdc3c7;">
+                <font>
+                    <Font size="11.0"/>
+                </font>
+            </Label>
+            <ComboBox fx:id="cmbTipoPersonal" promptText="Todos" prefWidth="180"
+                      style="-fx-background-color: #2c3e50;">
+            </ComboBox>
+        </VBox>
+
+        <Button text="🔄" onAction="#handleLimpiarFiltros"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 50%; -fx-cursor: hand; -fx-padding: 8;">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Button>
+    </HBox>
+
+    <!-- Estadísticas -->
+    <HBox spacing="15">
+        <VBox spacing="5" alignment="CENTER"
+              style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;"
+              HBox.hgrow="ALWAYS">
+            <Text fx:id="lblTotalPersonal" text="0" style="-fx-fill: #3498db;">
+                <font>
+                    <Font name="System Bold" size="28.0"/>
+                </font>
+            </Text>
+            <Text text="Total Personal" style="-fx-fill: #bdc3c7;">
+                <font>
+                    <Font size="12.0"/>
+                </font>
+            </Text>
+        </VBox>
+
+        <VBox spacing="5" alignment="CENTER"
+              style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;"
+              HBox.hgrow="ALWAYS">
+            <Text fx:id="lblAdministradores" text="0" style="-fx-fill: #e74c3c;">
+                <font>
+                    <Font name="System Bold" size="28.0"/>
+                </font>
+            </Text>
+            <Text text="Administradores" style="-fx-fill: #bdc3c7;">
+                <font>
+                    <Font size="12.0"/>
+                </font>
+            </Text>
+        </VBox>
+
+        <VBox spacing="5" alignment="CENTER"
+              style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;"
+              HBox.hgrow="ALWAYS">
+            <Text fx:id="lblEntrenadores" text="0" style="-fx-fill: #27ae60;">
+                <font>
+                    <Font name="System Bold" size="28.0"/>
+                </font>
+            </Text>
+            <Text text="Entrenadores" style="-fx-fill: #bdc3c7;">
+                <font>
+                    <Font size="12.0"/>
+                </font>
+            </Text>
+        </VBox>
+
+        <VBox spacing="5" alignment="CENTER"
+              style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;"
+              HBox.hgrow="ALWAYS">
+            <Text fx:id="lblRecepcionistas" text="0" style="-fx-fill: #9b59b6;">
+                <font>
+                    <Font name="System Bold" size="28.0"/>
+                </font>
+            </Text>
+            <Text text="Recepcionistas" style="-fx-fill: #bdc3c7;">
+                <font>
+                    <Font size="12.0"/>
+                </font>
+            </Text>
+        </VBox>
+    </HBox>
+
+    <!-- Tabla de Personal -->
+    <VBox VBox.vgrow="ALWAYS" spacing="10"
+          style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;">
+
+        <HBox alignment="CENTER_LEFT">
+            <Text text="Lista de Personal" style="-fx-fill: #ecf0f1;">
+                <font>
+                    <Font name="System Bold" size="16.0"/>
+                </font>
+            </Text>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblResultados" text="Mostrando 0 registros"
+                   style="-fx-text-fill: #bdc3c7;">
+                <font>
+                    <Font size="12.0"/>
+                </font>
+            </Label>
+        </HBox>
+
+        <TableView fx:id="tablePersonal" VBox.vgrow="ALWAYS"
+                   style="-fx-background-color: #2c3e50; -fx-background-radius: 8;">
+            <columns>
+                <TableColumn fx:id="colTipo" text="Tipo" prefWidth="120"/>
+                <TableColumn fx:id="colDocumento" text="Documento" prefWidth="120"/>
+                <TableColumn fx:id="colNombre" text="Nombre Completo" prefWidth="200"/>
+                <TableColumn fx:id="colUsuario" text="Usuario" prefWidth="150"/>
+                <TableColumn fx:id="colTelefono" text="Teléfono" prefWidth="120"/>
+                <TableColumn fx:id="colCorreo" text="Correo" prefWidth="200"/>
+                <TableColumn fx:id="colEspecifico" text="Detalle Específico" prefWidth="180"/>
+                <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="200"/>
+            </columns>
+            <placeholder>
+                <VBox alignment="CENTER" spacing="10">
+                    <Text text="📋" style="-fx-fill: #7f8c8d;">
+                        <font>
+                            <Font size="48.0"/>
+                        </font>
+                    </Text>
+                    <Text text="No hay personal registrado" style="-fx-fill: #bdc3c7;">
+                        <font>
+                            <Font size="14.0"/>
+                        </font>
+                    </Text>
+                </VBox>
+            </placeholder>
+        </TableView>
+    </VBox>
+
+    <!-- Botones de acción -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="btnVerDetalle" text="👁️ Ver Detalle" onAction="#handleVerDetalle" disable="true"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;">
+        </Button>
+        <Button fx:id="btnEditar" text="✏️ Editar" onAction="#handleEditar" disable="true"
+                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;">
+        </Button>
+        <Button fx:id="btnCambiarContrasena" text="🔑 Cambiar Contraseña" onAction="#handleCambiarContrasena" disable="true"
+                style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;">
+        </Button>
+        <Button fx:id="btnEliminar" text="🗑️ Eliminar" onAction="#handleEliminar" disable="true"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;">
+        </Button>
+    </HBox>
+
+</VBox>

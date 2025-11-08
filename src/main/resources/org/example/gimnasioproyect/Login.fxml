@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.gimnasioproyect.controllers.LoginController"
+            prefHeight="600.0" prefWidth="900.0"
+            styleClass="root"
+            stylesheets="@Login.css">
+
+
+    <!-- Fondo con gradiente -->
+    <VBox alignment="CENTER" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+          AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+          styleClass="background-gradient">
+
+        <!-- Card de Login -->
+        <VBox alignment="CENTER" spacing="25" styleClass="login-card"
+              maxWidth="400" maxHeight="500">
+
+            <!-- Logo y Título -->
+            <VBox alignment="CENTER" spacing="10">
+                <Text text="🏋️" styleClass="logo-icon">
+                    <font>
+                        <Font size="60.0"/>
+                    </font>
+                </Text>
+                <Text text="LightWeight" styleClass="app-title">
+                    <font>
+                        <Font name="System Bold" size="32.0"/>
+                    </font>
+                </Text>
+                <Text text="Sistema de Gestión de Gimnasio" styleClass="app-subtitle">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                </Text>
+            </VBox>
+
+            <!-- Formulario -->
+            <VBox spacing="15">
+                <!-- Campo Usuario -->
+                <VBox spacing="5">
+                    <Label text="Usuario" styleClass="field-label">
+                        <font>
+                            <Font name="System Bold" size="13.0"/>
+                        </font>
+                    </Label>
+                    <TextField fx:id="txtUsuario" promptText="Ingrese su usuario"
+                               styleClass="custom-text-field" prefHeight="40"/>
+                </VBox>
+
+                <!-- Campo Contraseña -->
+                <VBox spacing="5">
+                    <Label text="Contraseña" styleClass="field-label">
+                        <font>
+                            <Font name="System Bold" size="13.0"/>
+                        </font>
+                    </Label>
+                    <PasswordField fx:id="txtContrasena" promptText="Ingrese su contraseña"
+                                   styleClass="custom-text-field" prefHeight="40"/>
+                </VBox>
+
+                <!-- Mensaje de error -->
+                <Label fx:id="lblError" text="" styleClass="error-label" wrapText="true"/>
+
+                <!-- Botón de Login -->
+                <Button fx:id="btnLogin" text="Iniciar Sesión" onAction="#handleLogin"
+                        styleClass="btn-primary" prefHeight="45" maxWidth="Infinity">
+                    <font>
+                        <Font name="System Bold" size="14.0"/>
+                    </font>
+                </Button>
+
+                <!-- Link olvidé contraseña (opcional) -->
+                <HBox alignment="CENTER">
+                    <Hyperlink text="¿Olvidaste tu contraseña?" styleClass="link-text"
+                               onAction="#handleForgotPassword"/>
+                </HBox>
+            </VBox>
+
+            <!-- Espaciador -->
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Footer -->
+            <Text text="© 2025 LightWeight - Todos los derechos reservados" styleClass="footer-text">
+                <font>
+                    <Font size="11.0"/>
+                </font>
+            </Text>
+        </VBox>
+    </VBox>
+
+    <!-- Indicador de carga (oculto por defecto) -->
+    <StackPane fx:id="loadingPane" visible="false" styleClass="loading-overlay"
+               AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+               AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+        <VBox alignment="CENTER" spacing="15">
+            <ProgressIndicator styleClass="custom-progress"/>
+            <Label text="Iniciando sesión..." styleClass="loading-text">
+                <font>
+                    <Font size="14.0"/>
+                </font>
+            </Label>
+        </VBox>
+    </StackPane>
+
+</AnchorPane>

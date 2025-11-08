@@ -1,0 +1,127 @@
+/* ===== VARIABLES GLOBALES ===== */
+.root {
+    /* Colores principales */
+    -primary-color: #3498db;
+    -primary-light: #5dade2;
+    -danger-color: #e74c3c;
+
+    /* Colores de fondo */
+    -bg-primary: #2c3e50;
+    -bg-secondary: #34495e;
+    -bg-sidebar: #1a252f;
+
+    /* Texto */
+    -text-primary: #ecf0f1;
+    -text-secondary: #bdc3c7;
+
+    /* Bordes y sombras */
+    -border-color: #1f2a36;
+    -shadow: rgba(0, 0, 0, 0.2);
+}
+
+/* ===== DASHBOARD ===== */
+.dashboard-root {
+    -fx-background-color: -bg-secondary;
+}
+
+/* Header */
+.header {
+    -fx-background-color: -bg-primary;
+    -fx-border-color: transparent transparent -border-color transparent;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, -shadow, 5, 0, 0, 2);
+}
+
+.header-logo {
+    -fx-fill: -primary-color;
+}
+
+.header-title {
+    -fx-fill: -text-primary;
+}
+
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 8;
+}
+
+.icon-button:hover {
+    -fx-background-color: -bg-secondary;
+    -fx-background-radius: 50%;
+}
+
+.user-name {
+    -fx-text-fill: -text-primary;
+}
+
+.user-role {
+    -fx-text-fill: -text-secondary;
+}
+
+.avatar-button {
+    -fx-background-color: -primary-light;
+    -fx-background-radius: 50%;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-pref-width: 45;
+    -fx-pref-height: 45;
+}
+
+.avatar-button:hover {
+    -fx-background-color: -primary-color;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+/* Sidebar */
+.sidebar {
+    -fx-background-color: -bg-sidebar;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-padding: 12 15;
+    -fx-background-radius: 8;
+    -fx-font-size: 13px;
+}
+
+.menu-item:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu-item-active {
+    -fx-background-color: -primary-color;
+}
+
+.menu-item-logout {
+    -fx-background-color: rgba(231, 76, 60, 0.1);
+}
+
+.menu-item-logout:hover {
+    -fx-background-color: -danger-color;
+}
+
+.menu-separator {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Content Area */
+.content-area {
+    -fx-background-color: -bg-primary;
+    -fx-background-radius: 10;
+}
+
+.welcome-icon {
+    -fx-fill: -primary-color;
+}
+
+.welcome-title {
+    -fx-fill: -text-primary;
+}
+
+.welcome-subtitle {
+    -fx-fill: -text-secondary;
+}

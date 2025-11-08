@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.gimnasioproyect.controllers.MenuController"
+            prefHeight="700.0" prefWidth="1200.0"
+            styleClass="dashboard-root"
+            stylesheets="@Menu.css">
+
+    <!-- TOP: Header -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header"
+              prefHeight="70">
+            <padding>
+                <Insets left="20" right="20"/>
+            </padding>
+
+            <!-- Logo y Título -->
+            <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
+                <Text text="🏋️" styleClass="header-logo">
+                    <font>
+                        <Font size="28.0"/>
+                    </font>
+                </Text>
+                <Text text="LightWeight" styleClass="header-title">
+                    <font>
+                        <Font name="System Bold" size="20.0"/>
+                    </font>
+                </Text>
+            </HBox>
+
+            <!-- Espaciador -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Info Usuario -->
+            <HBox alignment="CENTER_RIGHT" spacing="15">
+                <!-- Notificaciones -->
+                <Button fx:id="btnNotificaciones" text="🔔" styleClass="icon-button"
+                        onAction="#handleNotificaciones">
+                    <font>
+                        <Font size="18.0"/>
+                    </font>
+                </Button>
+
+                <!-- Usuario -->
+                <VBox alignment="CENTER_RIGHT" spacing="2">
+                    <Label fx:id="lblNombreUsuario" text="Usuario" styleClass="user-name">
+                        <font>
+                            <Font name="System Bold" size="13.0"/>
+                        </font>
+                    </Label>
+                    <Label fx:id="lblTipoUsuario" text="Administrador" styleClass="user-role">
+                        <font>
+                            <Font size="11.0"/>
+                        </font>
+                    </Label>
+                </VBox>
+
+                <!-- Avatar -->
+                <Button text="👤" styleClass="avatar-button">
+                    <font>
+                        <Font size="24.0"/>
+                    </font>
+                </Button>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- LEFT: Menú Lateral -->
+    <left>
+        <VBox spacing="5" styleClass="sidebar" prefWidth="250">
+            <padding>
+                <Insets top="20" bottom="20" left="10" right="10"/>
+            </padding>
+
+            <!-- Menú Principal -->
+            <VBox fx:id="menuContainer" spacing="5" VBox.vgrow="ALWAYS">
+                <!-- Los items se agregarán dinámicamente según el rol -->
+            </VBox>
+
+            <!-- Separador -->
+            <Separator styleClass="menu-separator">
+                <VBox.margin>
+                    <Insets top="10" bottom="10"/>
+                </VBox.margin>
+            </Separator>
+
+            <!-- Opciones Fijas -->
+            <Button fx:id="btnPerfil" text="⚙️  Mi Perfil" alignment="CENTER_LEFT"
+                    styleClass="menu-item" maxWidth="Infinity"
+                    onAction="#handleMiPerfil">
+                <font>
+                    <Font size="13.0"/>
+                </font>
+            </Button>
+
+            <Button fx:id="btnCerrarSesion" text="🚪  Cerrar Sesión" alignment="CENTER_LEFT"
+                    styleClass="menu-item, menu-item-logout" maxWidth="Infinity"
+                    onAction="#handleCerrarSesion">
+                <font>
+                    <Font size="13.0"/>
+                </font>
+            </Button>
+        </VBox>
+    </left>
+
+    <!-- CENTER: Área de Contenido -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <padding>
+                <Insets top="20" bottom="20" left="20" right="20"/>
+            </padding>
+
+            <!-- Aquí se cargarán las vistas dinámicamente -->
+            <VBox alignment="CENTER" spacing="20">
+                <Text text="👋" styleClass="welcome-icon">
+                    <font>
+                        <Font size="60.0"/>
+                    </font>
+                </Text>
+                <Text text="Bienvenido a LightWeight" styleClass="welcome-title">
+                    <font>
+                        <Font name="System Bold" size="28.0"/>
+                    </font>
+                </Text>
+                <Text text="Selecciona una opción del menú para comenzar" styleClass="welcome-subtitle">
+                    <font>
+                        <Font size="14.0"/>
+                    </font>
+                </Text>
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>
