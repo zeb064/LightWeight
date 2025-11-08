@@ -337,12 +337,12 @@ public class FormularioClienteController {
         }
 
         // Validar barrio
-//        if (cmbBarrio.getValue() == null) {
-//            lblErrorBarrio.setText("Debe seleccionar un barrio");
-//            valido = false;
-//        } else {
-//            lblErrorBarrio.setText("");
-//        }
+        if (cmbBarrio.getValue() == null) {
+           lblErrorBarrio.setText("Debe seleccionar un barrio");
+            valido = false;
+        } else {
+            lblErrorBarrio.setText("");
+        }
 
         return valido;
     }
