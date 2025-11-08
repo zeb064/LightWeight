@@ -67,7 +67,7 @@ public class HelloApplication extends Application {
         );
         EstadisticaService estadisticaService = new EstadisticaService(
                 asistenciaRepo, membresiaClienteRepo, asignacionEntrenadorRepo,
-                clienteRepo, membresiaRepo
+                clienteRepo, membresiaRepo, rutinaAsignadaRepo
         );
         PersonalService personalService = new PersonalService(
                 personalRepo, adminRepo, entrenadorRepo, recepcionistaRepo
