@@ -177,6 +177,50 @@ public class RutinaService {
         return rutinaAsignadaRepository.findByCliente(documentoCliente);
     }
 
+    //Actualiza un detalle de rutina existente
+    public void actualizarDetalleRutina(DetalleRutinas detalle) throws SQLException {
+        if (detalle == null) {
+            throw new IllegalArgumentException("El detalle de rutina no puede ser nulo");
+        }
+
+        if (detalle.getIdDetalle() == null) {
+            throw new IllegalArgumentException("El ID del detalle es obligatorio");
+        }
+
+        // Validaciones
+        Validador.validarTexto(detalle.getDiaSemana(), "Día de la semana", 10, true);
+        Validador.validarTexto(detalle.getEjercicio(), "Ejercicio", 15, true);
+        Validador.validarNumeroPositivo(detalle.getOrden(), "Orden");
+        Validador.validarNumeroPositivo(detalle.getSeries(), "Series");
+        Validador.validarNumeroPositivo(detalle.getRepeticiones(), "Repeticiones");
+        Validador.validarNumeroPositivo(detalle.getPeso(), "Peso");
+
+        detalleRutinaRepository.update(detalle);
+    }
+
+    //Elimina un detalle de rutina
+    public void eliminarDetalleRutina(Integer idDetalle) throws SQLException {
+        if (idDetalle == null) {
+            throw new IllegalArgumentException("El ID del detalle es obligatorio");
+        }
+
+        // Verificar que existe
+        Optional<DetalleRutinas> detalleOpt = detalleRutinaRepository.findById(idDetalle);
+        if (!detalleOpt.isPresent()) {
+            throw new IllegalArgumentException("No existe el detalle de rutina con ID: " + idDetalle);
+        }
+
+        detalleRutinaRepository.delete(idDetalle);
+    }
+
+    //Obtiene un detalle de rutina por su ID
+    public Optional<DetalleRutinas> obtenerDetallePorId(Integer idDetalle) throws SQLException {
+        if (idDetalle == null) {
+            throw new IllegalArgumentException("El ID del detalle es obligatorio");
+        }
+        return detalleRutinaRepository.findById(idDetalle);
+    }
+
     //Elimina una rutina del sistema
     public void eliminarRutina(Integer idRutina) throws SQLException {
         if (idRutina == null) {

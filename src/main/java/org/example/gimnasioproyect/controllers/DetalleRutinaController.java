@@ -13,6 +13,7 @@ import org.example.gimnasioproyect.Utilidades.ServiceFactory;
 import org.example.gimnasioproyect.model.DetalleRutinas;
 import org.example.gimnasioproyect.model.Rutinas;
 import org.example.gimnasioproyect.services.RutinaService;
+import org.example.gimnasioproyect.services.EstadisticaService;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -46,6 +47,7 @@ public class DetalleRutinaController {
     @FXML private Button btnEliminarRutina;
 
     private RutinaService rutinaService;
+    private EstadisticaService estadisticaService;
     private StackPane parentContainer;
     private Rutinas rutinaActual;
     private List<DetalleRutinas> detallesRutina;
@@ -54,6 +56,7 @@ public class DetalleRutinaController {
         // Obtener servicios
         ServiceFactory factory = ServiceFactory.getInstance();
         this.rutinaService = factory.getRutinaService();
+        this.estadisticaService = factory.getEstadisticaService();
     }
 
     public void cargarRutina(Rutinas rutina) {
@@ -96,8 +99,14 @@ public class DetalleRutinaController {
                 .collect(Collectors.toSet());
         lblDiasEntrenamiento.setText(String.valueOf(diasUnicos.size()));
 
-        // Clientes asignados (esto requeriría un método adicional en el servicio)
-        lblClientesAsignados.setText("-");
+        // Clientes asignados
+        try {
+            int clientesAsignados = estadisticaService.obtenerClientesAsignadosARutina(rutinaActual.getIdRutina());
+            lblClientesAsignados.setText(String.valueOf(clientesAsignados));
+        } catch (SQLException e) {
+            lblClientesAsignados.setText("-");
+            e.printStackTrace();
+        }
     }
 
     private void cargarEjerciciosPorDia() {
@@ -176,12 +185,17 @@ public class DetalleRutinaController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
+        // Botón editar
+        Button btnEditar = new Button("✏️");
+        btnEditar.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5; -fx-padding: 5 10;");
+        btnEditar.setOnAction(e -> editarEjercicio(detalle));
+
         // Botón eliminar
         Button btnEliminar = new Button("🗑️");
-        btnEliminar.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5;");
+        btnEliminar.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 5; -fx-padding: 5 10;");
         btnEliminar.setOnAction(e -> eliminarEjercicio(detalle));
 
-        header.getChildren().addAll(circleContainer, nombreEjercicio, spacer, btnEliminar);
+        header.getChildren().addAll(circleContainer, nombreEjercicio, spacer, btnEditar, btnEliminar);
 
         // Información del ejercicio
         GridPane info = new GridPane();
@@ -244,20 +258,95 @@ public class DetalleRutinaController {
         confirmacion.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try {
-                    // Aquí necesitarías un método en el servicio para eliminar un detalle específico
-                    // Por ahora mostramos un mensaje
-                    mostrarInfo("Funcionalidad pendiente",
-                            "La eliminación de ejercicios individuales se implementará próximamente");
+                    rutinaService.eliminarDetalleRutina(detalle.getIdDetalle());
+                    mostrarExito("Ejercicio eliminado correctamente");
+                    cargarDetalles();
 
-                    // TODO: Implementar en el servicio
-                    // rutinaService.eliminarDetalleRutina(detalle.getIdDetalle());
-                    // cargarDetalles();
-
-                } catch (Exception e) {
+                } catch (SQLException | IllegalArgumentException e) {
                     mostrarError("Error al eliminar", e.getMessage());
                 }
             }
         });
+    }
+
+    private void editarEjercicio(DetalleRutinas detalle) {
+        // Crear diálogo para editar ejercicio
+        Dialog<DetalleRutinas> dialog = new Dialog<>();
+        dialog.setTitle("Editar Ejercicio");
+        dialog.setHeaderText("Editar ejercicio: " + detalle.getEjercicio());
+
+        ButtonType guardarButtonType = new ButtonType("Guardar", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(guardarButtonType, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 150, 10, 10));
+
+        // Cargar datos actuales
+        ComboBox<String> cmbDia = new ComboBox<>();
+        cmbDia.getItems().addAll("LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO");
+        cmbDia.setValue(detalle.getDiaSemana());
+
+        TextField txtOrden = new TextField(String.valueOf(detalle.getOrden()));
+        TextField txtEjercicio = new TextField(detalle.getEjercicio());
+        TextField txtSeries = new TextField(String.valueOf(detalle.getSeries()));
+        TextField txtRepeticiones = new TextField(String.valueOf(detalle.getRepeticiones()));
+        TextField txtPeso = new TextField(String.valueOf(detalle.getPeso()));
+        TextArea txtNotas = new TextArea(detalle.getNotas() != null ? detalle.getNotas() : "");
+        txtNotas.setPrefRowCount(2);
+
+        grid.add(new Label("Día de la semana:"), 0, 0);
+        grid.add(cmbDia, 1, 0);
+        grid.add(new Label("Orden:"), 0, 1);
+        grid.add(txtOrden, 1, 1);
+        grid.add(new Label("Ejercicio:"), 0, 2);
+        grid.add(txtEjercicio, 1, 2);
+        grid.add(new Label("Series:"), 0, 3);
+        grid.add(txtSeries, 1, 3);
+        grid.add(new Label("Repeticiones:"), 0, 4);
+        grid.add(txtRepeticiones, 1, 4);
+        grid.add(new Label("Peso (kg):"), 0, 5);
+        grid.add(txtPeso, 1, 5);
+        grid.add(new Label("Notas:"), 0, 6);
+        grid.add(txtNotas, 1, 6);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == guardarButtonType) {
+                try {
+                    // Actualizar los datos del detalle
+                    detalle.setDiaSemana(cmbDia.getValue());
+                    detalle.setOrden(Integer.parseInt(txtOrden.getText()));
+                    detalle.setEjercicio(txtEjercicio.getText());
+                    detalle.setSeries(Integer.parseInt(txtSeries.getText()));
+                    detalle.setRepeticiones(Integer.parseInt(txtRepeticiones.getText()));
+                    detalle.setPeso(Double.parseDouble(txtPeso.getText()));
+                    detalle.setNotas(txtNotas.getText());
+
+//                    // Aquí necesitarías un método en el servicio para actualizar
+//                    // Por ahora mostramos mensaje
+//                    mostrarInfo("Funcionalidad pendiente",
+//                            "La actualización de ejercicios se implementará próximamente");
+
+
+                     rutinaService.actualizarDetalleRutina(detalle);
+                     cargarDetalles();
+
+                    mostrarExito("Ejercicio actualizado correctamente");
+                    cargarDetalles();
+
+                } catch (NumberFormatException e) {
+                    mostrarError("Error", "Valores numéricos inválidos");
+                } catch (Exception e) {
+                    mostrarError("Error", e.getMessage());
+                }
+            }
+            return null;
+        });
+
+        dialog.showAndWait();
     }
 
     @FXML

@@ -16,6 +16,7 @@ import org.example.gimnasioproyect.Utilidades.ServiceFactory;
 import org.example.gimnasioproyect.model.DetalleRutinas;
 import org.example.gimnasioproyect.model.RutinaAsignadas;
 import org.example.gimnasioproyect.model.Rutinas;
+import org.example.gimnasioproyect.services.EstadisticaService;
 import org.example.gimnasioproyect.services.RutinaService;
 
 import java.io.IOException;
@@ -50,6 +51,7 @@ public class RutinasController {
 
     // Servicio
     private RutinaService rutinaService;
+    private EstadisticaService estadisticaService;
 
     // Datos
     private ObservableList<Rutinas> listaRutinas;
@@ -59,6 +61,7 @@ public class RutinasController {
         // Obtener servicios
         ServiceFactory factory = ServiceFactory.getInstance();
         this.rutinaService = factory.getRutinaService();
+        this.estadisticaService = factory.getEstadisticaService();
 
         // Configurar tabla
         configurarTabla();
@@ -96,8 +99,9 @@ public class RutinasController {
         // Asignaciones (contar cuántos clientes la tienen)
         colAsignaciones.setCellValueFactory(data -> {
             try {
-                // Esto requeriría un método en el servicio para contar asignaciones
-                return new SimpleStringProperty("-");
+                int clientesAsignados = estadisticaService.obtenerClientesAsignadosARutina(
+                        data.getValue().getIdRutina());
+                return new SimpleStringProperty(String.valueOf(clientesAsignados));
             } catch (Exception e) {
                 return new SimpleStringProperty("0");
             }
@@ -180,9 +184,26 @@ public class RutinasController {
     private void actualizarEstadisticas() {
         lblTotalRutinas.setText(String.valueOf(listaRutinas.size()));
 
-        // TODO: Implementar conteo de rutinas activas y clientes con rutina
-        lblRutinasActivas.setText("0");
-        lblClientesConRutina.setText("0");
+        try {
+            // Contar rutinas activas (que tienen al menos un cliente asignado)
+            int rutinasActivas = 0;
+            for (Rutinas rutina : listaRutinas) {
+                int clientesAsignados = estadisticaService.obtenerClientesAsignadosARutina(rutina.getIdRutina());
+                if (clientesAsignados > 0) {
+                    rutinasActivas++;
+                }
+            }
+            lblRutinasActivas.setText(String.valueOf(rutinasActivas));
+
+            // Total de clientes con rutina
+            int clientesConRutina = estadisticaService.obtenerTotalClientesConRutina();
+            lblClientesConRutina.setText(String.valueOf(clientesConRutina));
+
+        } catch (SQLException e) {
+            lblRutinasActivas.setText("0");
+            lblClientesConRutina.setText("0");
+            e.printStackTrace();
+        }
     }
 
     private void aplicarFiltros() {

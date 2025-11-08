@@ -4,10 +4,7 @@ import org.example.gimnasioproyect.Utilidades.CalculadoraFechas;
 import org.example.gimnasioproyect.Utilidades.MembresiaData;
 import org.example.gimnasioproyect.Utilidades.TopClienteData;
 import org.example.gimnasioproyect.Utilidades.Validador;
-import org.example.gimnasioproyect.model.AsignacionEntrenadores;
-import org.example.gimnasioproyect.model.Asistencias;
-import org.example.gimnasioproyect.model.Clientes;
-import org.example.gimnasioproyect.model.MembresiaClientes;
+import org.example.gimnasioproyect.model.*;
 import org.example.gimnasioproyect.repository.*;
 
 import java.sql.SQLException;
@@ -22,19 +19,21 @@ public class EstadisticaService {
     private final AsignacionEntrenadorRepository asignacionEntrenadorRepository;
     private final ClienteRepository clienteRepository;
     private final MembresiaRepository membresiaRepository;
+    private final RutinaAsignadaRepository rutinaAsignadaRepository;
 
     public EstadisticaService(AsistenciaRepository asistenciaRepository,
                               MembresiaClienteRepository membresiaClienteRepository,
                               AsignacionEntrenadorRepository asignacionEntrenadorRepository,
                               ClienteRepository clienteRepository,
-                              MembresiaRepository membresiaRepository) {
+                              MembresiaRepository membresiaRepository,
+                              RutinaAsignadaRepository rutinaAsignadaRepository) {
         this.asistenciaRepository = asistenciaRepository;
         this.membresiaClienteRepository = membresiaClienteRepository;
         this.asignacionEntrenadorRepository = asignacionEntrenadorRepository;
         this.clienteRepository = clienteRepository;
         this.membresiaRepository = membresiaRepository;
+        this.rutinaAsignadaRepository = rutinaAsignadaRepository;
     }
-
     // ==================== ESTADÍSTICAS DE ASISTENCIA ====================
 
     // Cuenta el total de asistencias de un cliente
@@ -573,6 +572,62 @@ public class EstadisticaService {
             case 3: return "🥉";
             default: return String.format("%2d.", posicion);
         }
+    }
+
+    // ==================== ESTADÍSTICAS DE RUTINAS ====================
+
+    // Obtiene el total de clientes asignados a una rutina específica
+    public int obtenerClientesAsignadosARutina(Integer idRutina) throws SQLException {
+        if (idRutina == null) {
+            throw new IllegalArgumentException("El ID de la rutina es obligatorio");
+        }
+
+        List<RutinaAsignadas> asignaciones = rutinaAsignadaRepository.findByRutina(idRutina);
+
+        // Contar solo las asignaciones activas
+        return (int) asignaciones.stream()
+                .filter(RutinaAsignadas::estaActiva)
+                .count();
+    }
+
+    //Obtiene el total de clientes con rutina asignada
+    public int obtenerTotalClientesConRutina() throws SQLException {
+        List<RutinaAsignadas> todasAsignaciones = rutinaAsignadaRepository.findAll();
+
+        // Obtener documentos únicos de clientes con rutinas activas
+        Set<String> clientesUnicos = todasAsignaciones.stream()
+                .filter(RutinaAsignadas::estaActiva)
+                .map(ra -> ra.getCliente().getDocumento())
+                .collect(Collectors.toSet());
+
+        return clientesUnicos.size();
+    }
+
+    // Obtiene las rutinas más asignadas (top N)
+    public Map<String, Integer> obtenerRutinasMasAsignadas(int limite) throws SQLException {
+        List<RutinaAsignadas> todasAsignaciones = rutinaAsignadaRepository.findAll();
+
+        // Contar asignaciones activas por rutina
+        Map<String, Integer> conteoRutinas = new HashMap<>();
+
+        for (RutinaAsignadas asignacion : todasAsignaciones) {
+            if (asignacion.estaActiva()) {
+                String objetivo = asignacion.getRutina().getObjetivo();
+                conteoRutinas.put(objetivo, conteoRutinas.getOrDefault(objetivo, 0) + 1);
+            }
+        }
+
+        // Ordenar y limitar
+        return conteoRutinas.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .limit(limite)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
     }
 
     // ==================== RESUMEN GENERAL ====================
