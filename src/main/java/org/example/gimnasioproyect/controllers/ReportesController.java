@@ -10,15 +10,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import org.example.gimnasioproyect.Utilidades.*;
-import org.example.gimnasioproyect.model.Clientes;
-import org.example.gimnasioproyect.repository.ClienteRepositoryImpl;
 import org.example.gimnasioproyect.services.EstadisticaService;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class ReportesController {
 
@@ -252,43 +250,11 @@ public class ReportesController {
     }
 
     private void cargarTopClientes() throws SQLException {
-        Map<String, Integer> topClientes = estadisticaService.obtenerClientesMasFrecuentes(10);
+        // ✅ SOLUCIÓN: Usar el nuevo método que ya incluye los nombres
+        List<TopClienteData> topClientes = estadisticaService.obtenerTopClientesConNombres(10);
 
-        ObservableList<TopClienteData> datos = FXCollections.observableArrayList();
-
-        int posicion = 1;
-        for (Map.Entry<String, Integer> entry : topClientes.entrySet()) {
-            String documento = entry.getKey();
-            int cantidad = entry.getValue();
-
-            // Buscar cliente usando Optional
-//            Optional<Clientes> optionalCliente = clienteRepository.findByDocumento(documento);
-//
-//            String nombreCompleto = optionalCliente
-//                    .map(cliente -> cliente.getNombres() + " " + cliente.getApellidos())
-//                    .orElse("Desconocido");
-//
-//            String emoji = obtenerEmojiPosicion(posicion);
-//
-//            datos.add(new TopClienteData(
-//                    emoji,
-//                    documento,
-//                    nombreCompleto,
-//                    cantidad
-//            ));
-            posicion++;
-        }
-
+        ObservableList<TopClienteData> datos = FXCollections.observableArrayList(topClientes);
         tableTopClientes.setItems(datos);
-    }
-
-    private String obtenerEmojiPosicion(int posicion) {
-        switch (posicion) {
-            case 1: return "🥇";
-            case 2: return "🥈";
-            case 3: return "🥉";
-            default: return String.format("%2d.", posicion);
-        }
     }
 
     private void cargarAsistenciasPorDiaSemana() throws SQLException {
@@ -351,22 +317,10 @@ public class ReportesController {
     }
 
     private void cargarDistribucionMembresias() throws SQLException {
-        Map<String, Integer> distribucion = estadisticaService.obtenerClientesActivosPorTipoMembresia();
-        Map<String, Double> ingresos = estadisticaService.obtenerIngresosPorTipoMembresia();
+        // ✅ SOLUCIÓN: Usar el nuevo método que calcula correctamente los porcentajes sobre ingresos
+        List<MembresiaData> distribucion = estadisticaService.obtenerDistribucionMembresiasConPorcentajes();
 
-        ObservableList<MembresiaData> datos = FXCollections.observableArrayList();
-
-        int total = distribucion.values().stream().mapToInt(Integer::intValue).sum();
-
-        for (Map.Entry<String, Integer> entry : distribucion.entrySet()) {
-            String tipo = entry.getKey();
-            int cantidad = entry.getValue();
-            double ingreso = ingresos.getOrDefault(tipo, 0.0);
-            double porcentaje = (total > 0) ? ((double) cantidad / total) * 100 : 0;
-
-            datos.add(new MembresiaData(tipo, cantidad, ingreso, porcentaje));
-        }
-
+        ObservableList<MembresiaData> datos = FXCollections.observableArrayList(distribucion);
         tableMembresias.setItems(datos);
     }
 

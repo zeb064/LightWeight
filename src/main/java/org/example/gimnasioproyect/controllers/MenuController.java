@@ -206,8 +206,15 @@ public class MenuController {
     }
 
     private void handleRutinas() {
-        System.out.println("Rutinas");
-        // TODO: Cargar vista de rutinas
+        try {
+            Parent gestionRutinas = HelloApplication.loadFXML("Rutinas");
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(gestionRutinas);
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                    "No se pudo cargar el registro de rutinas: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void handleAsistencias() {

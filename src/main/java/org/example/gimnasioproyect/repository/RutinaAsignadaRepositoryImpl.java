@@ -27,20 +27,20 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
 
     @Override
     public void save(RutinaAsignadas entity) throws SQLException {
-        String sql = "INSERT INTO RUTINASCLIENTES (ID_RUTINA_CLIENTE, ID_RUTINA, DOCUMENTO, " +
-                "FECHA_ASIGNACION, FECHA_FINALIZACION, ESTADO) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO RUTINASCLIENTES (ID_RUTINA, DOCUMENTO, " +
+                "FECHA_ASIGNACION, FECHA_FINALIZACION, ESTADO) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = this.connection.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, entity.getIdRutinaCliente());
-            ps.setInt(2, entity.getRutina().getIdRutina());
-            ps.setString(3, entity.getCliente().getDocumento());
-            ps.setDate(4, entity.getFechaAsignacion() != null ?
+            //ps.setInt(1, entity.getIdRutinaCliente());
+            ps.setInt(1, entity.getRutina().getIdRutina());
+            ps.setString(2, entity.getCliente().getDocumento());
+            ps.setDate(3, entity.getFechaAsignacion() != null ?
                     Date.valueOf(entity.getFechaAsignacion()) : null);
-            ps.setDate(5, entity.getFechaFinalizacion() != null ?
+            ps.setDate(4, entity.getFechaFinalizacion() != null ?
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
-            ps.setString(6, entity.getEstado());
+            ps.setString(5, entity.getEstado());
 
             ps.executeUpdate();
             System.out.println("✅ Rutina asignada exitosamente al cliente: " +

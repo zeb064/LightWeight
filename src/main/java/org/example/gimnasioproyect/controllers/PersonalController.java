@@ -4,8 +4,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.example.gimnasioproyect.Utilidades.ServiceFactory;
@@ -16,6 +19,7 @@ import org.example.gimnasioproyect.model.Personal;
 import org.example.gimnasioproyect.model.Recepcionistas;
 import org.example.gimnasioproyect.services.*;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -281,21 +285,39 @@ public class PersonalController {
 
     @FXML
     private void handleNuevoPersonal() {
-        // Diálogo para seleccionar tipo de personal
-        ChoiceDialog<String> dialog = new ChoiceDialog<>("RECEPCIONISTA",
-                "ADMINISTRADOR", "ENTRENADOR", "RECEPCIONISTA");
-        dialog.setTitle("Nuevo Personal");
-        dialog.setHeaderText("Seleccione el tipo de personal a crear");
-        dialog.setContentText("Tipo:");
-
-        dialog.showAndWait().ifPresent(tipo -> {
-            abrirFormularioNuevo(tipo);
-        });
+        abrirFormulario(null);
     }
 
-    private void abrirFormularioNuevo(String tipo) {
-        // TODO: Abrir formulario específico según el tipo
-        mostrarInfo("Nuevo " + tipo, "Formulario en desarrollo");
+    private void abrirFormulario(Personal personal) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(
+                    "/org/example/gimnasioproyect/FormularioPersonal.fxml"));
+            Parent formulario = loader.load();
+
+            FormularioPersonalController controller = loader.getController();
+
+            if (personal != null) {
+                controller.cargarPersonal(personal);
+            }
+
+            // Buscar el contentArea
+            if (tablePersonal.getScene() != null) {
+                Parent root = tablePersonal.getScene().getRoot();
+                StackPane contentArea = (StackPane) root.lookup("#contentArea");
+
+                if (contentArea != null) {
+                    controller.setParentContainer(contentArea);
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().add(formulario);
+                } else {
+                    mostrarError("Error", "No se pudo encontrar el área de contenido");
+                }
+            }
+
+        } catch (IOException e) {
+            mostrarError("Error", "No se pudo abrir el formulario: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -307,8 +329,31 @@ public class PersonalController {
     }
 
     private void verDetallePersonal(Personal personal) {
-        // TODO: Abrir vista de detalle
-        mostrarInfo("Detalle", "Vista de detalle en desarrollo");
+        StringBuilder detalle = new StringBuilder();
+        detalle.append("Información del Personal\n\n");
+        detalle.append("Tipo: ").append(personal.getTipoPersonal()).append("\n");
+        detalle.append("Documento: ").append(personal.getDocumento()).append("\n");
+        detalle.append("Nombre: ").append(personal.getNombreCompleto()).append("\n");
+        detalle.append("Usuario: ").append(personal.getUsuarioSistema()).append("\n");
+        detalle.append("Teléfono: ").append(personal.getTelefono()).append("\n");
+        detalle.append("Correo: ").append(personal.getCorreo()).append("\n");
+        detalle.append("Fecha Contratación: ").append(personal.getFechaContratacion()).append("\n\n");
+
+        // Detalles específicos
+        if (personal instanceof Administradores) {
+            Administradores admin = (Administradores) personal;
+            detalle.append("Cargo: ").append(admin.getCargo());
+        } else if (personal instanceof Entrenadores) {
+            Entrenadores entrenador = (Entrenadores) personal;
+            detalle.append("Especialidad: ").append(entrenador.getEspecialidad()).append("\n");
+            detalle.append("Experiencia: ").append(entrenador.getExperiencia()).append(" años");
+        } else if (personal instanceof Recepcionistas) {
+            Recepcionistas recepcionista = (Recepcionistas) personal;
+            String turno = recepcionista.getHorarioTurno();
+            detalle.append("Horario Turno: ").append(turno != null ? turno : "No asignado");
+        }
+
+        mostrarInfo("Detalle del Personal", detalle.toString());
     }
 
     @FXML
@@ -320,8 +365,7 @@ public class PersonalController {
     }
 
     private void editarPersonal(Personal personal) {
-        // TODO: Abrir formulario de edición
-        mostrarInfo("Editar", "Formulario de edición en desarrollo");
+        abrirFormulario(personal);
     }
 
     @FXML

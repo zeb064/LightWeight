@@ -1,6 +1,8 @@
 package org.example.gimnasioproyect.services;
 
 import org.example.gimnasioproyect.Utilidades.CalculadoraFechas;
+import org.example.gimnasioproyect.Utilidades.MembresiaData;
+import org.example.gimnasioproyect.Utilidades.TopClienteData;
 import org.example.gimnasioproyect.Utilidades.Validador;
 import org.example.gimnasioproyect.model.AsignacionEntrenadores;
 import org.example.gimnasioproyect.model.Asistencias;
@@ -433,6 +435,34 @@ public class EstadisticaService {
         return CalculadoraFechas.calcularDiasRestantes(membresiaOpt.get().getFechaFinalizacion());
     }
 
+    public List<MembresiaData> obtenerDistribucionMembresiasConPorcentajes() throws SQLException {
+        Map<String, Integer> distribucion = obtenerClientesActivosPorTipoMembresia();
+        Map<String, Double> ingresos = obtenerIngresosPorTipoMembresia();
+
+        // Calcular total de ingresos
+        double totalIngresos = ingresos.values().stream()
+                .mapToDouble(Double::doubleValue)
+                .sum();
+
+        List<MembresiaData> resultado = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> entry : distribucion.entrySet()) {
+            String tipo = entry.getKey();
+            int cantidad = entry.getValue();
+            double ingreso = ingresos.getOrDefault(tipo, 0.0);
+
+            // Calcular porcentaje sobre el total de INGRESOS, no sobre cantidad
+            double porcentaje = (totalIngresos > 0) ? (ingreso / totalIngresos) * 100 : 0;
+
+            resultado.add(new MembresiaData(tipo, cantidad, ingreso, porcentaje));
+        }
+
+        // Ordenar por ingresos (descendente)
+        resultado.sort((m1, m2) -> Double.compare(m2.getIngresos(), m1.getIngresos()));
+
+        return resultado;
+    }
+
     // ==================== ESTADÍSTICAS DE CLIENTES ====================
 
     // Obtiene el total de clientes registrados
@@ -485,6 +515,64 @@ public class EstadisticaService {
                         (e1, e2) -> e1,
                         LinkedHashMap::new
                 ));
+    }
+
+    public List<TopClienteData> obtenerTopClientesConNombres(int limite) throws SQLException {
+        List<Asistencias> todasAsistencias = asistenciaRepository.findAll();
+
+        // Contar asistencias por cliente
+        Map<String, Integer> conteoAsistencias = new HashMap<>();
+
+        for (Asistencias asistencia : todasAsistencias) {
+            String documento = asistencia.getCliente().getDocumento();
+            conteoAsistencias.put(documento, conteoAsistencias.getOrDefault(documento, 0) + 1);
+        }
+
+        // Ordenar por cantidad de asistencias (descendente)
+        List<Map.Entry<String, Integer>> listaOrdenada = conteoAsistencias.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .limit(limite)
+                .collect(Collectors.toList());
+
+        // Crear lista de TopClienteData con nombres
+        List<TopClienteData> resultado = new ArrayList<>();
+        int posicion = 1;
+
+        for (Map.Entry<String, Integer> entry : listaOrdenada) {
+            String documento = entry.getKey();
+            int cantidadAsistencias = entry.getValue();
+
+            // Buscar el cliente para obtener su nombre
+            Optional<Clientes> clienteOpt = clienteRepository.findByDocumento(documento);
+
+            String nombreCompleto = clienteOpt
+                    .map(c -> c.getNombres() + " " + c.getApellidos())
+                    .orElse("Cliente Desconocido");
+
+            // Obtener emoji de posición
+            String emoji = obtenerEmojiPosicion(posicion);
+
+            resultado.add(new TopClienteData(
+                    emoji,
+                    documento,
+                    nombreCompleto,
+                    cantidadAsistencias
+            ));
+
+            posicion++;
+        }
+
+        return resultado;
+    }
+
+    private String obtenerEmojiPosicion(int posicion) {
+        switch (posicion) {
+            case 1: return "🥇";
+            case 2: return "🥈";
+            case 3: return "🥉";
+            default: return String.format("%2d.", posicion);
+        }
     }
 
     // ==================== RESUMEN GENERAL ====================

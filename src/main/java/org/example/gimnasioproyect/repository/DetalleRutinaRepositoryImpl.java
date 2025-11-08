@@ -24,28 +24,28 @@ public class DetalleRutinaRepositoryImpl implements DetalleRutinaRepository {
 
     @Override
     public void save(DetalleRutinas entity) throws SQLException {
-        String sql = "INSERT INTO DETALLERUTINAS (ID_DETALLE, DIA_SEMANA, ORDEN, EJERCICIO, " +
+        String sql = "INSERT INTO DETALLERUTINAS (DIA_SEMANA, ORDEN, EJERCICIO, " +
                 "SERIES, REPETICIONES, PESO, NOTAS, ID_RUTINA) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = this.connection.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, entity.getIdDetalle());
-            ps.setString(2, entity.getDiaSemana());
-            ps.setInt(3, entity.getOrden() != null ? entity.getOrden() : 0);
-            ps.setString(4, entity.getEjercicio());
-            ps.setInt(5, entity.getSeries() != null ? entity.getSeries() : 0);
-            ps.setInt(6, entity.getRepeticiones() != null ? entity.getRepeticiones() : 0);
+           // ps.setInt(1, entity.getIdDetalle());
+            ps.setString(1, entity.getDiaSemana());
+            ps.setInt(2, entity.getOrden() != null ? entity.getOrden() : 0);
+            ps.setString(3, entity.getEjercicio());
+            ps.setInt(4, entity.getSeries() != null ? entity.getSeries() : 0);
+            ps.setInt(5, entity.getRepeticiones() != null ? entity.getRepeticiones() : 0);
 
             if (entity.getPeso() != null) {
-                ps.setDouble(7, entity.getPeso());
+                ps.setDouble(6, entity.getPeso());
             } else {
-                ps.setNull(7, Types.DOUBLE);
+                ps.setNull(6, Types.DOUBLE);
             }
 
-            ps.setString(8, entity.getNotas());
-            ps.setInt(9, entity.getRutina().getIdRutina());
+            ps.setString(7, entity.getNotas());
+            ps.setInt(8, entity.getRutina().getIdRutina());
 
             ps.executeUpdate();
             System.out.println("✅ Detalle de rutina guardado exitosamente");

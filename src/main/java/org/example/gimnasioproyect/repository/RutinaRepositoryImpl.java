@@ -26,13 +26,13 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
 
     @Override
     public void save(Rutinas entity) throws SQLException {
-        String sql = "INSERT INTO RUTINAS (ID_RUTINA, OBJETIVO) VALUES (?, ?)";
+        String sql = "INSERT INTO RUTINAS (OBJETIVO) VALUES (?)";
 
         try (Connection conn = this.connection.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setInt(1, entity.getIdRutina());
-            ps.setString(2, entity.getObjetivo());
+            //ps.setInt(1, entity.getIdRutina());
+            ps.setString(1, entity.getObjetivo());
 
             ps.executeUpdate();
             System.out.println("✅ Rutina guardada exitosamente: " + entity.getIdRutina());
