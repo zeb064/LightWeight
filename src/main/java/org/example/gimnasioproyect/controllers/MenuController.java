@@ -264,8 +264,25 @@ public class MenuController {
 
     @FXML
     private void handleMiPerfil() {
-        System.out.println("Mi Perfil");
-        // TODO: Cargar vista de perfil
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/MiPerfil.fxml"));
+            Parent miPerfil = loader.load();
+
+            // Obtener el controlador
+            MiPerfilController controller = loader.getController();
+
+            // Pasar el usuario logueado
+            controller.setPersonal(usuarioActual);
+
+            // Cargar en el contentArea
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(miPerfil);
+
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                    "No se pudo cargar mi perfil: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
