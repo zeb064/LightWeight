@@ -27,21 +27,20 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
     @Override
     public void save(AsignacionEntrenadores entity) throws SQLException {
-        String sql = "INSERT INTO ENTRENADORCLIENTES (ID_ENTRENADOR_CLIENTE, DOCUENTRENADOR, DOCUMENTO, " +
-                "FECHA_ASIGNACION, FECHA_FINALIZACION) VALUES (?, ?, ?, ?, ?)";
+        String sql = "{call PKG_ENTRENADORCLIENTES.PR_INSERTAR_ASIGNACION_ENTRENADOR(?, ?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, entity.getIdEntrenadorCliente());
-            ps.setString(2, entity.getEntrenador().getDocuEntrenador());
-            ps.setString(3, entity.getCliente().getDocumento());
-            ps.setDate(4, entity.getFechaAsignacion() != null ?
+            cs.setInt(1, entity.getIdEntrenadorCliente());
+            cs.setString(2, entity.getEntrenador().getDocuEntrenador());
+            cs.setString(3, entity.getCliente().getDocumento());
+            cs.setDate(4, entity.getFechaAsignacion() != null ?
                     Date.valueOf(entity.getFechaAsignacion()) : null);
-            ps.setDate(5, entity.getFechaFinalizacion() != null ?
+            cs.setDate(5, entity.getFechaFinalizacion() != null ?
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
 
-            ps.executeUpdate();
+            cs.execute();
             System.out.println("✅ Entrenador asignado exitosamente al cliente: " +
                     entity.getCliente().getDocumento());
 

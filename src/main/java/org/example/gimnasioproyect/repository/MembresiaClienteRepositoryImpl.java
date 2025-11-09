@@ -26,21 +26,20 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
 
     @Override
     public void save(MembresiaClientes entity) throws SQLException {
-        String sql = "INSERT INTO MEMBRESIASCLIENTES (ID_MEMBRESIA, DOCUMENTO, " +
-                "FECHA_ASIGNACION, FECHA_FINALIZACION) VALUES (?, ?, ?, ?)";
+        String sql = "{call PKG_MEMBRESIAS_CLIENTES.PR_INSERTAR_MEMBRESIA_CLIENTE(?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
             //ps.setInt(1, entity.getIdMembresiaCliente());
-            ps.setInt(1, entity.getMembresia().getIdMembresia());
-            ps.setString(2, entity.getCliente().getDocumento());
-            ps.setDate(3, entity.getFechaAsignacion() != null ?
+            cs.setInt(1, entity.getMembresia().getIdMembresia());
+            cs.setString(2, entity.getCliente().getDocumento());
+            cs.setDate(3, entity.getFechaAsignacion() != null ?
                     Date.valueOf(entity.getFechaAsignacion()) : null);
-            ps.setDate(4, entity.getFechaFinalizacion() != null ?
+            cs.setDate(4, entity.getFechaFinalizacion() != null ?
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
 
-            ps.executeUpdate();
+            cs.execute();
             System.out.println("✅ Membresía asignada exitosamente al cliente: " +
                     entity.getCliente().getDocumento());
 

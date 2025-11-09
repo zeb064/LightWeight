@@ -3,10 +3,7 @@ package org.example.gimnasioproyect.repository;
 import org.example.gimnasioproyect.model.Rutinas;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,15 +23,15 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
 
     @Override
     public void save(Rutinas entity) throws SQLException {
-        String sql = "INSERT INTO RUTINAS (OBJETIVO) VALUES (?)";
+        String sql = "{call PKG_RUTINAS.PR_INSERTAR_RUTINA(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
             //ps.setInt(1, entity.getIdRutina());
-            ps.setString(1, entity.getObjetivo());
+            cs.setString(1, entity.getObjetivo());
 
-            ps.executeUpdate();
+            cs.execute();
             System.out.println("✅ Rutina guardada exitosamente: " + entity.getIdRutina());
 
         } catch (SQLException e) {

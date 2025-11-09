@@ -27,22 +27,21 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
 
     @Override
     public void save(RutinaAsignadas entity) throws SQLException {
-        String sql = "INSERT INTO RUTINASCLIENTES (ID_RUTINA, DOCUMENTO, " +
-                "FECHA_ASIGNACION, FECHA_FINALIZACION, ESTADO) VALUES (?, ?, ?, ?, ?)";
+        String sql = "{call PKG_RUTINASCLIENTES.PR_INSERTAR_RUTINA_ASIGNADA(?, ?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
             //ps.setInt(1, entity.getIdRutinaCliente());
-            ps.setInt(1, entity.getRutina().getIdRutina());
-            ps.setString(2, entity.getCliente().getDocumento());
-            ps.setDate(3, entity.getFechaAsignacion() != null ?
+            cs.setInt(1, entity.getRutina().getIdRutina());
+            cs.setString(2, entity.getCliente().getDocumento());
+            cs.setDate(3, entity.getFechaAsignacion() != null ?
                     Date.valueOf(entity.getFechaAsignacion()) : null);
-            ps.setDate(4, entity.getFechaFinalizacion() != null ?
+            cs.setDate(4, entity.getFechaFinalizacion() != null ?
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
-            ps.setString(5, entity.getEstado());
+            cs.setString(5, entity.getEstado());
 
-            ps.executeUpdate();
+            cs.execute();
             System.out.println("✅ Rutina asignada exitosamente al cliente: " +
                     entity.getCliente().getDocumento());
 

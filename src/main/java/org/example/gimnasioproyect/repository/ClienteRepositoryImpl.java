@@ -4,10 +4,7 @@ import org.example.gimnasioproyect.model.Barrios;
 import org.example.gimnasioproyect.model.Clientes;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,27 +24,25 @@ public class ClienteRepositoryImpl implements ClienteRepository{
 
     @Override
     public void save(Clientes entity) throws SQLException {
-        String sql = "INSERT INTO CLIENTES (DOCUMENTO, NOMBRES, APELLIDOS, FECHA_NACIMIENTO, " +
-                "GENERO, TELEFONO, CORREO, DIRECCION, FECHA_REGISTRO, ID_BARRIO) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "{call PKG_CLIENTES.PR_INSERTAR_CLIENTE(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, entity.getDocumento());
-            ps.setString(2, entity.getNombres());
-            ps.setString(3, entity.getApellidos());
-            ps.setDate(4, entity.getFechaNacimiento() != null ?
+            cs.setString(1, entity.getDocumento());
+            cs.setString(2, entity.getNombres());
+            cs.setString(3, entity.getApellidos());
+            cs.setDate(4, entity.getFechaNacimiento() != null ?
                     java.sql.Date.valueOf(entity.getFechaNacimiento()) : null);
-            ps.setString(5, entity.getGenero());
-            ps.setString(6, entity.getTelefono());
-            ps.setString(7, entity.getCorreo());
-            ps.setString(8, entity.getDireccion());
-            ps.setDate(9, entity.getFechaRegistro() != null ?
+            cs.setString(5, entity.getGenero());
+            cs.setString(6, entity.getTelefono());
+            cs.setString(7, entity.getCorreo());
+            cs.setString(8, entity.getDireccion());
+            cs.setDate(9, entity.getFechaRegistro() != null ?
                     java.sql.Date.valueOf(entity.getFechaRegistro()) : null);
-            ps.setInt(10, entity.getBarrio() != null ? entity.getBarrio().getIdBarrio() : null);
+            cs.setInt(10, entity.getBarrio() != null ? entity.getBarrio().getIdBarrio() : null);
 
-            ps.executeUpdate();
+            cs.execute();
             System.out.println("✅ Cliente guardado exitosamente: " + entity.getDocumento());
 
         } catch (SQLException e) {

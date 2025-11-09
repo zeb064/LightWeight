@@ -3,10 +3,7 @@ package org.example.gimnasioproyect.repository;
 import org.example.gimnasioproyect.model.Membresias;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,16 +23,16 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
 
     @Override
     public void save(Membresias entity) throws SQLException {
-        String sql = "INSERT INTO MEMBRESIAS (TIPO, PRECIO_MEMBRESIA) VALUES (?, ?)";
+        String sql = "{call PKG_MEMBRESIAS.PR_INSERTAR_MEMBRESIA(?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
             //ps.setInt(1, entity.getIdMembresia());
-            ps.setString(1, entity.getTipoMembresia());
-            ps.setDouble(2, entity.getPrecioMembresia());
+            cs.setString(1, entity.getTipoMembresia());
+            cs.setDouble(2, entity.getPrecioMembresia());
 
-            ps.executeUpdate();
+            cs.execute();
             System.out.println("✅ Membresía guardada exitosamente: " + entity.getIdMembresia());
 
         } catch (SQLException e) {

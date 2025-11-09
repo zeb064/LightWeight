@@ -3,10 +3,7 @@ package org.example.gimnasioproyect.repository;
 import org.example.gimnasioproyect.model.Barrios;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,15 +23,15 @@ public class BarrioRepositoryImpl implements  BarrioRepository{
 
     @Override
     public void save(Barrios entity) throws SQLException {
-        String sql = "INSERT INTO BARRIOS (ID_BARRIO, NOM_BARRIO) VALUES (?, ?)";
+        String sql = "{call PKG_BARRIOS.PR_INSERTAR_BARRIO(?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, entity.getIdBarrio());
-            ps.setString(2, entity.getNombreBarrio());
+            cs.setInt(1, entity.getIdBarrio());
+            cs.setString(2, entity.getNombreBarrio());
 
-            ps.executeUpdate();
+            cs.execute();
             System.out.println("✅ Barrio guardado exitosamente: " + entity.getNombreBarrio());
 
         } catch (SQLException e) {

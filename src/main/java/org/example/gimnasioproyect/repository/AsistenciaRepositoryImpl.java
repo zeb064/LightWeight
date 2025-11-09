@@ -26,16 +26,16 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
 
     @Override
     public void save(Asistencias entity) throws SQLException {
-        String sql = "INSERT INTO ASISTENCIAS (FECHA, DOCUMENTO) VALUES (?, ?)";
+        String sql = "{call PKG_ASISTENCIAS.PR_INSERTAR_ASISTENCIA(?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
             //ps.setInt(1, entity.getIdAsistencia());
-            ps.setDate(1, entity.getFecha() != null ? Date.valueOf(entity.getFecha()) : null);
-            ps.setString(2, entity.getCliente().getDocumento());
+            cs.setDate(1, entity.getFecha() != null ? Date.valueOf(entity.getFecha()) : null);
+            cs.setString(2, entity.getCliente().getDocumento());
 
-            ps.executeUpdate();
+            cs.execute();
             System.out.println("✅ Asistencia registrada exitosamente para: " +
                     entity.getCliente().getDocumento());
 
