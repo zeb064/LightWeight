@@ -27,17 +27,17 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
     @Override
     public void save(AsignacionEntrenadores entity) throws SQLException {
-        String sql = "{call PKG_ENTRENADORCLIENTES.PR_INSERTAR_ASIGNACION_ENTRENADOR(?, ?, ?, ?, ?)}";
+        String sql = "{call PKG_ENTRENADORES.PR_INSERTAR_ASIGNACION_ENTRENADOR(?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
              CallableStatement cs = conn.prepareCall(sql)) {
 
-            cs.setInt(1, entity.getIdEntrenadorCliente());
-            cs.setString(2, entity.getEntrenador().getDocuEntrenador());
-            cs.setString(3, entity.getCliente().getDocumento());
-            cs.setDate(4, entity.getFechaAsignacion() != null ?
+            //cs.setInt(1, entity.getIdEntrenadorCliente());
+            cs.setString(1, entity.getEntrenador().getDocuEntrenador());
+            cs.setString(2, entity.getCliente().getDocumento());
+            cs.setDate(3, entity.getFechaAsignacion() != null ?
                     Date.valueOf(entity.getFechaAsignacion()) : null);
-            cs.setDate(5, entity.getFechaFinalizacion() != null ?
+            cs.setDate(4, entity.getFechaFinalizacion() != null ?
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
 
             cs.execute();

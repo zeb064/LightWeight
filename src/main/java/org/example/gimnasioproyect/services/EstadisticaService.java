@@ -134,15 +134,22 @@ public class EstadisticaService {
     public Map<String, Integer> obtenerClientesMasFrecuentes(int limite) throws SQLException {
         List<Asistencias> todasAsistencias = asistenciaRepository.findAll();
 
-        // Contar asistencias por cliente
         Map<String, Integer> conteoAsistencias = new HashMap<>();
 
         for (Asistencias asistencia : todasAsistencias) {
-            String documento = asistencia.getCliente().getDocumento();
-            conteoAsistencias.put(documento, conteoAsistencias.getOrDefault(documento, 0) + 1);
+            Clientes cliente = asistencia.getCliente();
+
+            // Acortar nombres largos para mejor visualización en gráficos
+            String nombre = cliente.getNombres();
+            String apellido = cliente.getApellidos();
+
+            String nombreCorto = nombre.length() > 10 ? nombre.substring(0, 8) + ".." : nombre;
+            String apellidoCorto = apellido.length() > 10 ? apellido.substring(0, 8) + ".." : apellido;
+
+            String clave = nombreCorto + " " + apellidoCorto;
+            conteoAsistencias.put(clave, conteoAsistencias.getOrDefault(clave, 0) + 1);
         }
 
-        // Ordenar y limitar
         return conteoAsistencias.entrySet()
                 .stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())

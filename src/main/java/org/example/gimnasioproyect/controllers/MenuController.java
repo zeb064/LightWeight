@@ -9,6 +9,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.example.gimnasioproyect.HelloApplication;
 import org.example.gimnasioproyect.Utilidades.TipoPersonal;
+import org.example.gimnasioproyect.model.Entrenadores;
 import org.example.gimnasioproyect.model.Personal;
 import org.example.gimnasioproyect.services.*;
 
@@ -116,8 +117,9 @@ public class MenuController {
 
     private void cargarMenuRecepcionista() {
         agregarMenuItem("📊  Dashboard", this::handleDashboard);
+        agregarMenuItem("👥  Clientes", this::handleClientes);
+        agregarMenuItem("🏋️  Entrenadores", this::handleEntrenadores);
         agregarMenuItem("✅  Asistencias", this::handleAsistencias);
-        agregarMenuItem("👥  Buscar Cliente", this::handleBuscarCliente);
         agregarMenuItem("💳  Membresías", this::handleMembresias);
     }
 
@@ -129,26 +131,6 @@ public class MenuController {
         btn.setOnAction(e -> accion.run());
 
         menuContainer.getChildren().add(btn);
-    }
-
-    // Método genérico para cargar vistas en el contentArea
-    private void cargarVista(String fxmlFile, Object controller) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/" + fxmlFile));
-
-            if (controller != null) {
-                loader.setController(controller);
-            }
-
-            Parent vista = loader.load();
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(vista);
-
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar la vista: " + e.getMessage());
-            e.printStackTrace();
-        }
     }
 
     // Handlers de menú
@@ -254,13 +236,30 @@ public class MenuController {
     }
 
     private void handleMisClientes() {
-        System.out.println("Mis Clientes");
-        // TODO: Cargar vista de mis clientes (entrenador)
-    }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/MisClientes.fxml"));
+            Parent misClientes = loader.load();
 
-    private void handleBuscarCliente() {
-        System.out.println("Buscar Cliente");
-        // TODO: Cargar vista de búsqueda de cliente
+            // Obtener el controlador
+            MisClientesController controller = loader.getController();
+
+            // Pasar el entrenador logueado
+            if (usuarioActual instanceof Entrenadores) {
+                controller.setEntrenador((Entrenadores) usuarioActual);
+            } else {
+                mostrarAlerta(Alert.AlertType.ERROR, "Error", "Usuario no es un entrenador");
+                return;
+            }
+
+            // Cargar en el contentArea
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(misClientes);
+
+        } catch (IOException e) {
+            mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                    "No se pudo cargar mis clientes: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML

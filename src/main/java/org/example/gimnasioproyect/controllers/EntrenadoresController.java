@@ -5,15 +5,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.example.gimnasioproyect.HelloApplication;
 import org.example.gimnasioproyect.Utilidades.ServiceFactory;
 import org.example.gimnasioproyect.model.AsignacionEntrenadores;
+import org.example.gimnasioproyect.model.Clientes;
 import org.example.gimnasioproyect.model.Entrenadores;
+import org.example.gimnasioproyect.services.ClienteServices;
 import org.example.gimnasioproyect.services.EntrenadorService;
 import org.example.gimnasioproyect.services.EstadisticaService;
 
@@ -335,10 +339,159 @@ public class EntrenadoresController {
     private void handleAsignarCliente() {
         Entrenadores seleccionado = tableEntrenadores.getSelectionModel().getSelectedItem();
         if (seleccionado != null) {
-            // TODO: Abrir diálogo para asignar cliente
-            mostrarInfo("Funcionalidad pendiente",
-                    "La asignación de clientes se implementará próximamente");
+            abrirDialogoAsignarCliente(seleccionado);
         }
+    }
+
+    private void abrirDialogoAsignarCliente(Entrenadores entrenador) {
+        // Crear diálogo personalizado
+        Dialog<String> dialog = new Dialog<>();
+        dialog.setTitle("Asignar Cliente");
+        dialog.setHeaderText("Asignar cliente a: " + entrenador.getNombreCompleto() +
+                "\nEspecialidad: " + entrenador.getEspecialidad());
+
+        // Botones
+        ButtonType asignarButtonType = new ButtonType("Asignar", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(asignarButtonType, ButtonType.CANCEL);
+
+        // Crear contenido
+        VBox content = new VBox(15);
+        content.setPrefWidth(500);
+        content.setPrefHeight(400);
+
+        // Campo de búsqueda
+        HBox searchBox = new HBox(10);
+        TextField txtBuscarCliente = new TextField();
+        txtBuscarCliente.setPromptText("Buscar cliente por nombre o documento...");
+        txtBuscarCliente.setPrefWidth(400);
+        Button btnBuscar = new Button("🔍");
+        searchBox.getChildren().addAll(txtBuscarCliente, btnBuscar);
+
+        // Tabla de clientes disponibles
+        TableView<Clientes> tableClientes = new TableView<>();
+        tableClientes.setPrefHeight(300);
+
+        TableColumn<Clientes, String> colDoc = new TableColumn<>("Documento");
+        colDoc.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleStringProperty(data.getValue().getDocumento()));
+        colDoc.setPrefWidth(120);
+
+        TableColumn<Clientes, String> colNom = new TableColumn<>("Nombre");
+        colNom.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleStringProperty(data.getValue().getNombreCompleto()));
+        colNom.setPrefWidth(200);
+
+        TableColumn<Clientes, String> colTel = new TableColumn<>("Teléfono");
+        colTel.setCellValueFactory(data ->
+                new javafx.beans.property.SimpleStringProperty(data.getValue().getTelefono()));
+        colTel.setPrefWidth(120);
+
+        tableClientes.getColumns().addAll(colDoc, colNom, colTel);
+
+        // Label de información
+        Label lblInfo = new Label("Seleccione un cliente de la lista");
+        lblInfo.setStyle("-fx-text-fill: #7f8c8d; -fx-font-size: 11px;");
+
+        content.getChildren().addAll(
+                new Label("Buscar cliente:"),
+                searchBox,
+                new Label("Clientes disponibles (sin entrenador):"),
+                tableClientes,
+                lblInfo
+        );
+
+        dialog.getDialogPane().setContent(content);
+
+        // Cargar clientes sin entrenador
+        try {
+            ClienteServices clienteService = ServiceFactory.getInstance().getClienteService();
+            List<Clientes> todosClientes = clienteService.obtenerTodosLosClientes();
+
+            // Filtrar clientes sin entrenador activo
+            List<Clientes> clientesDisponibles = new ArrayList<>();
+            for (Clientes cliente : todosClientes) {
+                try {
+                    Optional<AsignacionEntrenadores> asignacion =
+                            entrenadorService.obtenerEntrenadorDeCliente(cliente.getDocumento());
+
+                    // Si no tiene asignación activa, está disponible
+                    if (!asignacion.isPresent()) {
+                        clientesDisponibles.add(cliente);
+                    }
+                } catch (SQLException e) {
+                    // Si hay error, incluirlo por si acaso
+                    clientesDisponibles.add(cliente);
+                }
+            }
+
+            ObservableList<Clientes> listaClientes =
+                    FXCollections.observableArrayList(clientesDisponibles);
+            tableClientes.setItems(listaClientes);
+
+            lblInfo.setText("Clientes disponibles: " + clientesDisponibles.size());
+
+            // Funcionalidad de búsqueda
+            txtBuscarCliente.textProperty().addListener((obs, old, nuevo) -> {
+                if (nuevo == null || nuevo.isEmpty()) {
+                    tableClientes.setItems(listaClientes);
+                } else {
+                    String busqueda = nuevo.toLowerCase();
+                    List<Clientes> filtrados = clientesDisponibles.stream()
+                            .filter(c -> c.getNombreCompleto().toLowerCase().contains(busqueda) ||
+                                    c.getDocumento().toLowerCase().contains(busqueda))
+                            .collect(Collectors.toList());
+                    tableClientes.setItems(FXCollections.observableArrayList(filtrados));
+                }
+            });
+
+            btnBuscar.setOnAction(e -> {
+                String busqueda = txtBuscarCliente.getText();
+                if (busqueda != null && !busqueda.isEmpty()) {
+                    txtBuscarCliente.clear();
+                }
+            });
+
+        } catch (SQLException e) {
+            mostrarError("Error", "No se pudieron cargar los clientes: " + e.getMessage());
+            return;
+        }
+
+        // Deshabilitar botón Asignar si no hay selección
+        Node asignarButton = dialog.getDialogPane().lookupButton(asignarButtonType);
+        asignarButton.setDisable(true);
+
+        tableClientes.getSelectionModel().selectedItemProperty().addListener((obs, old, nuevo) -> {
+            asignarButton.setDisable(nuevo == null);
+        });
+
+        // Convertir resultado
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == asignarButtonType) {
+                Clientes clienteSeleccionado = tableClientes.getSelectionModel().getSelectedItem();
+                if (clienteSeleccionado != null) {
+                    return clienteSeleccionado.getDocumento();
+                }
+            }
+            return null;
+        });
+
+        // Mostrar diálogo y procesar resultado
+        dialog.showAndWait().ifPresent(documentoCliente -> {
+            try {
+                entrenadorService.asignarEntrenadorACliente(
+                        entrenador.getDocuEntrenador(),
+                        documentoCliente
+                );
+
+                mostrarExito("Cliente asignado correctamente al entrenador");
+                cargarDatos(); // Recargar para actualizar contadores
+
+            } catch (SQLException e) {
+                mostrarError("Error al asignar", e.getMessage());
+            } catch (IllegalArgumentException e) {
+                mostrarError("Error de validación", e.getMessage());
+            }
+        });
     }
 
     @FXML

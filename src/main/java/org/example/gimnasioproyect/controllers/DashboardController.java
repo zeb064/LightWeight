@@ -4,7 +4,10 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -45,6 +48,7 @@ public class DashboardController {
     @FXML private Text lblAsistenciasMes;
 
     // Top Clientes
+    @FXML private BarChart<String, Number> barChartTopClientes;
     @FXML private ListView<String> listTopClientes;
 
     // Distribución Membresías
@@ -58,6 +62,7 @@ public class DashboardController {
         // Obtener servicios
         ServiceFactory factory = ServiceFactory.getInstance();
         this.estadisticaService = factory.getEstadisticaService();
+        this.
 
         // Iniciar reloj
         inicializarReloj();
@@ -144,19 +149,23 @@ public class DashboardController {
     private void cargarTopClientes() throws SQLException {
         Map<String, Integer> topClientes = estadisticaService.obtenerClientesMasFrecuentes(5);
 
-        listTopClientes.getItems().clear();
+        // Limpiar gráfico anterior
+        barChartTopClientes.getData().clear();
 
         if (topClientes.isEmpty()) {
-            listTopClientes.getItems().add("Sin datos disponibles");
-        } else {
-            int posicion = 1;
-            for (Map.Entry<String, Integer> entry : topClientes.entrySet()) {
-                String emoji = obtenerEmojiPosicion(posicion);
-                String item = emoji + " " + entry.getKey() + " - " + entry.getValue() + " asistencias";
-                listTopClientes.getItems().add(item);
-                posicion++;
-            }
+            return;
         }
+
+        // Crear serie de datos
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Asistencias");
+
+        // Agregar datos al gráfico (ya vienen con nombres completos)
+        for (Map.Entry<String, Integer> entry : topClientes.entrySet()) {
+            series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        }
+
+        barChartTopClientes.getData().add(series);
     }
 
     private String obtenerEmojiPosicion(int posicion) {
@@ -228,8 +237,7 @@ public class DashboardController {
 
     @FXML
     private void handleVerReportes() {
-        // TODO: Implementar vista de reportes
-        mostrarInfo("Reportes", "Módulo de reportes en desarrollo");
+        navegarA("Reportes");
     }
 
     @FXML
