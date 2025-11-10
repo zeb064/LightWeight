@@ -126,7 +126,6 @@ public class MenuController {
         menuContainer.getChildren().add(btn);
     }
 
-    // ========== MÉTODO DE LOADING ==========
 
     private void mostrarLoading(boolean mostrar) {
         if (loadingPane != null) {
@@ -136,8 +135,6 @@ public class MenuController {
             }
         }
     }
-
-    // ========== HANDLERS DE MENÚ ==========
 
     @FXML
     private void handleDashboard() {
