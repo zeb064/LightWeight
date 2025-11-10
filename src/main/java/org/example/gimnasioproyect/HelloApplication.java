@@ -69,9 +69,7 @@ public class HelloApplication extends Application {
                 asistenciaRepo, membresiaClienteRepo, asignacionEntrenadorRepo,
                 clienteRepo, membresiaRepo, rutinaAsignadaRepo
         );
-        PersonalService personalService = new PersonalService(
-                personalRepo, adminRepo, entrenadorRepo, recepcionistaRepo
-        );
+        PersonalService personalService = new PersonalService(personalRepo );
         AdministradorService administradorService = new AdministradorService(
                 adminRepo, personalRepo
         );
