@@ -1,6 +1,6 @@
 package org.example.gimnasioproyect.controllers;
 
-
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,6 +21,7 @@ public class MenuController {
     @FXML private Label lblTipoUsuario;
     @FXML private VBox menuContainer;
     @FXML private StackPane contentArea;
+    @FXML private StackPane loadingPane;
     @FXML private Button btnPerfil;
     @FXML private Button btnCerrarSesion;
     @FXML private Button btnNotificaciones;
@@ -44,7 +45,6 @@ public class MenuController {
         this.loginService = loginService;
     }
 
-    // Método para inyectar todos los servicios
     public void setAllServices(ClienteServices clienteService,
                                BarrioService barrioService,
                                MembresiaClienteService membresiaClienteService,
@@ -71,12 +71,8 @@ public class MenuController {
 
     public void inicializarMenu(Personal personal) {
         this.usuarioActual = personal;
-
-        // Configurar header
         lblNombreUsuario.setText(personal.getNombreCompleto());
         lblTipoUsuario.setText(personal.getTipoPersonal().toString());
-
-        // Cargar menú según rol
         cargarMenu(personal.getTipoPersonal());
     }
 
@@ -101,7 +97,7 @@ public class MenuController {
         agregarMenuItem("👥  Clientes", this::handleClientes);
         agregarMenuItem("💳  Membresías", this::handleMembresias);
         agregarMenuItem("🏋️  Entrenadores", this::handleEntrenadores);
-        agregarMenuItem("📝  Rutinas", this::handleRutinas);
+        agregarMenuItem("📋  Rutinas", this::handleRutinas);
         agregarMenuItem("✅  Asistencias", this::handleAsistencias);
         agregarMenuItem("👔  Personal", this::handlePersonal);
         agregarMenuItem("📈  Reportes", this::handleReportes);
@@ -110,7 +106,7 @@ public class MenuController {
     private void cargarMenuEntrenador() {
         agregarMenuItem("📊  Dashboard", this::handleDashboard);
         agregarMenuItem("👥  Mis Clientes", this::handleMisClientes);
-        agregarMenuItem("📝  Rutinas", this::handleRutinas);
+        agregarMenuItem("📋  Rutinas", this::handleRutinas);
     }
 
     private void cargarMenuRecepcionista() {
@@ -127,160 +123,273 @@ public class MenuController {
         btn.setMaxWidth(Double.MAX_VALUE);
         btn.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         btn.setOnAction(e -> accion.run());
-
         menuContainer.getChildren().add(btn);
     }
 
-    // Handlers de menú
+    // ========== MÉTODO DE LOADING ==========
+
+    private void mostrarLoading(boolean mostrar) {
+        if (loadingPane != null) {
+            loadingPane.setVisible(mostrar);
+            if (mostrar) {
+                loadingPane.toFront();
+            }
+        }
+    }
+
+    // ========== HANDLERS DE MENÚ ==========
+
     @FXML
     private void handleDashboard() {
-        try {
-            Parent dashboard = HelloApplication.loadFXML("Dashboard");
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(dashboard);
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar el dashboard: " + e.getMessage());
-            e.printStackTrace();
-        }
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent dashboard = HelloApplication.loadFXML("Dashboard");
+
+                Platform.runLater(() -> {
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().addAll(dashboard, loadingPane);
+                    mostrarLoading(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar el dashboard: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
     }
 
     private void handleClientes() {
-        try {
-            // Cargar el FXML
-            Parent gestionClientes = HelloApplication.loadFXML("GestionClientes");
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent gestionClientes = HelloApplication.loadFXML("GestionClientes");
 
-            // Reemplazar el contenido del StackPane
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(gestionClientes);
-
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar la gestión de clientes: " + e.getMessage());
-            e.printStackTrace();
-        }
+                Platform.runLater(() -> {
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().addAll(gestionClientes, loadingPane);
+                    mostrarLoading(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar la gestión de clientes: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
     }
 
     private void handleMembresias() {
-        try {
-            Parent gestionMembresias = HelloApplication.loadFXML("GestionMembresias");
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(gestionMembresias);
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar la gestión de membresías: " + e.getMessage());
-            e.printStackTrace();
-        }
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent gestionMembresias = HelloApplication.loadFXML("GestionMembresias");
+
+                Platform.runLater(() -> {
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().addAll(gestionMembresias, loadingPane);
+                    mostrarLoading(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar la gestión de membresías: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
     }
 
     private void handleEntrenadores() {
-        try {
-            Parent gestionEntrenadores = HelloApplication.loadFXML("Entrenadores");
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(gestionEntrenadores);
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar la gestion de entrenadores: " + e.getMessage());
-            e.printStackTrace();
-        }
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent gestionEntrenadores = HelloApplication.loadFXML("Entrenadores");
+
+                Platform.runLater(() -> {
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().addAll(gestionEntrenadores, loadingPane);
+                    mostrarLoading(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar la gestion de entrenadores: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
     }
 
     private void handleRutinas() {
-        try {
-            Parent gestionRutinas = HelloApplication.loadFXML("Rutinas");
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(gestionRutinas);
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar el registro de rutinas: " + e.getMessage());
-            e.printStackTrace();
-        }
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent gestionRutinas = HelloApplication.loadFXML("Rutinas");
+
+                Platform.runLater(() -> {
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().addAll(gestionRutinas, loadingPane);
+                    mostrarLoading(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar el registro de rutinas: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
     }
 
     private void handleAsistencias() {
-        try {
-            Parent gestionAsistencias = HelloApplication.loadFXML("Asistencias");
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(gestionAsistencias);
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar el registro de asistencias: " + e.getMessage());
-            e.printStackTrace();
-        }
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent gestionAsistencias = HelloApplication.loadFXML("Asistencias");
+
+                Platform.runLater(() -> {
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().addAll(gestionAsistencias, loadingPane);
+                    mostrarLoading(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar el registro de asistencias: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
     }
 
     private void handlePersonal() {
-        try {
-            Parent gestionPersonal = HelloApplication.loadFXML("Personal");
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(gestionPersonal);
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar la gestión de personal: " + e.getMessage());
-            e.printStackTrace();
-        }
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent gestionPersonal = HelloApplication.loadFXML("Personal");
+
+                Platform.runLater(() -> {
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().addAll(gestionPersonal, loadingPane);
+                    mostrarLoading(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar la gestión de personal: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
     }
 
     private void handleReportes() {
-        try {
-            Parent reportes = HelloApplication.loadFXML("Reportes");
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(reportes);
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar el registro de reportes: " + e.getMessage());
-            e.printStackTrace();
-        }
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent reportes = HelloApplication.loadFXML("Reportes");
+
+                Platform.runLater(() -> {
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().addAll(reportes, loadingPane);
+                    mostrarLoading(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar el registro de reportes: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
     }
 
     private void handleMisClientes() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/MisClientes.fxml"));
-            Parent misClientes = loader.load();
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/MisClientes.fxml"));
+                Parent misClientes = loader.load();
 
-            // Obtener el controlador
-            MisClientesController controller = loader.getController();
+                Platform.runLater(() -> {
+                    // Obtener el controlador
+                    MisClientesController controller = loader.getController();
 
-            // Pasar el entrenador logueado
-            if (usuarioActual instanceof Entrenadores) {
-                controller.setEntrenador((Entrenadores) usuarioActual);
-            } else {
-                mostrarAlerta(Alert.AlertType.ERROR, "Error", "Usuario no es un entrenador");
-                return;
+                    // Pasar el entrenador logueado
+                    if (usuarioActual instanceof Entrenadores) {
+                        controller.setEntrenador((Entrenadores) usuarioActual);
+
+                        // Cargar en el contentArea
+                        contentArea.getChildren().clear();
+                        contentArea.getChildren().addAll(misClientes, loadingPane);
+                        mostrarLoading(false);
+                    } else {
+                        mostrarLoading(false);
+                        mostrarAlerta(Alert.AlertType.ERROR, "Error", "Usuario no es un entrenador");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar mis clientes: " + e.getMessage());
+                    e.printStackTrace();
+                });
             }
-
-            // Cargar en el contentArea
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(misClientes);
-
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar mis clientes: " + e.getMessage());
-            e.printStackTrace();
-        }
+        }).start();
     }
 
     @FXML
     private void handleMiPerfil() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/MiPerfil.fxml"));
-            Parent miPerfil = loader.load();
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/MiPerfil.fxml"));
+                Parent miPerfil = loader.load();
 
-            // Obtener el controlador
-            MiPerfilController controller = loader.getController();
+                Platform.runLater(() -> {
+                    // Obtener el controlador
+                    MiPerfilController controller = loader.getController();
 
-            // Pasar el usuario logueado
-            controller.setPersonal(usuarioActual);
+                    // Pasar el usuario logueado
+                    controller.setPersonal(usuarioActual);
 
-            // Cargar en el contentArea
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(miPerfil);
-
-        } catch (IOException e) {
-            mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                    "No se pudo cargar mi perfil: " + e.getMessage());
-            e.printStackTrace();
-        }
+                    // Cargar en el contentArea
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().addAll(miPerfil, loadingPane);
+                    mostrarLoading(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar mi perfil: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
     }
 
     @FXML
@@ -305,18 +414,14 @@ public class MenuController {
 
     private void cerrarSesion() {
         try {
-            // Guardar referencia al stage ANTES de cambiar la escena
             Stage stage = (Stage) lblNombreUsuario.getScene().getWindow();
 
-            // Hacer logout
             if (loginService != null) {
                 loginService.logout();
             }
 
-            // Cambiar a Login (esto inyectará automáticamente el LoginService)
             HelloApplication.setRoot("Login");
 
-            // Configurar el stage
             if (stage != null) {
                 stage.setTitle("LightWeight - Login");
                 stage.setMaximized(false);

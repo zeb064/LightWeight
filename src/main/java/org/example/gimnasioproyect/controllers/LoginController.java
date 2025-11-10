@@ -82,14 +82,14 @@ public class LoginController {
         }).start();
     }
 
-    @FXML
-    private void handleForgotPassword() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Recuperar Contraseña");
-        alert.setHeaderText("Contacta al administrador");
-        alert.setContentText("Por favor contacta al administrador del sistema para recuperar tu contraseña.");
-        alert.showAndWait();
-    }
+//    @FXML
+//    private void handleForgotPassword() {
+//        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+//        alert.setTitle("Recuperar Contraseña");
+//        alert.setHeaderText("Contacta al administrador");
+//        alert.setContentText("Por favor contacta al administrador del sistema para recuperar tu contraseña.");
+//        alert.showAndWait();
+//    }
 
     private void abrirMenu(Personal personal) throws Exception {
         try {

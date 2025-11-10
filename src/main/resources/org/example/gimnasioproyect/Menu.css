@@ -125,3 +125,40 @@
 .welcome-subtitle {
     -fx-fill: -text-secondary;
 }
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay {
+    -fx-background-color: rgba(44, 62, 80, 0.95);
+    -fx-background-radius: 10;
+}
+
+.custom-progress {
+    -fx-progress-color: -primary-color;
+}
+
+.custom-progress .percentage {
+    -fx-fill: null;
+}
+
+.custom-progress .spinner {
+    -fx-progress-color: -primary-color;
+}
+
+.loading-text {
+    -fx-text-fill: -text-primary;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+/* Animación del ProgressIndicator */
+.progress-indicator .percentage {
+    -fx-fill: null;
+}
+
+.progress-indicator .spinner {
+    -fx-progress-color: -primary-color;
+}
+
+.progress-indicator .indicator-segment {
+    -fx-background-color: -primary-color;
+}

@@ -65,6 +65,7 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
                 "WHERE rc.ID_RUTINA_CLIENTE = ?";
 
         try (Connection conn = this.connection.connect();
+
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);

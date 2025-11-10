@@ -1,71 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.example.gimnasioproyect.controllers.MenuController"
-            prefHeight="700.0" prefWidth="1200.0"
-            styleClass="dashboard-root"
-            stylesheets="@Menu.css">
+<BorderPane prefHeight="700.0" prefWidth="1200.0" styleClass="dashboard-root" stylesheets="@Menu.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.gimnasioproyect.controllers.MenuController">
 
     <!-- TOP: Header -->
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="15" styleClass="header"
-              prefHeight="70">
+        <HBox alignment="CENTER_LEFT" prefHeight="70" spacing="15" styleClass="header">
             <padding>
-                <Insets left="20" right="20"/>
+                <Insets left="20" right="20" />
             </padding>
 
             <!-- Logo y Título -->
             <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
-                <Text text="🏋️" styleClass="header-logo">
+                <Text styleClass="header-logo" text="🏋️">
                     <font>
-                        <Font size="28.0"/>
+                        <Font size="28.0" />
                     </font>
                 </Text>
-                <Text text="LightWeight" styleClass="header-title">
+                <Text styleClass="header-title" text="LightWeight">
                     <font>
-                        <Font name="System Bold" size="20.0"/>
+                        <Font name="System Bold" size="20.0" />
                     </font>
                 </Text>
             </HBox>
 
             <!-- Espaciador -->
-            <Region HBox.hgrow="ALWAYS"/>
+            <Region HBox.hgrow="ALWAYS" />
 
             <!-- Info Usuario -->
             <HBox alignment="CENTER_RIGHT" spacing="15">
                 <!-- Notificaciones -->
-                <Button fx:id="btnNotificaciones" text="🔔" styleClass="icon-button"
-                        onAction="#handleNotificaciones">
+                <Button fx:id="btnNotificaciones" onAction="#handleNotificaciones" styleClass="icon-button" text="🔔">
                     <font>
-                        <Font size="18.0"/>
+                        <Font size="18.0" />
                     </font>
                 </Button>
 
                 <!-- Usuario -->
                 <VBox alignment="CENTER_RIGHT" spacing="2">
-                    <Label fx:id="lblNombreUsuario" text="Usuario" styleClass="user-name">
+                    <Label fx:id="lblNombreUsuario" styleClass="user-name" text="Usuario">
                         <font>
-                            <Font name="System Bold" size="13.0"/>
+                            <Font name="System Bold" size="13.0" />
                         </font>
                     </Label>
-                    <Label fx:id="lblTipoUsuario" text="Administrador" styleClass="user-role">
+                    <Label fx:id="lblTipoUsuario" styleClass="user-role" text="Administrador">
                         <font>
-                            <Font size="11.0"/>
+                            <Font size="11.0" />
                         </font>
                     </Label>
                 </VBox>
 
                 <!-- Avatar -->
-                <Button text="👤" styleClass="avatar-button">
+                <Button styleClass="avatar-button" text="👤">
                     <font>
-                        <Font size="24.0"/>
+                        <Font size="24.0" />
                     </font>
                 </Button>
             </HBox>
@@ -74,9 +74,9 @@
 
     <!-- LEFT: Menú Lateral -->
     <left>
-        <VBox spacing="5" styleClass="sidebar" prefWidth="250">
+        <VBox prefWidth="250" spacing="5" styleClass="sidebar">
             <padding>
-                <Insets top="20" bottom="20" left="10" right="10"/>
+                <Insets bottom="20" left="10" right="10" top="20" />
             </padding>
 
             <!-- Menú Principal -->
@@ -87,24 +87,20 @@
             <!-- Separador -->
             <Separator styleClass="menu-separator">
                 <VBox.margin>
-                    <Insets top="10" bottom="10"/>
+                    <Insets bottom="10" top="10" />
                 </VBox.margin>
             </Separator>
 
             <!-- Opciones Fijas -->
-            <Button fx:id="btnPerfil" text="⚙️  Mi Perfil" alignment="CENTER_LEFT"
-                    styleClass="menu-item" maxWidth="Infinity"
-                    onAction="#handleMiPerfil">
+            <Button fx:id="btnPerfil" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#handleMiPerfil" styleClass="menu-item" text="⚙️  Mi Perfil">
                 <font>
-                    <Font size="13.0"/>
+                    <Font size="13.0" />
                 </font>
             </Button>
 
-            <Button fx:id="btnCerrarSesion" text="🚪  Cerrar Sesión" alignment="CENTER_LEFT"
-                    styleClass="menu-item, menu-item-logout" maxWidth="Infinity"
-                    onAction="#handleCerrarSesion">
+            <Button fx:id="btnCerrarSesion" alignment="CENTER_LEFT" maxWidth="Infinity" onAction="#handleCerrarSesion" styleClass="menu-item, menu-item-logout" text="🚪  Cerrar Sesión">
                 <font>
-                    <Font size="13.0"/>
+                    <Font size="13.0" />
                 </font>
             </Button>
         </VBox>
@@ -114,26 +110,43 @@
     <center>
         <StackPane fx:id="contentArea" styleClass="content-area">
             <padding>
-                <Insets top="20" bottom="20" left="20" right="20"/>
+                <Insets bottom="20" left="20" right="20" top="20" />
             </padding>
 
             <!-- Aquí se cargarán las vistas dinámicamente -->
             <VBox alignment="CENTER" spacing="20">
-                <Text text="👋" styleClass="welcome-icon">
+
+                <Text styleClass="welcome-icon" text="👋">
                     <font>
-                        <Font size="60.0"/>
+                        <Font size="60.0" />
                     </font>
                 </Text>
-                <Text text="Bienvenido a LightWeight" styleClass="welcome-title">
+                <Text styleClass="welcome-title" text="Bienvenido a LightWeight">
                     <font>
-                        <Font name="System Bold" size="28.0"/>
+                        <Font name="System Bold" size="28.0" />
                     </font>
                 </Text>
-                <Text text="Selecciona una opción del menú para comenzar" styleClass="welcome-subtitle">
+                <Text styleClass="welcome-subtitle" text="Selecciona una opción del menú para comenzar">
                     <font>
-                        <Font size="14.0"/>
+                        <Font size="14.0" />
                     </font>
                 </Text>
+
+                <StackPane fx:id="loadingPane"
+                           styleClass="loading-overlay"
+                           visible="false"
+                           maxWidth="Infinity"
+                           maxHeight="Infinity">
+
+                    <VBox alignment="CENTER" spacing="15">
+                        <ProgressIndicator styleClass="custom-progress" />
+                        <Label styleClass="loading-text" text="Cargando vista...">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                    </VBox>
+                </StackPane>
             </VBox>
         </StackPane>
     </center>
