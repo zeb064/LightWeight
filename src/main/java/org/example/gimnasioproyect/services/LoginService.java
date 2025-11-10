@@ -56,41 +56,9 @@ public class LoginService {
         return usuarioActual != null && usuarioActual.getTipoPersonal() == rolEsperado;
     }
 
-    // Métodos específicos para roles (más legibles)
-    public boolean esAdministrador() {
-        return tieneRol(TipoPersonal.ADMINISTRADOR);
-    }
-
-    public boolean esEntrenador() {
-        return tieneRol(TipoPersonal.ENTRENADOR);
-    }
-
-    public boolean esRecepcionista() {
-        return tieneRol(TipoPersonal.RECEPCIONISTA);
-    }
-
     // Obtiene el tipo de usuario actual
     public TipoPersonal getTipoUsuarioActual() {
         return (usuarioActual != null) ? usuarioActual.getTipoPersonal() : null;
-    }
-
-    // Verificaciones de permisos
-    public void validarSesionActiva() {
-        if (!hayUsuarioAutenticado()) {
-            throw new SecurityException("No hay una sesión activa. Por favor, inicie sesión.");
-        }
-    }
-
-    public void validarPermisoAdministrador() {
-        if (!esAdministrador()) {
-            throw new SecurityException("Se requieren permisos de administrador para esta operación.");
-        }
-    }
-
-    public void validarPermisoEntrenador() {
-        if (!esEntrenador()) {
-            throw new SecurityException("Se requieren permisos de entrenador para esta operación.");
-        }
     }
 
     // Obtiene el nombre completo del usuario actual
@@ -98,7 +66,7 @@ public class LoginService {
         return (usuarioActual != null) ? usuarioActual.getNombreCompleto() : null;
     }
 
-    // Obtiene el documento del usuario actual (gracias al polimorfismo)
+    // Obtiene el documento del usuario actual
     public String getDocumentoUsuarioActual() {
         return (usuarioActual != null) ? usuarioActual.getDocumento() : null;
     }

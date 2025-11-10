@@ -56,11 +56,11 @@ public class PersonalService {
         // Actualizar contraseña
         personal.setContrasena(nuevaContrasena);
 
-        // Guardar según el tipo (LSP: cada tipo se guarda correctamente)
+        // Guardar según el tipo de personal
         actualizarPersonalSegunTipo(personal);
     }
 
-    // Actualiza datos comunes de cualquier tipo de personal (LSP aplicado)
+    // Actualiza datos comunes de cualquier tipo de personal
     public void actualizarDatosComunes(String usuario, String telefono,
                                        String correo) throws SQLException {
         if (usuario == null || usuario.trim().isEmpty()) {
@@ -153,10 +153,7 @@ public class PersonalService {
         return personalRepository.findAll().size();
     }
 
-    /**
-     * Método privado que actualiza el personal según su tipo (LSP aplicado)
-     * Respeta OCP: si agregas un nuevo tipo de personal, solo modificas este método
-     */
+    // Actualiza el personal según su tipo
     private void actualizarPersonalSegunTipo(Personal personal) throws SQLException {
         if (personal instanceof Administradores) {
             administradorRepository.update((Administradores) personal);

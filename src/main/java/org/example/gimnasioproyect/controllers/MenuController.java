@@ -28,8 +28,6 @@ public class MenuController {
     private LoginService loginService;
     private Personal usuarioActual;
 
-
-    // Servicios necesarios
     private ClienteServices clienteService;
     private BarrioService barrioService;
     private MembresiaClienteService membresiaClienteService;

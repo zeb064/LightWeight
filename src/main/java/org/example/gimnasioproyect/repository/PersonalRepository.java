@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface PersonalRepository {
+public interface PersonalRepository extends Repository<Personal, Integer> {
     Optional<Personal> findByUsuario(String usuario) throws SQLException;
 
     Optional<Personal> autenticar(String usuario, String contrasena) throws SQLException;

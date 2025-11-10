@@ -7,10 +7,7 @@ import org.example.gimnasioproyect.model.Personal;
 import org.example.gimnasioproyect.model.Recepcionistas;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +23,44 @@ public class PersonalRepositoryImpl implements PersonalRepository {
             System.err.println("❌ Error al conectar: " + e.getMessage());
             throw e;
         }
+    }
+
+    @Override
+    public void update(Personal entity) throws SQLException {
+        String sql = "UPDATE PERSONAL SET NOMBRES = ?, APELLIDOS = ?, TELEFONO = ?, " +
+                "CORREO = ?, USUARIO_SISTEMA = ?, CONTRASENA = ?, FECHA_CONTRATACION = ? " +
+                "WHERE ID_PERSONAL = ?";
+
+        try (Connection conn = this.connection.connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, entity.getNombres());
+            ps.setString(2, entity.getApellidos());
+            ps.setString(3, entity.getTelefono());
+            ps.setString(4, entity.getCorreo());
+            ps.setString(5, entity.getUsuarioSistema());
+            ps.setString(6, entity.getContrasena());
+            ps.setDate(7, entity.getFechaContratacion() != null ?
+                    Date.valueOf(entity.getFechaContratacion()) : null);
+            ps.setInt(8, entity.getIdPersonal());
+
+            int filasActualizadas = ps.executeUpdate();
+
+            if (filasActualizadas > 0) {
+                System.out.println("✅ Personal actualizado: " + entity.getUsuarioSistema());
+            } else {
+                throw new SQLException("No se encontró el personal con ID: " + entity.getIdPersonal());
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Error al actualizar personal: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    public void delete(Integer integer) throws SQLException {
+
     }
 
     @Override
@@ -92,6 +127,16 @@ public class PersonalRepositoryImpl implements PersonalRepository {
             System.err.println("❌ Error al autenticar: " + e.getMessage());
             throw e;
         }
+    }
+
+    @Override
+    public void save(Personal entity) throws SQLException {
+
+    }
+
+    @Override
+    public Optional<Personal> findById(Integer integer) throws SQLException {
+        return Optional.empty();
     }
 
     @Override
