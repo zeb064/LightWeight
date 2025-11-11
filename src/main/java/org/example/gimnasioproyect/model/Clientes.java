@@ -13,13 +13,14 @@ public class Clientes {
     private String direccion;
     private LocalDate fechaRegistro;
     private Barrios barrio;
+    private String chatId;
 
     public Clientes() {}
 
     public Clientes(String documento, String nombres, String apellidos,
                    LocalDate fechaNacimiento, String genero, String telefono,
                    String correo, String direccion, LocalDate fechaRegistro,
-                   Barrios barrio) {
+                   Barrios barrio, String chatId) {
         this.documento = documento;
         this.nombres = nombres;
         this.apellidos = apellidos;
@@ -30,6 +31,7 @@ public class Clientes {
         this.direccion = direccion;
         this.fechaRegistro = fechaRegistro;
         this.barrio = barrio;
+        this.chatId = chatId;
     }
 
     // Getters y Setters
@@ -66,6 +68,9 @@ public class Clientes {
 
     public Barrios getBarrio() { return barrio; }
     public void setBarrio(Barrios barrio) { this.barrio = barrio; }
+
+    public String getChatId() { return chatId; }
+    public void setChatId(String chatId) { this.chatId = chatId; }
 
     public String getNombreCompleto() {
         return nombres + " " + apellidos;

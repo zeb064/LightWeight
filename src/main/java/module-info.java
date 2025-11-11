@@ -5,6 +5,8 @@ module org.example.gimnasioproyect {
     //requires org.example.gimnasioproyect;
     requires static lombok;
     requires javafx.graphics;
+    requires telegrambots.meta;
+    requires telegrambots;
 
     //requires org.example.gimnasioproyect;
     //requires org.example.gimnasioproyect;

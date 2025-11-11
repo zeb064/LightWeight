@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface MensajeTelergramRepository extends Repository<MensajesTelegram, Integer> {
+public interface MensajeTelegramRepository extends Repository<MensajesTelegram, Integer> {
     Optional<MensajesTelegram> findByTipo(String tipo) throws SQLException;
 
     List<MensajesTelegram> findActivos() throws SQLException;

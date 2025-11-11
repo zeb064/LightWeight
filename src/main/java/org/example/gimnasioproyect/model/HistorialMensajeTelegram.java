@@ -1,14 +1,11 @@
 package org.example.gimnasioproyect.model;
 import java.sql.Timestamp;
 
-/**
- * Modelo de la tabla HISTORIAL_MENSAJES_TELEGRAM
- */
 public class HistorialMensajeTelegram {
 
     private int idHistorial;
-    private int idMensaje;
-    private String documento;
+    private MensajesTelegram mensajesTelegram;
+    private Clientes cliente;
     private String mensajeFinal;
     private Timestamp fechaEnvio;
     private String estado;
@@ -20,20 +17,20 @@ public class HistorialMensajeTelegram {
         this.estado = "ENVIADO";
     }
 
-    public HistorialMensajeTelegram(int idMensaje, String documento, String mensajeFinal, String chatId) {
+    public HistorialMensajeTelegram(MensajesTelegram idMensaje, Clientes documento, String mensajeFinal, String chatId) {
         this();
-        this.idMensaje = idMensaje;
-        this.documento = documento;
+        this.mensajesTelegram = idMensaje;
+        this.cliente = documento;
         this.mensajeFinal = mensajeFinal;
         this.chatId = chatId;
     }
 
-    public HistorialMensajeTelegram(int idHistorial, int idMensaje, String documento,
+    public HistorialMensajeTelegram(int idHistorial, MensajesTelegram idMensaje, Clientes documento,
                                     String mensajeFinal, Timestamp fechaEnvio,
                                     String estado, String chatId) {
         this.idHistorial = idHistorial;
-        this.idMensaje = idMensaje;
-        this.documento = documento;
+        this.mensajesTelegram = idMensaje;
+        this.cliente = documento;
         this.mensajeFinal = mensajeFinal;
         this.fechaEnvio = fechaEnvio;
         this.estado = estado;
@@ -49,20 +46,20 @@ public class HistorialMensajeTelegram {
         this.idHistorial = idHistorial;
     }
 
-    public int getIdMensaje() {
-        return idMensaje;
+    public MensajesTelegram getMensaje() {
+        return mensajesTelegram;
     }
 
-    public void setIdMensaje(int idMensaje) {
-        this.idMensaje = idMensaje;
+    public void setMensaje(MensajesTelegram idMensaje) {
+        this.mensajesTelegram = idMensaje;
     }
 
-    public String getDocumento() {
-        return documento;
+    public Clientes getClientes() {
+        return cliente;
     }
 
-    public void setDocumento(String documento) {
-        this.documento = documento;
+    public void setClientes(Clientes cliente) {
+        this.cliente = cliente;
     }
 
     public String getMensajeFinal() {
@@ -102,8 +99,8 @@ public class HistorialMensajeTelegram {
     public String toString() {
         return "HistorialMensajeTelegramRepository{" +
                 "idHistorial=" + idHistorial +
-                ", idMensaje=" + idMensaje +
-                ", documento='" + documento + '\'' +
+                ", mensajesTelegram=" + mensajesTelegram +
+                ", documento='" + cliente + '\'' +
                 ", mensajeFinal='" + mensajeFinal + '\'' +
                 ", fechaEnvio=" + fechaEnvio +
                 ", estado='" + estado + '\'' +
