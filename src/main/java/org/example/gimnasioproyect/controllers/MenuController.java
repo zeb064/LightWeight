@@ -101,6 +101,7 @@ public class MenuController {
         agregarMenuItem("✅  Asistencias", this::handleAsistencias);
         agregarMenuItem("👔  Personal", this::handlePersonal);
         agregarMenuItem("📈  Reportes", this::handleReportes);
+        agregarMenuItem("🤖  Telegram Bot ", this::handleTelegramBot);
     }
 
     private void cargarMenuEntrenador() {
@@ -115,6 +116,7 @@ public class MenuController {
         agregarMenuItem("🏋️  Entrenadores", this::handleEntrenadores);
         agregarMenuItem("✅  Asistencias", this::handleAsistencias);
         agregarMenuItem("💳  Membresías", this::handleMembresias);
+        agregarMenuItem("🤖  Telegram Bot ", this::handleTelegramBot);
     }
 
     private void agregarMenuItem(String texto, Runnable accion) {
@@ -383,6 +385,30 @@ public class MenuController {
                     mostrarLoading(false);
                     mostrarAlerta(Alert.AlertType.ERROR, "Error",
                             "No se pudo cargar mi perfil: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
+    }
+
+    @FXML
+    private void handleTelegramBot() {
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent telegram = HelloApplication.loadFXML("GestionPlantillas");
+
+                Platform.runLater(() -> {
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().addAll(telegram, loadingPane);
+                    mostrarLoading(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar la gestion de plantillas telegram: " + e.getMessage());
                     e.printStackTrace();
                 });
             }
