@@ -168,15 +168,6 @@ public class DashboardController {
         barChartTopClientes.getData().add(series);
     }
 
-    private String obtenerEmojiPosicion(int posicion) {
-        switch (posicion) {
-            case 1: return "🥇";
-            case 2: return "🥈";
-            case 3: return "🥉";
-            default: return "  " + posicion + ".";
-        }
-    }
-
     private void cargarDistribucionMembresias() throws SQLException {
         Map<String, Integer> distribucion = estadisticaService.obtenerClientesActivosPorTipoMembresia();
 
