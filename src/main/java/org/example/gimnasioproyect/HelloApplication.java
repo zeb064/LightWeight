@@ -47,6 +47,8 @@ public class HelloApplication extends Application {
         PersonalRepository personalRepo = new PersonalRepositoryImpl(dbConnection);
         AdministradorRepository adminRepo = new AdministradorRepositoryImpl(dbConnection);
         RecepcionistaRepository recepcionistaRepo = new RecepcionistaRepositoryImpl(dbConnection);
+        MensajeTelegramRepository mensajeTelegramRepo = new MensajeTelegramRepositoryImpl(dbConnection);
+        HistorialMensajeTelegramRepository historialMensajeTelegramRepo = new HistorialMensajeTelegramRepositoryImpl(dbConnection, clienteRepo, mensajeTelegramRepo);
         System.out.println("✅ Repositorios inicializados");
 
         //Services
@@ -76,6 +78,14 @@ public class HelloApplication extends Application {
         RecepcionistaService recepcionistaService = new RecepcionistaService(
                 recepcionistaRepo, personalRepo
         );
+        MensajeTelegramService mensajeTelegramService = new MensajeTelegramService(
+                mensajeTelegramRepo
+        );
+        TelegramBotService telegramBotService = new TelegramBotService(
+        );
+        NotificacionService notificacionService = new NotificacionService(
+                telegramBotService, mensajeTelegramService, historialMensajeTelegramRepo
+        );
         LoginService loginService = new LoginService(personalRepo);
         System.out.println("✅ Servicios inicializados");
 
@@ -96,7 +106,10 @@ public class HelloApplication extends Application {
                 personalService,
                 administradorService,
                 recepcionistaService,
-                loginService
+                loginService,
+                mensajeTelegramService,
+                telegramBotService,
+                notificacionService
         );
 
 

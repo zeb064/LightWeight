@@ -5,7 +5,7 @@ import org.example.gimnasioproyect.services.*;
 public class ServiceFactory {
     private static ServiceFactory instance;
 
-    // Servicios
+    // Servicios existentes
     private ClienteServices clienteService;
     private BarrioService barrioService;
     private MembresiaClienteService membresiaClienteService;
@@ -18,6 +18,9 @@ public class ServiceFactory {
     private AdministradorService administradorService;
     private RecepcionistaService recepcionistaService;
     private LoginService loginService;
+    private MensajeTelegramService mensajeTelegramService;
+    private TelegramBotService telegramBotService;
+    private NotificacionService notificacionService;
 
     private ServiceFactory() {}
 
@@ -40,7 +43,10 @@ public class ServiceFactory {
                                    PersonalService personalService,
                                    AdministradorService administradorService,
                                    RecepcionistaService recepcionistaService,
-                                   LoginService loginService) {
+                                   LoginService loginService,
+                                   MensajeTelegramService mensajeTelegramService,
+                                   TelegramBotService telegramBotService,
+                                   NotificacionService notificacionService) {
         this.clienteService = clienteService;
         this.barrioService = barrioService;
         this.membresiaClienteService = membresiaClienteService;
@@ -53,9 +59,12 @@ public class ServiceFactory {
         this.administradorService = administradorService;
         this.recepcionistaService = recepcionistaService;
         this.loginService = loginService;
+        this.mensajeTelegramService = mensajeTelegramService;
+        this.telegramBotService = telegramBotService;
+        this.notificacionService = notificacionService;
     }
 
-    // Getters
+    // Getters existentes
     public ClienteServices getClienteService() { return clienteService; }
     public BarrioService getBarrioService() { return barrioService; }
     public MembresiaClienteService getMembresiaClienteService() { return membresiaClienteService; }
@@ -68,4 +77,7 @@ public class ServiceFactory {
     public AdministradorService getAdministradorService() { return administradorService; }
     public RecepcionistaService getRecepcionistaService() { return recepcionistaService; }
     public LoginService getLoginService() { return loginService; }
+    public MensajeTelegramService getMensajeTelegramService() { return mensajeTelegramService; }
+    public TelegramBotService getTelegramBotService() { return telegramBotService; }
+    public NotificacionService getNotificacionService() { return notificacionService; }
 }

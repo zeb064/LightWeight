@@ -60,7 +60,7 @@ public class ClienteRepositoryImpl implements ClienteRepository{
     public Optional<Clientes> findByDocumento(String documento) throws SQLException {
         String sql = "SELECT c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, " +
                 "c.GENERO, c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
+                "c.ID_BARRIO, b.NOM_BARRIO, c.CHAT_ID " +
                 "FROM CLIENTES c " +
                 "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
                 "WHERE c.DOCUMENTO = ?";
@@ -87,7 +87,7 @@ public class ClienteRepositoryImpl implements ClienteRepository{
     public List<Clientes> findAll() throws SQLException {
         String sql = "SELECT c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, " +
                 "c.GENERO, c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
+                "c.ID_BARRIO, b.NOM_BARRIO, c.CHAT_ID  " +
                 "FROM CLIENTES c " +
                 "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
                 "ORDER BY c.NOMBRES, c.APELLIDOS";
@@ -114,7 +114,7 @@ public class ClienteRepositoryImpl implements ClienteRepository{
     public List<Clientes> findByNombre(String nombre) throws SQLException {
         String sql = "SELECT c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, " +
                 "c.GENERO, c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
+                "c.ID_BARRIO, b.NOM_BARRIO, c.CHAT_ID  " +
                 "FROM CLIENTES c " +
                 "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
                 "WHERE UPPER(c.NOMBRES) LIKE ? OR UPPER(c.APELLIDOS) LIKE ? " +
@@ -146,7 +146,7 @@ public class ClienteRepositoryImpl implements ClienteRepository{
     public List<Clientes> findByBarrio(Integer idBarrio) throws SQLException {
         String sql = "SELECT c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, " +
                 "c.GENERO, c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
+                "c.ID_BARRIO, b.NOM_BARRIO, c.CHAT_ID  " +
                 "FROM CLIENTES c " +
                 "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
                 "WHERE c.ID_BARRIO = ? " +
@@ -175,7 +175,7 @@ public class ClienteRepositoryImpl implements ClienteRepository{
     @Override
     public void update(Clientes entity) throws SQLException {
         String sql = "UPDATE CLIENTES SET NOMBRES = ?, APELLIDOS = ?, FECHA_NACIMIENTO = ?, " +
-                "GENERO = ?, TELEFONO = ?, CORREO = ?, DIRECCION = ?, ID_BARRIO = ? " +
+                "GENERO = ?, TELEFONO = ?, CORREO = ?, DIRECCION = ?, ID_BARRIO = ?, CHAT_ID = ?  " +
                 "WHERE DOCUMENTO = ?";
 
         try (Connection conn = this.connection.connect();
@@ -190,7 +190,8 @@ public class ClienteRepositoryImpl implements ClienteRepository{
             ps.setString(6, entity.getCorreo());
             ps.setString(7, entity.getDireccion());
             ps.setInt(8, entity.getBarrio() != null ? entity.getBarrio().getIdBarrio() : null);
-            ps.setString(9, entity.getDocumento());
+            ps.setString(9, entity.getChatId());
+            ps.setString(10, entity.getDocumento());
 
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
@@ -250,6 +251,7 @@ public class ClienteRepositoryImpl implements ClienteRepository{
             barrio.setNombreBarrio(rs.getString("NOM_BARRIO"));
             cliente.setBarrio(barrio);
         }
+        cliente.setChatId(rs.getString("CHAT_ID"));
 
         return cliente;
     }
