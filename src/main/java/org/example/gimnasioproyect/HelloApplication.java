@@ -89,6 +89,9 @@ public class HelloApplication extends Application {
         NotificacionService notificacionService = new NotificacionService(
                 telegramBotService, mensajeTelegramService, historialMensajeTelegramRepo
         );
+        HistorialNotificacionService historialService = new HistorialNotificacionService(
+                historialMensajeTelegramRepo
+        );
         LoginService loginService = new LoginService(personalRepo);
         System.out.println("✅ Servicios inicializados");
 
@@ -137,7 +140,8 @@ public class HelloApplication extends Application {
                 telegramBotService,
                 notificacionService,
                 null, // LightWeightBot ya está manejado por TelegramBotsApi
-                null  // TareaRevisionMembresias ya está iniciada arriba
+                null, // TareaRevisionMembresias ya está iniciada arriba
+                historialService
         );
 
 

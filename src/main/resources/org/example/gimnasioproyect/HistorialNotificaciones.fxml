@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.gimnasioproyect.controllers.HistorialNotificacionesController"
+      spacing="20"
+      style="-fx-background-color: #2c3e50;">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" spacing="15">
+        <Text text="📨" style="-fx-fill: #3498db;">
+            <font>
+                <Font size="32.0"/>
+            </font>
+        </Text>
+        <VBox>
+            <Text text="Historial de Notificaciones" style="-fx-fill: #ecf0f1;">
+                <font>
+                    <Font name="System Bold" size="24.0"/>
+                </font>
+            </Text>
+            <Text text="Registro de mensajes enviados por Telegram" style="-fx-fill: #bdc3c7;">
+                <font>
+                    <Font size="13.0"/>
+                </font>
+            </Text>
+        </VBox>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <!-- Botón Actualizar -->
+        <Button text="🔄 Actualizar" onAction="#handleActualizar"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 10 20;">
+            <font>
+                <Font name="System Bold" size="13.0"/>
+            </font>
+        </Button>
+    </HBox>
+
+    <!-- Estadísticas Rápidas -->
+    <HBox spacing="15">
+        <VBox spacing="5" alignment="CENTER"
+              style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;"
+              HBox.hgrow="ALWAYS">
+            <Text fx:id="lblTotalEnviados" text="0" style="-fx-fill: #3498db;">
+                <font>
+                    <Font name="System Bold" size="28.0"/>
+                </font>
+            </Text>
+            <Text text="Total Enviados" style="-fx-fill: #bdc3c7;">
+                <font>
+                    <Font size="12.0"/>
+                </font>
+            </Text>
+        </VBox>
+
+        <VBox spacing="5" alignment="CENTER"
+              style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;"
+              HBox.hgrow="ALWAYS">
+            <Text fx:id="lblExitosos" text="0" style="-fx-fill: #2ecc71;">
+                <font>
+                    <Font name="System Bold" size="28.0"/>
+                </font>
+            </Text>
+            <Text text="Exitosos" style="-fx-fill: #bdc3c7;">
+                <font>
+                    <Font size="12.0"/>
+                </font>
+            </Text>
+        </VBox>
+
+        <VBox spacing="5" alignment="CENTER"
+              style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;"
+              HBox.hgrow="ALWAYS">
+            <Text fx:id="lblFallidos" text="0" style="-fx-fill: #e74c3c;">
+                <font>
+                    <Font name="System Bold" size="28.0"/>
+                </font>
+            </Text>
+            <Text text="Fallidos" style="-fx-fill: #bdc3c7;">
+                <font>
+                    <Font size="12.0"/>
+                </font>
+            </Text>
+        </VBox>
+
+        <VBox spacing="5" alignment="CENTER"
+              style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;"
+              HBox.hgrow="ALWAYS">
+            <Text fx:id="lblHoy" text="0" style="-fx-fill: #f39c12;">
+                <font>
+                    <Font name="System Bold" size="28.0"/>
+                </font>
+            </Text>
+            <Text text="Hoy" style="-fx-fill: #bdc3c7;">
+                <font>
+                    <Font size="12.0"/>
+                </font>
+            </Text>
+        </VBox>
+    </HBox>
+
+    <!-- Filtros -->
+    <VBox spacing="10" style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;">
+
+        <Text text="Filtros de Búsqueda" style="-fx-fill: #ecf0f1;">
+            <font>
+                <Font name="System Bold" size="14.0"/>
+            </font>
+        </Text>
+
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <!-- Buscar por cliente -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Cliente" style="-fx-text-fill: #bdc3c7;">
+                    <font>
+                        <Font size="11.0"/>
+                    </font>
+                </Label>
+                <TextField fx:id="txtBuscarCliente" promptText="Buscar por nombre o documento"
+                           style="-fx-background-color: #2c3e50; -fx-text-fill: #ecf0f1; -fx-prompt-text-fill: #7f8c8d; -fx-background-radius: 5; -fx-padding: 8;">
+                </TextField>
+            </VBox>
+
+            <!-- Tipo de mensaje -->
+            <VBox spacing="5">
+                <Label text="Tipo de Mensaje" style="-fx-text-fill: #bdc3c7;">
+                    <font>
+                        <Font size="11.0"/>
+                    </font>
+                </Label>
+                <ComboBox fx:id="cmbTipoMensaje" promptText="Todos"
+                          prefWidth="180"
+                          style="-fx-background-color: #2c3e50;">
+                </ComboBox>
+            </VBox>
+
+            <!-- Estado -->
+            <VBox spacing="5">
+                <Label text="Estado" style="-fx-text-fill: #bdc3c7;">
+                    <font>
+                        <Font size="11.0"/>
+                    </font>
+                </Label>
+                <ComboBox fx:id="cmbEstado" promptText="Todos"
+                          prefWidth="150"
+                          style="-fx-background-color: #2c3e50;">
+                </ComboBox>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <!-- Fecha desde -->
+            <VBox spacing="5">
+                <Label text="Desde" style="-fx-text-fill: #bdc3c7;">
+                    <font>
+                        <Font size="11.0"/>
+                    </font>
+                </Label>
+                <DatePicker fx:id="dpFechaDesde" promptText="dd/MM/yyyy"
+                            prefWidth="180"
+                            style="-fx-background-color: #2c3e50;">
+                </DatePicker>
+            </VBox>
+
+            <!-- Fecha hasta -->
+            <VBox spacing="5">
+                <Label text="Hasta" style="-fx-text-fill: #bdc3c7;">
+                    <font>
+                        <Font size="11.0"/>
+                    </font>
+                </Label>
+                <DatePicker fx:id="dpFechaHasta" promptText="dd/MM/yyyy"
+                            prefWidth="180"
+                            style="-fx-background-color: #2c3e50;">
+                </DatePicker>
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Botones de filtro -->
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button text="🔍 Buscar" onAction="#handleBuscar"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                </Button>
+                <Button text="🔄 Limpiar" onAction="#handleLimpiarFiltros"
+                        style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                </Button>
+            </HBox>
+        </HBox>
+    </VBox>
+
+    <!-- Tabla de Historial -->
+    <VBox VBox.vgrow="ALWAYS" spacing="10"
+          style="-fx-background-color: #34495e; -fx-background-radius: 10; -fx-padding: 15;">
+
+        <HBox alignment="CENTER_LEFT">
+            <Text text="Registro de Mensajes" style="-fx-fill: #ecf0f1;">
+                <font>
+                    <Font name="System Bold" size="16.0"/>
+                </font>
+            </Text>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblResultados" text="Mostrando 0 registros"
+                   style="-fx-text-fill: #bdc3c7;">
+                <font>
+                    <Font size="12.0"/>
+                </font>
+            </Label>
+        </HBox>
+
+        <TableView fx:id="tableHistorial" VBox.vgrow="ALWAYS"
+                   style="-fx-background-color: #2c3e50; -fx-background-radius: 8;">
+            <columns>
+                <TableColumn fx:id="colFecha" text="Fecha/Hora" prefWidth="150"/>
+                <TableColumn fx:id="colTipo" text="Tipo" prefWidth="150"/>
+                <TableColumn fx:id="colCliente" text="Cliente" prefWidth="200"/>
+                <TableColumn fx:id="colDocumento" text="Documento" prefWidth="120"/>
+                <TableColumn fx:id="colEstado" text="Estado" prefWidth="100"/>
+                <TableColumn fx:id="colMensaje" text="Mensaje (Vista previa)" prefWidth="300"/>
+                <TableColumn fx:id="colAcciones" text="Acciones" prefWidth="120"/>
+            </columns>
+            <placeholder>
+                <VBox alignment="CENTER" spacing="10">
+                    <Text text="📭" style="-fx-fill: #7f8c8d;">
+                        <font>
+                            <Font size="48.0"/>
+                        </font>
+                    </Text>
+                    <Text text="No hay mensajes registrados" style="-fx-fill: #bdc3c7;">
+                        <font>
+                            <Font size="14.0"/>
+                        </font>
+                    </Text>
+                </VBox>
+            </placeholder>
+        </TableView>
+    </VBox>
+
+    <!-- Botones de Acción -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button fx:id="btnVerDetalle" text="👁️ Ver Detalle"
+                onAction="#handleVerDetalle" disable="true"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;">
+        </Button>
+        <Button fx:id="btnReenviar" text="📤 Reenviar"
+                onAction="#handleReenviar" disable="true"
+                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;">
+        </Button>
+        <Button fx:id="btnExportar" text="📊 Exportar"
+                onAction="#handleExportar"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;">
+        </Button>
+    </HBox>
+
+</VBox>

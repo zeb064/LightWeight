@@ -101,7 +101,8 @@ public class MenuController {
         agregarMenuItem("✅  Asistencias", this::handleAsistencias);
         agregarMenuItem("👔  Personal", this::handlePersonal);
         agregarMenuItem("📈  Reportes", this::handleReportes);
-        agregarMenuItem("🤖  Telegram Bot ", this::handleTelegramBot);
+        agregarMenuItem("📱  Plantillas Telegram", this::handlePlantillasTelegram);
+        agregarMenuItem("📨  Historial Notificaciones", this::handleHistorialNotificaciones);
     }
 
     private void cargarMenuEntrenador() {
@@ -116,7 +117,7 @@ public class MenuController {
         agregarMenuItem("🏋️  Entrenadores", this::handleEntrenadores);
         agregarMenuItem("✅  Asistencias", this::handleAsistencias);
         agregarMenuItem("💳  Membresías", this::handleMembresias);
-        agregarMenuItem("🤖  Telegram Bot ", this::handleTelegramBot);
+        agregarMenuItem("📱  Plantillas Telegram", this::handlePlantillasTelegram);
     }
 
     private void agregarMenuItem(String texto, Runnable accion) {
@@ -392,7 +393,7 @@ public class MenuController {
     }
 
     @FXML
-    private void handleTelegramBot() {
+    private void handlePlantillasTelegram() {
         mostrarLoading(true);
         new Thread(() -> {
             try {
@@ -416,9 +417,32 @@ public class MenuController {
     }
 
     @FXML
+    private void handleHistorialNotificaciones() {
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent historialNotificaciones = HelloApplication.loadFXML("HistorialNotificaciones");
+
+                Platform.runLater(() -> {
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().addAll(historialNotificaciones, loadingPane);
+                    mostrarLoading(false);
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar el historial de notificaciones: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
+    }
+
+    @FXML
     private void handleNotificaciones() {
-        System.out.println("Notificaciones");
-        // TODO: Mostrar notificaciones
+        handleHistorialNotificaciones();
     }
 
     @FXML
