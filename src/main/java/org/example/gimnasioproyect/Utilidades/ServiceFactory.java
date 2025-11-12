@@ -21,6 +21,8 @@ public class ServiceFactory {
     private MensajeTelegramService mensajeTelegramService;
     private TelegramBotService telegramBotService;
     private NotificacionService notificacionService;
+    private LightWeightBot telegramBot;
+    private TareaRevisionMembresias tareaRevision;
 
     private ServiceFactory() {}
 
@@ -46,7 +48,9 @@ public class ServiceFactory {
                                    LoginService loginService,
                                    MensajeTelegramService mensajeTelegramService,
                                    TelegramBotService telegramBotService,
-                                   NotificacionService notificacionService) {
+                                   NotificacionService notificacionService,
+                                   LightWeightBot telegramBot,
+                                   TareaRevisionMembresias tareaRevision) {
         this.clienteService = clienteService;
         this.barrioService = barrioService;
         this.membresiaClienteService = membresiaClienteService;
@@ -62,6 +66,8 @@ public class ServiceFactory {
         this.mensajeTelegramService = mensajeTelegramService;
         this.telegramBotService = telegramBotService;
         this.notificacionService = notificacionService;
+        this.telegramBot = telegramBot;
+        this.tareaRevision = tareaRevision;
     }
 
     // Getters existentes
@@ -80,4 +86,6 @@ public class ServiceFactory {
     public MensajeTelegramService getMensajeTelegramService() { return mensajeTelegramService; }
     public TelegramBotService getTelegramBotService() { return telegramBotService; }
     public NotificacionService getNotificacionService() { return notificacionService; }
+    public LightWeightBot getTelegramBot() { return telegramBot; }
+    public TareaRevisionMembresias getTareaRevision() { return tareaRevision; }
 }

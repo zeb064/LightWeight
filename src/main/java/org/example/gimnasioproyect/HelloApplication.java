@@ -15,6 +15,9 @@ import org.example.gimnasioproyect.model.Administradores;
 import org.example.gimnasioproyect.model.Personal;
 import org.example.gimnasioproyect.repository.*;
 import org.example.gimnasioproyect.services.*;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -89,6 +92,29 @@ public class HelloApplication extends Application {
         LoginService loginService = new LoginService(personalRepo);
         System.out.println("✅ Servicios inicializados");
 
+        try {
+            TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
+            LightWeightBot bot = new LightWeightBot(
+                    clienteRepo,
+                    membresiaClienteService,
+                    notificacionService
+            );
+            botsApi.registerBot(bot);
+            System.out.println("✅ Bot de Telegram registrado y en funcionamiento");
+
+            // Iniciar tarea de revisión automática
+            TareaRevisionMembresias tareaRevision = new TareaRevisionMembresias(
+                    membresiaClienteRepo,
+                    notificacionService
+            );
+            tareaRevision.iniciar();
+            System.out.println("✅ Tarea de revisión de membresías iniciada");
+
+        } catch (TelegramApiException e) {
+            System.err.println("❌ Error al inicializar bot: " + e.getMessage());
+            // Continuar sin bot si falla
+        }
+
 //        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("Login.fxml"));
 //        Parent root = loader.load(); // ✅ Primero se carga el FXML
 
@@ -109,7 +135,9 @@ public class HelloApplication extends Application {
                 loginService,
                 mensajeTelegramService,
                 telegramBotService,
-                notificacionService
+                notificacionService,
+                null, // LightWeightBot ya está manejado por TelegramBotsApi
+                null  // TareaRevisionMembresias ya está iniciada arriba
         );
 
 
@@ -135,6 +163,15 @@ public class HelloApplication extends Application {
 //        stage.show();
 
 
+    }
+
+    @Override
+    public void stop() throws Exception {
+        // Detener la tarea de revisión al cerrar la aplicación
+        if (ServiceFactory.getInstance().getTareaRevision() != null) {
+            ServiceFactory.getInstance().getTareaRevision().detener();
+        }
+        super.stop();
     }
 
     public static void setRoot(String fxml) throws IOException {

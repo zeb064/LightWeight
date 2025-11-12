@@ -58,23 +58,41 @@ public class TelegramBotService {
         java.net.URL url = new java.net.URL(urlString);
         java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
         conn.setDoOutput(true);
 
+        // ✅ Mejorar el escape de caracteres
+        String mensajeEscapado = mensaje
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
+
         String jsonInputString = String.format(
-                "{\"chat_id\": \"%s\", \"text\": \"%s\", \"parse_mode\": \"Markdown\"}",
+                "{\"chat_id\":\"%s\",\"text\":\"%s\",\"parse_mode\":\"Markdown\"}",
                 chatId,
-                mensaje.replace("\"", "\\\"").replace("\n", "\\n")
+                mensajeEscapado
         );
 
         try (java.io.OutputStream os = conn.getOutputStream()) {
-            byte[] input = jsonInputString.getBytes("utf-8");
+            byte[] input = jsonInputString.getBytes(java.nio.charset.StandardCharsets.UTF_8);
             os.write(input, 0, input.length);
         }
 
         int responseCode = conn.getResponseCode();
+
+        // ✅ Leer la respuesta para mejor debugging
         if (responseCode != 200) {
-            throw new Exception("Error HTTP: " + responseCode);
+            try (java.io.BufferedReader br = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(conn.getErrorStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                throw new Exception("Error HTTP " + responseCode + ": " + response.toString());
+            }
         }
     }
 
