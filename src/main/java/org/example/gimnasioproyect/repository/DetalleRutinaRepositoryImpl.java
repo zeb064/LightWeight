@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.model.DetalleRutinas;
 import org.example.gimnasioproyect.model.Rutinas;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
@@ -56,19 +57,16 @@ public class DetalleRutinaRepositoryImpl implements DetalleRutinaRepository {
 
     @Override
     public Optional<DetalleRutinas> findById(Integer id) throws SQLException {
-        String sql = "SELECT dr.ID_DETALLE, dr.DIA_SEMANA, dr.ORDEN, dr.EJERCICIO, " +
-                "dr.SERIES, dr.REPETICIONES, dr.PESO, dr.NOTAS, " +
-                "dr.ID_RUTINA, r.OBJETIVO " +
-                "FROM DETALLERUTINAS dr " +
-                "INNER JOIN RUTINAS r ON dr.ID_RUTINA = r.ID_RUTINA " +
-                "WHERE dr.ID_DETALLE = ?";
+        String sql = "{? = call PKG_DETALLERUTINAS.FN_OBTENER_DETALLE_POR_ID(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, id);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 DetalleRutinas detalle = mapResultSetToDetalleRutina(rs);
                 return Optional.of(detalle);
@@ -83,22 +81,17 @@ public class DetalleRutinaRepositoryImpl implements DetalleRutinaRepository {
 
     @Override
     public List<DetalleRutinas> findByRutina(Integer idRutina) throws SQLException {
-        String sql = "SELECT dr.ID_DETALLE, dr.DIA_SEMANA, dr.ORDEN, dr.EJERCICIO, " +
-                "dr.SERIES, dr.REPETICIONES, dr.PESO, dr.NOTAS, " +
-                "dr.ID_RUTINA, r.OBJETIVO " +
-                "FROM DETALLERUTINAS dr " +
-                "INNER JOIN RUTINAS r ON dr.ID_RUTINA = r.ID_RUTINA " +
-                "WHERE dr.ID_RUTINA = ? " +
-                "ORDER BY dr.DIA_SEMANA, dr.ORDEN";
-
+        String sql = "{? = call PKG_DETALLERUTINAS.FN_BUSCAR_DETALLES_POR_RUTINA(?)}";
         List<DetalleRutinas> detalles = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, idRutina);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, idRutina);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 detalles.add(mapResultSetToDetalleRutina(rs));
             }
@@ -113,23 +106,18 @@ public class DetalleRutinaRepositoryImpl implements DetalleRutinaRepository {
 
     @Override
     public List<DetalleRutinas> findByRutinaAndDia(Integer idRutina, String diaSemana) throws SQLException {
-        String sql = "SELECT dr.ID_DETALLE, dr.DIA_SEMANA, dr.ORDEN, dr.EJERCICIO, " +
-                "dr.SERIES, dr.REPETICIONES, dr.PESO, dr.NOTAS, " +
-                "dr.ID_RUTINA, r.OBJETIVO " +
-                "FROM DETALLERUTINAS dr " +
-                "INNER JOIN RUTINAS r ON dr.ID_RUTINA = r.ID_RUTINA " +
-                "WHERE dr.ID_RUTINA = ? AND UPPER(dr.DIA_SEMANA) = ? " +
-                "ORDER BY dr.ORDEN";
-
+        String sql = "{? = call PKG_DETALLERUTINAS.FN_BUSCAR_DETALLES_POR_RUTINA_DIA(?, ?)}";
         List<DetalleRutinas> detalles = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, idRutina);
-            ps.setString(2, diaSemana.toUpperCase());
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, idRutina);
+            cs.setString(3, diaSemana);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 detalles.add(mapResultSetToDetalleRutina(rs));
             }
@@ -144,19 +132,16 @@ public class DetalleRutinaRepositoryImpl implements DetalleRutinaRepository {
 
     @Override
     public List<DetalleRutinas> findAll() throws SQLException {
-        String sql = "SELECT dr.ID_DETALLE, dr.DIA_SEMANA, dr.ORDEN, dr.EJERCICIO, " +
-                "dr.SERIES, dr.REPETICIONES, dr.PESO, dr.NOTAS, " +
-                "dr.ID_RUTINA, r.OBJETIVO " +
-                "FROM DETALLERUTINAS dr " +
-                "INNER JOIN RUTINAS r ON dr.ID_RUTINA = r.ID_RUTINA " +
-                "ORDER BY dr.ID_RUTINA, dr.DIA_SEMANA, dr.ORDEN";
-
+        String sql = "{? = call PKG_DETALLERUTINAS.FN_LISTAR_DETALLES_RUTINAS()}";
         List<DetalleRutinas> detalles = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 detalles.add(mapResultSetToDetalleRutina(rs));
             }
@@ -171,33 +156,29 @@ public class DetalleRutinaRepositoryImpl implements DetalleRutinaRepository {
 
     @Override
     public void update(DetalleRutinas entity) throws SQLException {
-        String sql = "UPDATE DETALLERUTINAS SET DIA_SEMANA = ?, ORDEN = ?, EJERCICIO = ?, " +
-                "SERIES = ?, REPETICIONES = ?, PESO = ?, NOTAS = ?, ID_RUTINA = ? " +
-                "WHERE ID_DETALLE = ?";
+        String sql = "{call PKG_DETALLERUTINAS.PR_ACTUALIZAR_DETALLE_RUTINA(?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, entity.getDiaSemana());
-            ps.setInt(2, entity.getOrden() != null ? entity.getOrden() : 0);
-            ps.setString(3, entity.getEjercicio());
-            ps.setInt(4, entity.getSeries() != null ? entity.getSeries() : 0);
-            ps.setInt(5, entity.getRepeticiones() != null ? entity.getRepeticiones() : 0);
+            cs.setInt(1, entity.getIdDetalle());
+            cs.setString(2, entity.getDiaSemana());
+            cs.setInt(3, entity.getOrden() != null ? entity.getOrden() : 0);
+            cs.setString(4, entity.getEjercicio());
+            cs.setInt(5, entity.getSeries() != null ? entity.getSeries() : 0);
+            cs.setInt(6, entity.getRepeticiones() != null ? entity.getRepeticiones() : 0);
 
             if (entity.getPeso() != null) {
-                ps.setDouble(6, entity.getPeso());
+                cs.setDouble(7, entity.getPeso());
             } else {
-                ps.setNull(6, Types.DOUBLE);
+                cs.setNull(7, Types.DOUBLE);
             }
 
-            ps.setString(7, entity.getNotas());
-            ps.setInt(8, entity.getRutina().getIdRutina());
-            ps.setInt(9, entity.getIdDetalle());
+            cs.setString(8, entity.getNotas());
+            cs.setInt(9, entity.getRutina().getIdRutina());
 
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("✅ Detalle rutina actualizado: " + entity.getIdDetalle());
-            }
+            cs.execute();
+            System.out.println("✅ Detalle rutina actualizado: " + entity.getIdDetalle());
 
         } catch (SQLException e) {
             System.err.println("❌ Error al actualizar detalle rutina: " + e.getMessage());
@@ -207,17 +188,14 @@ public class DetalleRutinaRepositoryImpl implements DetalleRutinaRepository {
 
     @Override
     public void delete(Integer id) throws SQLException {
-        String sql = "DELETE FROM DETALLERUTINAS WHERE ID_DETALLE = ?";
+        String sql = "{call PKG_DETALLERUTINAS.PR_ELIMINAR_DETALLE_RUTINA(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("✅ Detalle rutina eliminado: " + id);
-            }
+            cs.setInt(1, id);
+            cs.execute();
+            System.out.println("✅ Detalle rutina eliminado: " + id);
 
         } catch (SQLException e) {
             System.err.println("❌ Error al eliminar detalle rutina: " + e.getMessage());
@@ -227,16 +205,15 @@ public class DetalleRutinaRepositoryImpl implements DetalleRutinaRepository {
 
     @Override
     public void deleteByRutina(Integer idRutina) throws SQLException {
-        String sql = "DELETE FROM DETALLERUTINAS WHERE ID_RUTINA = ?";
+        String sql = "{call PKG_DETALLERUTINAS.PR_ELIMINAR_DETALLES_POR_RUTINA(?)}";
+
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, idRutina);
-            int rowsAffected = ps.executeUpdate();
+            cs.setInt(1, idRutina);
+            cs.execute();
+            System.out.println("✅ Detalles de rutina eliminados para ID_RUTINA: " + idRutina);
 
-            if (rowsAffected > 0) {
-                System.out.println("✅ Detalles de rutina eliminados: " + rowsAffected + " registros");
-            }
         } catch (SQLException e) {
             System.err.println("❌ Error al eliminar detalles por rutina: " + e.getMessage());
             throw e;

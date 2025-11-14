@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.model.Barrios;
 import org.example.gimnasioproyect.model.Clientes;
 import org.example.gimnasioproyect.model.MembresiaClientes;
@@ -51,23 +52,16 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
 
     @Override
     public Optional<MembresiaClientes> findById(Integer id) throws SQLException {
-        String sql = "SELECT mc.ID_MEMBRESIA_CLIENTE, mc.FECHA_ASIGNACION, mc.FECHA_FINALIZACION, " +
-                "m.ID_MEMBRESIA, m.TIPO, m.PRECIO_MEMBRESIA, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM MEMBRESIASCLIENTES mc " +
-                "JOIN MEMBRESIAS m ON mc.ID_MEMBRESIA = m.ID_MEMBRESIA " +
-                "JOIN CLIENTES c ON mc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE mc.ID_MEMBRESIA_CLIENTE = ?";
+        String sql = "{? = call PKG_MEMBRESIAS_CLIENTES.FN_OBTENER_MEMBRESIA_CLIENTE_POR_ID(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, id);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 MembresiaClientes membresiaCliente = mapResultSetToMembresiaCliente(rs);
                 return Optional.of(membresiaCliente);
@@ -82,26 +76,16 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
 
     @Override
     public Optional<MembresiaClientes> findMembresiaActivaByCliente(String documentoCliente) throws SQLException {
-        String sql = "SELECT mc.ID_MEMBRESIA_CLIENTE, mc.FECHA_ASIGNACION, mc.FECHA_FINALIZACION, " +
-                "m.ID_MEMBRESIA, m.TIPO, m.PRECIO_MEMBRESIA, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM MEMBRESIASCLIENTES mc " +
-                "JOIN MEMBRESIAS m ON mc.ID_MEMBRESIA = m.ID_MEMBRESIA " +
-                "JOIN CLIENTES c ON mc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE mc.DOCUMENTO = ? " +
-                "AND (mc.FECHA_FINALIZACION IS NULL OR mc.FECHA_FINALIZACION >= SYSDATE) " +
-                "ORDER BY mc.FECHA_ASIGNACION DESC " +
-                "FETCH FIRST 1 ROW ONLY";
+        String sql = "{? = call PKG_MEMBRESIAS_CLIENTES.FN_OBTENER_MEMBRESIA_ACTIVA_CLIENTE(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoCliente);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documentoCliente);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 MembresiaClientes membresiaCliente = mapResultSetToMembresiaCliente(rs);
                 return Optional.of(membresiaCliente);
@@ -116,26 +100,17 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
 
     @Override
     public List<MembresiaClientes> findByCliente(String documentoCliente) throws SQLException {
-        String sql = "SELECT mc.ID_MEMBRESIA_CLIENTE, mc.FECHA_ASIGNACION, mc.FECHA_FINALIZACION, " +
-                "m.ID_MEMBRESIA, m.TIPO, m.PRECIO_MEMBRESIA, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM MEMBRESIASCLIENTES mc " +
-                "JOIN MEMBRESIAS m ON mc.ID_MEMBRESIA = m.ID_MEMBRESIA " +
-                "JOIN CLIENTES c ON mc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE mc.DOCUMENTO = ? " +
-                "ORDER BY mc.FECHA_ASIGNACION DESC";
-
+        String sql = "{? = call PKG_MEMBRESIAS_CLIENTES.FN_BUSCAR_MEMBRESIAS_POR_CLIENTE(?)}";
         List<MembresiaClientes> membresiasCliente = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoCliente);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documentoCliente);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 membresiasCliente.add(mapResultSetToMembresiaCliente(rs));
             }
@@ -150,26 +125,17 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
 
     @Override
     public List<MembresiaClientes> findMembresiasProximasAVencer(int dias) throws SQLException {
-        String sql = "SELECT mc.ID_MEMBRESIA_CLIENTE, mc.FECHA_ASIGNACION, mc.FECHA_FINALIZACION, " +
-                "m.ID_MEMBRESIA, m.TIPO, m.PRECIO_MEMBRESIA, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM MEMBRESIASCLIENTES mc " +
-                "JOIN MEMBRESIAS m ON mc.ID_MEMBRESIA = m.ID_MEMBRESIA " +
-                "JOIN CLIENTES c ON mc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE mc.FECHA_FINALIZACION BETWEEN SYSDATE AND SYSDATE + ? " +
-                "ORDER BY mc.FECHA_FINALIZACION ASC";
-
+        String sql = "{? = call PKG_MEMBRESIAS_CLIENTES.FN_BUSCAR_MEMBRESIAS_PROXIMAS_VENCER(?)}";
         List<MembresiaClientes> membresiasCliente = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, dias);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, dias);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 membresiasCliente.add(mapResultSetToMembresiaCliente(rs));
             }
@@ -184,24 +150,16 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
 
     @Override
     public List<MembresiaClientes> findMembresiasVencidas() throws SQLException {
-        String sql = "SELECT mc.ID_MEMBRESIA_CLIENTE, mc.FECHA_ASIGNACION, mc.FECHA_FINALIZACION, " +
-                "m.ID_MEMBRESIA, m.TIPO, m.PRECIO_MEMBRESIA, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM MEMBRESIASCLIENTES mc " +
-                "JOIN MEMBRESIAS m ON mc.ID_MEMBRESIA = m.ID_MEMBRESIA " +
-                "JOIN CLIENTES c ON mc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE mc.FECHA_FINALIZACION < SYSDATE " +
-                "ORDER BY mc.FECHA_FINALIZACION DESC";
-
+        String sql = "{? = call PKG_MEMBRESIAS_CLIENTES.FN_BUSCAR_MEMBRESIAS_VENCIDAS()}";
         List<MembresiaClientes> membresiasCliente = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 membresiasCliente.add(mapResultSetToMembresiaCliente(rs));
             }
@@ -216,23 +174,16 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
 
     @Override
     public List<MembresiaClientes> findAll() throws SQLException {
-        String sql = "SELECT mc.ID_MEMBRESIA_CLIENTE, mc.FECHA_ASIGNACION, mc.FECHA_FINALIZACION, " +
-                "m.ID_MEMBRESIA, m.TIPO, m.PRECIO_MEMBRESIA, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM MEMBRESIASCLIENTES mc " +
-                "JOIN MEMBRESIAS m ON mc.ID_MEMBRESIA = m.ID_MEMBRESIA " +
-                "JOIN CLIENTES c ON mc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "ORDER BY mc.ID_MEMBRESIA_CLIENTE DESC";
-
+        String sql = "{? = call PKG_MEMBRESIAS_CLIENTES.FN_LISTAR_MEMBRESIAS_CLIENTES()}";
         List<MembresiaClientes> membresiasCliente = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 membresiasCliente.add(mapResultSetToMembresiaCliente(rs));
             }
@@ -247,25 +198,21 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
 
     @Override
     public void update(MembresiaClientes entity) throws SQLException {
-        String sql = "UPDATE MEMBRESIASCLIENTES SET ID_MEMBRESIA = ?, DOCUMENTO = ?, " +
-                "FECHA_ASIGNACION = ?, FECHA_FINALIZACION = ? " +
-                "WHERE ID_MEMBRESIA_CLIENTE = ?";
+        String sql = "{call PKG_MEMBRESIAS_CLIENTES.PR_ACTUALIZAR_MEMBRESIA_CLIENTE(?, ?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, entity.getMembresia().getIdMembresia());
-            ps.setString(2, entity.getCliente().getDocumento());
-            ps.setDate(3, entity.getFechaAsignacion() != null ?
+            cs.setInt(1, entity.getIdMembresiaCliente());
+            cs.setInt(2, entity.getMembresia().getIdMembresia());
+            cs.setString(3, entity.getCliente().getDocumento());
+            cs.setDate(4, entity.getFechaAsignacion() != null ?
                     Date.valueOf(entity.getFechaAsignacion()) : null);
-            ps.setDate(4, entity.getFechaFinalizacion() != null ?
+            cs.setDate(5, entity.getFechaFinalizacion() != null ?
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
-            ps.setInt(5, entity.getIdMembresiaCliente());
 
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("✅ Membresía cliente actualizada: " + entity.getIdMembresiaCliente());
-            }
+            cs.execute();
+            System.out.println("✅ Membresía cliente actualizada: " + entity.getIdMembresiaCliente());
 
         } catch (SQLException e) {
             System.err.println("❌ Error al actualizar membresía cliente: " + e.getMessage());
@@ -275,17 +222,14 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
 
     @Override
     public void delete(Integer id) throws SQLException {
-        String sql = "DELETE FROM MEMBRESIASCLIENTES WHERE ID_MEMBRESIA_CLIENTE = ?";
+        String sql = "{call PKG_MEMBRESIAS_CLIENTES.PR_ELIMINAR_MEMBRESIA_CLIENTE(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("✅ Membresía cliente eliminada: " + id);
-            }
+            cs.setInt(1, id);
+            cs.execute();
+            System.out.println("✅ Membresía cliente eliminada: " + id);
 
         } catch (SQLException e) {
             System.err.println("❌ Error al eliminar membresía cliente: " + e.getMessage());

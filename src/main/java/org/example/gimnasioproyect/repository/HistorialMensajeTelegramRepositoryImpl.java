@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
 import org.example.gimnasioproyect.model.HistorialMensajeTelegram;
 
@@ -31,23 +32,21 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
 
     @Override
     public void save(HistorialMensajeTelegram entity) throws SQLException {
-        String sql = "INSERT INTO HISTORIAL_MENSAJES_TELEGRAM " +
-                "(id_mensaje, documento, mensaje_final, fecha_envio, estado, chat_id) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "{call PKG_HISTORIAL_MENSAJES.PR_INSERTAR_HISTORIAL(?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, entity.getMensaje().getIdMensaje());
-            ps.setString(2, entity.getClientes().getDocumento());
-            ps.setString(3, entity.getMensajeFinal());
-            ps.setTimestamp(4, entity.getFechaEnvio() != null ?
+            cs.setInt(1, entity.getMensaje().getIdMensaje());
+            cs.setString(2, entity.getClientes().getDocumento());
+            cs.setString(3, entity.getMensajeFinal());
+            cs.setTimestamp(4, entity.getFechaEnvio() != null ?
                     Timestamp.valueOf(entity.getFechaEnvio().toLocalDateTime()) :
                     Timestamp.valueOf(java.time.LocalDateTime.now()));
-            ps.setString(5, entity.getEstado());
-            ps.setString(6, entity.getChatId());
+            cs.setString(5, entity.getEstado());
+            cs.setString(6, entity.getChatId());
 
-            ps.executeUpdate();
+            cs.execute();
             System.out.println("✅ Historial guardado para cliente: " + entity.getClientes().getDocumento());
 
         } catch (SQLException e) {
@@ -58,16 +57,16 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
 
     @Override
     public Optional<HistorialMensajeTelegram> findById(Integer id) throws SQLException {
-        String sql = "SELECT h.id_historial, h.id_mensaje, h.documento, h.mensaje_final, " +
-                "h.fecha_envio, h.estado, h.chat_id " +
-                "FROM HISTORIAL_MENSAJES_TELEGRAM h WHERE h.id_historial = ?";
+        String sql = "{? = call PKG_HISTORIAL_MENSAJES.FN_OBTENER_HISTORIAL_POR_ID(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, id);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 return Optional.of(mapResultSet(rs));
             }
@@ -81,16 +80,16 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
 
     @Override
     public List<HistorialMensajeTelegram> findAll() throws SQLException {
-        String sql = "SELECT h.id_historial, h.id_mensaje, h.documento, h.mensaje_final, " +
-                "h.fecha_envio, h.estado, h.chat_id " +
-                "FROM HISTORIAL_MENSAJES_TELEGRAM h ORDER BY h.fecha_envio DESC";
-
+        String sql = "{? = call PKG_HISTORIAL_MENSAJES.FN_LISTAR_HISTORIAL()}";
         List<HistorialMensajeTelegram> historial = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 historial.add(mapResultSet(rs));
             }
@@ -104,29 +103,18 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
     }
 
     @Override
-    public void update(HistorialMensajeTelegram entity) throws SQLException {
-
-    }
-
-    @Override
-    public void delete(Integer integer) throws SQLException {
-
-    }
-
-    @Override
     public List<HistorialMensajeTelegram> findByCliente(String documento) throws SQLException {
-        String sql = "SELECT h.id_historial, h.id_mensaje, h.documento, h.mensaje_final, " +
-                "h.fecha_envio, h.estado, h.chat_id " +
-                "FROM HISTORIAL_MENSAJES_TELEGRAM h WHERE h.documento = ? ORDER BY h.fecha_envio DESC";
-
+        String sql = "{? = call PKG_HISTORIAL_MENSAJES.FN_BUSCAR_HISTORIAL_POR_CLIENTE(?)}";
         List<HistorialMensajeTelegram> historial = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documento);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documento);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 historial.add(mapResultSet(rs));
             }
@@ -141,19 +129,17 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
 
     @Override
     public List<HistorialMensajeTelegram> findByFecha(LocalDate fecha) throws SQLException {
-        String sql = "SELECT h.id_historial, h.id_mensaje, h.documento, h.mensaje_final, " +
-                "h.fecha_envio, h.estado, h.chat_id " +
-                "FROM HISTORIAL_MENSAJES_TELEGRAM h " +
-                "WHERE TRUNC(h.fecha_envio) = ? ORDER BY h.fecha_envio DESC";
-
+        String sql = "{? = call PKG_HISTORIAL_MENSAJES.FN_BUSCAR_HISTORIAL_POR_FECHA(?)}";
         List<HistorialMensajeTelegram> historial = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setDate(1, Date.valueOf(fecha));
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setDate(2, Date.valueOf(fecha));
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 historial.add(mapResultSet(rs));
             }
@@ -168,18 +154,17 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
 
     @Override
     public List<HistorialMensajeTelegram> findByEstado(String estado) throws SQLException {
-        String sql = "SELECT h.id_historial, h.id_mensaje, h.documento, h.mensaje_final, " +
-                "h.fecha_envio, h.estado, h.chat_id " +
-                "FROM HISTORIAL_MENSAJES_TELEGRAM h WHERE UPPER(h.estado) = ? ORDER BY h.fecha_envio DESC";
-
+        String sql = "{? = call PKG_HISTORIAL_MENSAJES.FN_BUSCAR_HISTORIAL_POR_ESTADO(?)}";
         List<HistorialMensajeTelegram> historial = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, estado.toUpperCase());
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, estado);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 historial.add(mapResultSet(rs));
             }
@@ -194,20 +179,17 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
 
     @Override
     public List<HistorialMensajeTelegram> findByTipoMensaje(String tipo) throws SQLException {
-        String sql = "SELECT h.id_historial, h.id_mensaje, h.documento, h.mensaje_final, " +
-                "h.fecha_envio, h.estado, h.chat_id " +
-                "FROM HISTORIAL_MENSAJES_TELEGRAM h " +
-                "JOIN MENSAJES_TELEGRAM m ON h.id_mensaje = m.id_mensaje " +
-                "WHERE UPPER(m.tipo_mensaje) = ? ORDER BY h.fecha_envio DESC";
-
+        String sql = "{? = call PKG_HISTORIAL_MENSAJES.FN_BUSCAR_HISTORIAL_POR_TIPO(?)}";
         List<HistorialMensajeTelegram> historial = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, tipo.toUpperCase());
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, tipo);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 historial.add(mapResultSet(rs));
             }
@@ -222,14 +204,14 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
 
     @Override
     public void updateEstado(Integer id, String nuevoEstado) throws SQLException {
-        String sql = "UPDATE HISTORIAL_MENSAJES_TELEGRAM SET estado = ? WHERE id_historial = ?";
+        String sql = "{call PKG_HISTORIAL_MENSAJES.PR_ACTUALIZAR_ESTADO_HISTORIAL(?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, nuevoEstado);
-            ps.setInt(2, id);
-            ps.executeUpdate();
+            cs.setInt(1, id);
+            cs.setString(2, nuevoEstado);
+            cs.execute();
 
             System.out.println("✅ Estado actualizado para historial: " + id);
 
@@ -237,6 +219,16 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
             System.err.println("❌ Error al actualizar estado: " + e.getMessage());
             throw e;
         }
+    }
+
+    @Override
+    public void update(HistorialMensajeTelegram entity) throws SQLException {
+        // Metodo no implementado - El historial generalmente no se actualiza
+    }
+
+    @Override
+    public void delete(Integer integer) throws SQLException {
+        // Metodo no implementado - El historial generalmente no se elimina
     }
 
     private HistorialMensajeTelegram mapResultSet(ResultSet rs) throws SQLException {

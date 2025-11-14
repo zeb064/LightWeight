@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
 import org.example.gimnasioproyect.model.MensajesTelegram;
 
@@ -23,17 +24,16 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
     @Override
     public void save(MensajesTelegram mensaje) throws SQLException {
-        String sql = "INSERT INTO MENSAJES_TELEGRAM (tipo_mensaje, contenido, activo) " +
-                "VALUES (?, ?, ?)";
+        String sql = "{call PKG_MENSAJES_TELEGRAM.PR_INSERTAR_MENSAJE(?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, mensaje.getTipoMensaje());
-            ps.setString(2, mensaje.getContenido());
-            ps.setInt(3, mensaje.isActivo() ? 1 : 0);
+            cs.setString(1, mensaje.getTipoMensaje());
+            cs.setString(2, mensaje.getContenido());
+            cs.setInt(3, mensaje.isActivo() ? 1 : 0);
 
-            ps.executeUpdate();
+            cs.execute();
             System.out.println("✅ Mensaje Telegram guardado: " + mensaje.getTipoMensaje());
 
         } catch (SQLException e) {
@@ -44,14 +44,16 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
     @Override
     public Optional<MensajesTelegram> findById(Integer id) throws SQLException {
-        String sql = "SELECT id_mensaje, tipo_mensaje, contenido, activo FROM MENSAJES_TELEGRAM WHERE id_mensaje = ?";
+        String sql = "{? = call PKG_MENSAJES_TELEGRAM.FN_OBTENER_MENSAJE_POR_ID(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, id);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 return Optional.of(mapResultSet(rs));
             }
@@ -65,15 +67,16 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
     @Override
     public Optional<MensajesTelegram> findByTipo(String tipo) throws SQLException {
-        String sql = "SELECT id_mensaje, tipo_mensaje, contenido, activo FROM MENSAJES_TELEGRAM " +
-                "WHERE UPPER(tipo_mensaje) = ? AND activo = 1";
+        String sql = "{? = call PKG_MENSAJES_TELEGRAM.FN_OBTENER_MENSAJE_POR_TIPO(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, tipo.toUpperCase());
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, tipo);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 return Optional.of(mapResultSet(rs));
             }
@@ -87,13 +90,16 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
     @Override
     public List<MensajesTelegram> findAll() throws SQLException {
-        String sql = "SELECT id_mensaje, tipo_mensaje, contenido, activo FROM MENSAJES_TELEGRAM ORDER BY tipo_mensaje";
+        String sql = "{? = call PKG_MENSAJES_TELEGRAM.FN_LISTAR_MENSAJES()}";
         List<MensajesTelegram> mensajes = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 mensajes.add(mapResultSet(rs));
             }
@@ -108,14 +114,16 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
     @Override
     public List<MensajesTelegram> findActivos() throws SQLException {
-        String sql = "SELECT id_mensaje, tipo_mensaje, contenido, activo FROM MENSAJES_TELEGRAM " +
-                "WHERE activo = 1 ORDER BY tipo_mensaje";
+        String sql = "{? = call PKG_MENSAJES_TELEGRAM.FN_LISTAR_MENSAJES_ACTIVOS()}";
         List<MensajesTelegram> mensajes = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 mensajes.add(mapResultSet(rs));
             }
@@ -130,20 +138,18 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
     @Override
     public void update(MensajesTelegram mensaje) throws SQLException {
-        String sql = "UPDATE MENSAJES_TELEGRAM SET tipo_mensaje = ?, contenido = ?, activo = ? WHERE id_mensaje = ?";
+        String sql = "{call PKG_MENSAJES_TELEGRAM.PR_ACTUALIZAR_MENSAJE(?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, mensaje.getTipoMensaje());
-            ps.setString(2, mensaje.getContenido());
-            ps.setInt(3, mensaje.isActivo() ? 1 : 0);
-            ps.setInt(4, mensaje.getIdMensaje());
+            cs.setInt(1, mensaje.getIdMensaje());
+            cs.setString(2, mensaje.getTipoMensaje());
+            cs.setString(3, mensaje.getContenido());
+            cs.setInt(4, mensaje.isActivo() ? 1 : 0);
 
-            int filasActualizadas = ps.executeUpdate();
-            if (filasActualizadas > 0) {
-                System.out.println("✅ Mensaje actualizado: " + mensaje.getTipoMensaje());
-            }
+            cs.execute();
+            System.out.println("✅ Mensaje actualizado: " + mensaje.getTipoMensaje());
 
         } catch (SQLException e) {
             System.err.println("❌ Error al actualizar mensaje: " + e.getMessage());
@@ -153,13 +159,13 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
     @Override
     public void delete(Integer id) throws SQLException {
-        String sql = "DELETE FROM MENSAJES_TELEGRAM WHERE id_mensaje = ?";
+        String sql = "{call PKG_MENSAJES_TELEGRAM.PR_ELIMINAR_MENSAJE(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            ps.executeUpdate();
+            cs.setInt(1, id);
+            cs.execute();
             System.out.println("✅ Mensaje eliminado: " + id);
 
         } catch (SQLException e) {
@@ -170,13 +176,13 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
     @Override
     public void activar(Integer id) throws SQLException {
-        String sql = "UPDATE MENSAJES_TELEGRAM SET activo = 1 WHERE id_mensaje = ?";
+        String sql = "{call PKG_MENSAJES_TELEGRAM.PR_ACTIVAR_MENSAJE(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            ps.executeUpdate();
+            cs.setInt(1, id);
+            cs.execute();
             System.out.println("✅ Mensaje activado: " + id);
 
         } catch (SQLException e) {
@@ -187,13 +193,13 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
     @Override
     public void desactivar(Integer id) throws SQLException {
-        String sql = "UPDATE MENSAJES_TELEGRAM SET activo = 0 WHERE id_mensaje = ?";
+        String sql = "{call PKG_MENSAJES_TELEGRAM.PR_DESACTIVAR_MENSAJE(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            ps.executeUpdate();
+            cs.setInt(1, id);
+            cs.execute();
             System.out.println("✅ Mensaje desactivado: " + id);
 
         } catch (SQLException e) {

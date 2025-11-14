@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.model.Membresias;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
 
@@ -43,14 +44,16 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
 
     @Override
     public Optional<Membresias> findById(Integer id) throws SQLException {
-        String sql = "SELECT ID_MEMBRESIA, TIPO, PRECIO_MEMBRESIA FROM MEMBRESIAS WHERE ID_MEMBRESIA = ?";
+        String sql = "{? = call PKG_MEMBRESIAS.FN_OBTENER_MEMBRESIA_POR_ID(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, id);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 Membresias membresia = mapResultSetToMembresia(rs);
                 return Optional.of(membresia);
@@ -65,14 +68,16 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
 
     @Override
     public List<Membresias> findAll() throws SQLException {
-        String sql = "SELECT ID_MEMBRESIA, TIPO, PRECIO_MEMBRESIA FROM MEMBRESIAS ORDER BY ID_MEMBRESIA";
-
+        String sql = "{? = call PKG_MEMBRESIAS.FN_LISTAR_MEMBRESIAS()}";
         List<Membresias> membresias = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 membresias.add(mapResultSetToMembresia(rs));
             }
@@ -87,17 +92,17 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
 
     @Override
     public List<Membresias> findByTipo(String tipo) throws SQLException {
-        String sql = "SELECT ID_MEMBRESIA, TIPO, PRECIO_MEMBRESIA FROM MEMBRESIAS " +
-                "WHERE UPPER(TIPO) = ? ORDER BY ID_MEMBRESIA";
-
+        String sql = "{? = call PKG_MEMBRESIAS.FN_BUSCAR_MEMBRESIAS_POR_TIPO(?)}";
         List<Membresias> membresias = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, tipo.toUpperCase());
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, tipo);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 membresias.add(mapResultSetToMembresia(rs));
             }
@@ -112,19 +117,17 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
 
     @Override
     public void update(Membresias entity) throws SQLException {
-        String sql = "UPDATE MEMBRESIAS SET TIPO = ?, PRECIO_MEMBRESIA = ? WHERE ID_MEMBRESIA = ?";
+        String sql = "{call PKG_MEMBRESIAS.PR_ACTUALIZAR_MEMBRESIA(?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, entity.getTipoMembresia());
-            ps.setDouble(2, entity.getPrecioMembresia());
-            ps.setInt(3, entity.getIdMembresia());
+            cs.setInt(1, entity.getIdMembresia());
+            cs.setString(2, entity.getTipoMembresia());
+            cs.setDouble(3, entity.getPrecioMembresia());
 
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("✅ Membresía actualizada: " + entity.getIdMembresia());
-            }
+            cs.execute();
+            System.out.println("✅ Membresía actualizada: " + entity.getIdMembresia());
 
         } catch (SQLException e) {
             System.err.println("❌ Error al actualizar membresía: " + e.getMessage());
@@ -134,17 +137,14 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
 
     @Override
     public void delete(Integer id) throws SQLException {
-        String sql = "DELETE FROM MEMBRESIAS WHERE ID_MEMBRESIA = ?";
+        String sql = "{call PKG_MEMBRESIAS.PR_ELIMINAR_MEMBRESIA(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("✅ Membresía eliminada: " + id);
-            }
+            cs.setInt(1, id);
+            cs.execute();
+            System.out.println("✅ Membresía eliminada: " + id);
 
         } catch (SQLException e) {
             System.err.println("❌ Error al eliminar membresía: " + e.getMessage());
