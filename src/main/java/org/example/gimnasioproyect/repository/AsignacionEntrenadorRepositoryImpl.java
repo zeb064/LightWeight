@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.Utilidades.TipoPersonal;
 import org.example.gimnasioproyect.model.AsignacionEntrenadores;
 import org.example.gimnasioproyect.model.Barrios;
@@ -27,7 +28,7 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
     @Override
     public void save(AsignacionEntrenadores entity) throws SQLException {
-        String sql = "{call PKG_ENTRENADORES.PR_INSERTAR_ASIGNACION_ENTRENADOR(?, ?, ?, ?)}";
+        String sql = "{call PKG_ASIGNACION_ENTRENADORES.PR_INSERTAR_ASIGNACION_ENTRENADOR(?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
              CallableStatement cs = conn.prepareCall(sql)) {
@@ -52,28 +53,16 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
     @Override
     public Optional<AsignacionEntrenadores> findById(Integer id) throws SQLException {
-        String sql = "SELECT ec.ID_ENTRENADOR_CLIENTE, ec.FECHA_ASIGNACION, ec.FECHA_FINALIZACION, " +
-                "e.DOCUENTRENADOR, e.ESPECIALIDAD, e.EXPERIENCIA, " +
-                "p.ID_PERSONAL, p.NOMBRES AS ENT_NOMBRES, p.APELLIDOS AS ENT_APELLIDOS, " +
-                "p.TELEFONO AS ENT_TELEFONO, p.CORREO AS ENT_CORREO, p.USUARIO_SISTEMA, " +
-                "p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION, " +
-                "c.DOCUMENTO, c.NOMBRES AS CLI_NOMBRES, c.APELLIDOS AS CLI_APELLIDOS, " +
-                "c.FECHA_NACIMIENTO, c.GENERO, c.TELEFONO AS CLI_TELEFONO, " +
-                "c.CORREO AS CLI_CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM ENTRENADORCLIENTES ec " +
-                "JOIN ENTRENADORES e ON ec.DOCUENTRENADOR = e.DOCUENTRENADOR " +
-                "JOIN PERSONAL p ON e.ID_PERSONAL = p.ID_PERSONAL " +
-                "JOIN CLIENTES c ON ec.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE ec.ID_ENTRENADOR_CLIENTE = ?";
+        String sql = "{? = call PKG_ASIGNACION_ENTRENADORES.FN_OBTENER_ASIGNACION_POR_ID(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, id);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 AsignacionEntrenadores asignacion = mapResultSetToAsignacionEntrenador(rs);
                 return Optional.of(asignacion);
@@ -88,31 +77,16 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
     @Override
     public Optional<AsignacionEntrenadores> findAsignacionActivaByCliente(String documentoCliente) throws SQLException {
-        String sql = "SELECT ec.ID_ENTRENADOR_CLIENTE, ec.FECHA_ASIGNACION, ec.FECHA_FINALIZACION, " +
-                "e.DOCUENTRENADOR, e.ESPECIALIDAD, e.EXPERIENCIA, " +
-                "p.ID_PERSONAL, p.NOMBRES AS ENT_NOMBRES, p.APELLIDOS AS ENT_APELLIDOS, " +
-                "p.TELEFONO AS ENT_TELEFONO, p.CORREO AS ENT_CORREO, p.USUARIO_SISTEMA, " +
-                "p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION, " +
-                "c.DOCUMENTO, c.NOMBRES AS CLI_NOMBRES, c.APELLIDOS AS CLI_APELLIDOS, " +
-                "c.FECHA_NACIMIENTO, c.GENERO, c.TELEFONO AS CLI_TELEFONO, " +
-                "c.CORREO AS CLI_CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM ENTRENADORCLIENTES ec " +
-                "JOIN ENTRENADORES e ON ec.DOCUENTRENADOR = e.DOCUENTRENADOR " +
-                "JOIN PERSONAL p ON e.ID_PERSONAL = p.ID_PERSONAL " +
-                "JOIN CLIENTES c ON ec.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE ec.DOCUMENTO = ? " +
-                "AND (ec.FECHA_FINALIZACION IS NULL OR ec.FECHA_FINALIZACION >= SYSDATE) " +
-                "ORDER BY ec.FECHA_ASIGNACION DESC " +
-                "FETCH FIRST 1 ROW ONLY";
+        String sql = "{? = call PKG_ASIGNACION_ENTRENADORES.FN_OBTENER_ASIGNACION_ACTIVA_CLIENTE(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoCliente);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documentoCliente);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 AsignacionEntrenadores asignacion = mapResultSetToAsignacionEntrenador(rs);
                 return Optional.of(asignacion);
@@ -127,31 +101,17 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
     @Override
     public List<AsignacionEntrenadores> findByCliente(String documentoCliente) throws SQLException {
-        String sql = "SELECT ec.ID_ENTRENADOR_CLIENTE, ec.FECHA_ASIGNACION, ec.FECHA_FINALIZACION, " +
-                "e.DOCUENTRENADOR, e.ESPECIALIDAD, e.EXPERIENCIA, " +
-                "p.ID_PERSONAL, p.NOMBRES AS ENT_NOMBRES, p.APELLIDOS AS ENT_APELLIDOS, " +
-                "p.TELEFONO AS ENT_TELEFONO, p.CORREO AS ENT_CORREO, p.USUARIO_SISTEMA, " +
-                "p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION, " +
-                "c.DOCUMENTO, c.NOMBRES AS CLI_NOMBRES, c.APELLIDOS AS CLI_APELLIDOS, " +
-                "c.FECHA_NACIMIENTO, c.GENERO, c.TELEFONO AS CLI_TELEFONO, " +
-                "c.CORREO AS CLI_CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM ENTRENADORCLIENTES ec " +
-                "JOIN ENTRENADORES e ON ec.DOCUENTRENADOR = e.DOCUENTRENADOR " +
-                "JOIN PERSONAL p ON e.ID_PERSONAL = p.ID_PERSONAL " +
-                "JOIN CLIENTES c ON ec.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE ec.DOCUMENTO = ? " +
-                "ORDER BY ec.FECHA_ASIGNACION DESC";
-
+        String sql = "{? = call PKG_ASIGNACION_ENTRENADORES.FN_BUSCAR_ASIGNACIONES_POR_CLIENTE(?)}";
         List<AsignacionEntrenadores> asignaciones = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoCliente);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documentoCliente);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 asignaciones.add(mapResultSetToAsignacionEntrenador(rs));
             }
@@ -166,31 +126,17 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
     @Override
     public List<AsignacionEntrenadores> findByEntrenador(String documentoEntrenador) throws SQLException {
-        String sql = "SELECT ec.ID_ENTRENADOR_CLIENTE, ec.FECHA_ASIGNACION, ec.FECHA_FINALIZACION, " +
-                "e.DOCUENTRENADOR, e.ESPECIALIDAD, e.EXPERIENCIA, " +
-                "p.ID_PERSONAL, p.NOMBRES AS ENT_NOMBRES, p.APELLIDOS AS ENT_APELLIDOS, " +
-                "p.TELEFONO AS ENT_TELEFONO, p.CORREO AS ENT_CORREO, p.USUARIO_SISTEMA, " +
-                "p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION, " +
-                "c.DOCUMENTO, c.NOMBRES AS CLI_NOMBRES, c.APELLIDOS AS CLI_APELLIDOS, " +
-                "c.FECHA_NACIMIENTO, c.GENERO, c.TELEFONO AS CLI_TELEFONO, " +
-                "c.CORREO AS CLI_CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM ENTRENADORCLIENTES ec " +
-                "JOIN ENTRENADORES e ON ec.DOCUENTRENADOR = e.DOCUENTRENADOR " +
-                "JOIN PERSONAL p ON e.ID_PERSONAL = p.ID_PERSONAL " +
-                "JOIN CLIENTES c ON ec.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE ec.DOCUENTRENADOR = ? " +
-                "ORDER BY ec.FECHA_ASIGNACION DESC";
-
+        String sql = "{? = call PKG_ASIGNACION_ENTRENADORES.FN_BUSCAR_ASIGNACIONES_POR_ENTRENADOR(?)}";
         List<AsignacionEntrenadores> asignaciones = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoEntrenador);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documentoEntrenador);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 asignaciones.add(mapResultSetToAsignacionEntrenador(rs));
             }
@@ -205,32 +151,17 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
     @Override
     public List<AsignacionEntrenadores> findClientesActivosByEntrenador(String documentoEntrenador) throws SQLException {
-        String sql = "SELECT ec.ID_ENTRENADOR_CLIENTE, ec.FECHA_ASIGNACION, ec.FECHA_FINALIZACION, " +
-                "e.DOCUENTRENADOR, e.ESPECIALIDAD, e.EXPERIENCIA, " +
-                "p.ID_PERSONAL, p.NOMBRES AS ENT_NOMBRES, p.APELLIDOS AS ENT_APELLIDOS, " +
-                "p.TELEFONO AS ENT_TELEFONO, p.CORREO AS ENT_CORREO, p.USUARIO_SISTEMA, " +
-                "p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION, " +
-                "c.DOCUMENTO, c.NOMBRES AS CLI_NOMBRES, c.APELLIDOS AS CLI_APELLIDOS, " +
-                "c.FECHA_NACIMIENTO, c.GENERO, c.TELEFONO AS CLI_TELEFONO, " +
-                "c.CORREO AS CLI_CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM ENTRENADORCLIENTES ec " +
-                "INNER JOIN ENTRENADORES e ON ec.DOCUENTRENADOR = e.DOCUENTRENADOR " +
-                "INNER JOIN PERSONAL p ON e.ID_PERSONAL = p.ID_PERSONAL " +
-                "INNER JOIN CLIENTES c ON ec.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE ec.DOCUENTRENADOR = ? " +
-                "AND (ec.FECHA_FINALIZACION IS NULL OR ec.FECHA_FINALIZACION >= SYSDATE) " +
-                "ORDER BY c.NOMBRES, c.APELLIDOS";
-
+        String sql = "{? = call PKG_ASIGNACION_ENTRENADORES.FN_BUSCAR_CLIENTES_ACTIVOS_ENTRENADOR(?)}";
         List<AsignacionEntrenadores> asignaciones = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoEntrenador);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documentoEntrenador);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 asignaciones.add(mapResultSetToAsignacionEntrenador(rs));
             }
@@ -245,28 +176,16 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
     @Override
     public List<AsignacionEntrenadores> findAll() throws SQLException {
-        String sql = "SELECT ec.ID_ENTRENADOR_CLIENTE, ec.FECHA_ASIGNACION, ec.FECHA_FINALIZACION, " +
-                "e.DOCUENTRENADOR, e.ESPECIALIDAD, e.EXPERIENCIA, " +
-                "p.ID_PERSONAL, p.NOMBRES AS ENT_NOMBRES, p.APELLIDOS AS ENT_APELLIDOS, " +
-                "p.TELEFONO AS ENT_TELEFONO, p.CORREO AS ENT_CORREO, p.USUARIO_SISTEMA, " +
-                "p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION, " +
-                "c.DOCUMENTO, c.NOMBRES AS CLI_NOMBRES, c.APELLIDOS AS CLI_APELLIDOS, " +
-                "c.FECHA_NACIMIENTO, c.GENERO, c.TELEFONO AS CLI_TELEFONO, " +
-                "c.CORREO AS CLI_CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM ENTRENADORCLIENTES ec " +
-                "INNER JOIN ENTRENADORES e ON ec.DOCUENTRENADOR = e.DOCUENTRENADOR " +
-                "INNER JOIN PERSONAL p ON e.ID_PERSONAL = p.ID_PERSONAL " +
-                "INNER JOIN CLIENTES c ON ec.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "ORDER BY ec.ID_ENTRENADOR_CLIENTE DESC";
-
+        String sql = "{? = call PKG_ASIGNACION_ENTRENADORES.FN_LISTAR_ASIGNACIONES()}";
         List<AsignacionEntrenadores> asignaciones = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 asignaciones.add(mapResultSetToAsignacionEntrenador(rs));
             }
@@ -281,25 +200,21 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
     @Override
     public void update(AsignacionEntrenadores entity) throws SQLException {
-        String sql = "UPDATE ENTRENADORCLIENTES SET DOCUENTRENADOR = ?, DOCUMENTO = ?, " +
-                "FECHA_ASIGNACION = ?, FECHA_FINALIZACION = ? " +
-                "WHERE ID_ENTRENADOR_CLIENTE = ?";
+        String sql = "{call PKG_ASIGNACION_ENTRENADORES.PR_ACTUALIZAR_ASIGNACION(?, ?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, entity.getEntrenador().getDocuEntrenador());
-            ps.setString(2, entity.getCliente().getDocumento());
-            ps.setDate(3, entity.getFechaAsignacion() != null ?
+            cs.setInt(1, entity.getIdEntrenadorCliente());
+            cs.setString(2, entity.getEntrenador().getDocuEntrenador());
+            cs.setString(3, entity.getCliente().getDocumento());
+            cs.setDate(4, entity.getFechaAsignacion() != null ?
                     Date.valueOf(entity.getFechaAsignacion()) : null);
-            ps.setDate(4, entity.getFechaFinalizacion() != null ?
+            cs.setDate(5, entity.getFechaFinalizacion() != null ?
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
-            ps.setInt(5, entity.getIdEntrenadorCliente());
 
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("✅ Asignación entrenador actualizada: " + entity.getIdEntrenadorCliente());
-            }
+            cs.execute();
+            System.out.println("✅ Asignación entrenador actualizada: " + entity.getIdEntrenadorCliente());
 
         } catch (SQLException e) {
             System.err.println("❌ Error al actualizar asignación entrenador: " + e.getMessage());
@@ -309,17 +224,14 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
     @Override
     public void delete(Integer id) throws SQLException {
-        String sql = "DELETE FROM ENTRENADORCLIENTES WHERE ID_ENTRENADOR_CLIENTE = ?";
+        String sql = "{call PKG_ASIGNACION_ENTRENADORES.PR_ELIMINAR_ASIGNACION(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("✅ Asignación entrenador eliminada: " + id);
-            }
+            cs.setInt(1, id);
+            cs.execute();
+            System.out.println("✅ Asignación entrenador eliminada: " + id);
 
         } catch (SQLException e) {
             System.err.println("❌ Error al eliminar asignación entrenador: " + e.getMessage());

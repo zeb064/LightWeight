@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.model.Barrios;
 import org.example.gimnasioproyect.model.Clientes;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ClienteRepositoryImpl implements ClienteRepository{
+public class ClienteRepositoryImpl implements ClienteRepository {
     private final OracleDatabaseConnection connection;
 
     public ClienteRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
@@ -58,19 +59,16 @@ public class ClienteRepositoryImpl implements ClienteRepository{
 
     @Override
     public Optional<Clientes> findByDocumento(String documento) throws SQLException {
-        String sql = "SELECT c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, " +
-                "c.GENERO, c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO, c.CHAT_ID " +
-                "FROM CLIENTES c " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE c.DOCUMENTO = ?";
+        String sql = "{ ? = call PKG_CLIENTES.FN_OBTENER_CLIENTE_POR_DOCUMENTO(?) }";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documento);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documento);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 Clientes cliente = mapResultSetToCliente(rs);
                 return Optional.of(cliente);
@@ -85,19 +83,16 @@ public class ClienteRepositoryImpl implements ClienteRepository{
 
     @Override
     public List<Clientes> findAll() throws SQLException {
-        String sql = "SELECT c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, " +
-                "c.GENERO, c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO, c.CHAT_ID  " +
-                "FROM CLIENTES c " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "ORDER BY c.NOMBRES, c.APELLIDOS";
-
+        String sql = "{ ? = call PKG_CLIENTES.FN_LISTAR_CLIENTES() }";
         List<Clientes> clientes = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 clientes.add(mapResultSetToCliente(rs));
             }
@@ -112,24 +107,17 @@ public class ClienteRepositoryImpl implements ClienteRepository{
 
     @Override
     public List<Clientes> findByNombre(String nombre) throws SQLException {
-        String sql = "SELECT c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, " +
-                "c.GENERO, c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO, c.CHAT_ID  " +
-                "FROM CLIENTES c " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE UPPER(c.NOMBRES) LIKE ? OR UPPER(c.APELLIDOS) LIKE ? " +
-                "ORDER BY c.NOMBRES, c.APELLIDOS";
-
+        String sql = "{ ? = call PKG_CLIENTES.FN_BUSCAR_CLIENTES_POR_NOMBRE(?) }";
         List<Clientes> clientes = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            String parametro = "%" + nombre.toUpperCase() + "%";
-            ps.setString(1, parametro);
-            ps.setString(2, parametro);
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, nombre);
+            cs.execute();
 
-            ResultSet rs = ps.executeQuery();
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 clientes.add(mapResultSetToCliente(rs));
             }
@@ -144,22 +132,17 @@ public class ClienteRepositoryImpl implements ClienteRepository{
 
     @Override
     public List<Clientes> findByBarrio(Integer idBarrio) throws SQLException {
-        String sql = "SELECT c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, " +
-                "c.GENERO, c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO, c.CHAT_ID  " +
-                "FROM CLIENTES c " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE c.ID_BARRIO = ? " +
-                "ORDER BY c.NOMBRES, c.APELLIDOS";
-
+        String sql = "{ ? = call PKG_CLIENTES.FN_BUSCAR_CLIENTES_POR_BARRIO(?) }";
         List<Clientes> clientes = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, idBarrio);
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, idBarrio);
+            cs.execute();
 
-            ResultSet rs = ps.executeQuery();
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 clientes.add(mapResultSetToCliente(rs));
             }
@@ -174,29 +157,25 @@ public class ClienteRepositoryImpl implements ClienteRepository{
 
     @Override
     public void update(Clientes entity) throws SQLException {
-        String sql = "UPDATE CLIENTES SET NOMBRES = ?, APELLIDOS = ?, FECHA_NACIMIENTO = ?, " +
-                "GENERO = ?, TELEFONO = ?, CORREO = ?, DIRECCION = ?, ID_BARRIO = ?, CHAT_ID = ?  " +
-                "WHERE DOCUMENTO = ?";
+        String sql = "{call PKG_CLIENTES.PR_ACTUALIZAR_CLIENTE(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, entity.getNombres());
-            ps.setString(2, entity.getApellidos());
-            ps.setDate(3, entity.getFechaNacimiento() != null ?
+            cs.setString(1, entity.getDocumento());
+            cs.setString(2, entity.getNombres());
+            cs.setString(3, entity.getApellidos());
+            cs.setDate(4, entity.getFechaNacimiento() != null ?
                     java.sql.Date.valueOf(entity.getFechaNacimiento()) : null);
-            ps.setString(4, entity.getGenero());
-            ps.setString(5, entity.getTelefono());
-            ps.setString(6, entity.getCorreo());
-            ps.setString(7, entity.getDireccion());
-            ps.setInt(8, entity.getBarrio() != null ? entity.getBarrio().getIdBarrio() : null);
-            ps.setString(9, entity.getChatId());
-            ps.setString(10, entity.getDocumento());
+            cs.setString(5, entity.getGenero());
+            cs.setString(6, entity.getTelefono());
+            cs.setString(7, entity.getCorreo());
+            cs.setString(8, entity.getDireccion());
+            cs.setInt(9, entity.getBarrio() != null ? entity.getBarrio().getIdBarrio() : null);
+            cs.setString(10, entity.getChatId());
 
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("✅ Cliente actualizado: " + entity.getDocumento());
-            }
+            cs.execute();
+            System.out.println("✅ Cliente actualizado: " + entity.getDocumento());
 
         } catch (SQLException e) {
             System.err.println("❌ Error al actualizar cliente: " + e.getMessage());
@@ -206,17 +185,14 @@ public class ClienteRepositoryImpl implements ClienteRepository{
 
     @Override
     public void delete(String documento) throws SQLException {
-        String sql = "DELETE FROM CLIENTES WHERE DOCUMENTO = ?";
+        String sql = "{call PKG_CLIENTES.PR_ELIMINAR_CLIENTE(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documento);
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("✅ Cliente eliminado: " + documento);
-            }
+            cs.setString(1, documento);
+            cs.execute();
+            System.out.println("✅ Cliente eliminado: " + documento);
 
         } catch (SQLException e) {
             System.err.println("❌ Error al eliminar cliente: " + e.getMessage());
@@ -224,14 +200,16 @@ public class ClienteRepositoryImpl implements ClienteRepository{
         }
     }
 
+    // Método auxiliar para mapear ResultSet a Cliente
     private Clientes mapResultSetToCliente(ResultSet rs) throws SQLException {
         Clientes cliente = new Clientes();
         cliente.setDocumento(rs.getString("DOCUMENTO"));
         cliente.setNombres(rs.getString("NOMBRES"));
         cliente.setApellidos(rs.getString("APELLIDOS"));
 
-        if (rs.getDate("FECHA_NACIMIENTO") != null) {
-            cliente.setFechaNacimiento(rs.getDate("FECHA_NACIMIENTO").toLocalDate());
+        java.sql.Date fechaNac = rs.getDate("FECHA_NACIMIENTO");
+        if (fechaNac != null) {
+            cliente.setFechaNacimiento(fechaNac.toLocalDate());
         }
 
         cliente.setGenero(rs.getString("GENERO"));
@@ -239,19 +217,25 @@ public class ClienteRepositoryImpl implements ClienteRepository{
         cliente.setCorreo(rs.getString("CORREO"));
         cliente.setDireccion(rs.getString("DIRECCION"));
 
-        if (rs.getDate("FECHA_REGISTRO") != null) {
-            cliente.setFechaRegistro(rs.getDate("FECHA_REGISTRO").toLocalDate());
+        java.sql.Date fechaReg = rs.getDate("FECHA_REGISTRO");
+        if (fechaReg != null) {
+            cliente.setFechaRegistro(fechaReg.toLocalDate());
         }
 
-        // Mapear barrio
         int idBarrio = rs.getInt("ID_BARRIO");
         if (!rs.wasNull()) {
             Barrios barrio = new Barrios();
             barrio.setIdBarrio(idBarrio);
-            barrio.setNombreBarrio(rs.getString("NOM_BARRIO"));
+            try {
+                String nomBarrio = rs.getString("NOM_BARRIO");
+                barrio.setNombreBarrio(nomBarrio);
+            } catch (SQLException e) {
+                // El campo NOM_BARRIO no existe en el ResultSet del paquete
+            }
             cliente.setBarrio(barrio);
         }
         cliente.setChatId(rs.getString("CHAT_ID"));
+
 
         return cliente;
     }

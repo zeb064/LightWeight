@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.model.Asistencias;
 import org.example.gimnasioproyect.model.Barrios;
 import org.example.gimnasioproyect.model.Clientes;
@@ -47,21 +48,16 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
 
     @Override
     public Optional<Asistencias> findById(Integer id) throws SQLException {
-        String sql = "SELECT a.ID_ASISTENCIA, a.FECHA, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM ASISTENCIAS a " +
-                "INNER JOIN CLIENTES c ON a.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE a.ID_ASISTENCIA = ?";
+        String sql = "{? = call PKG_ASISTENCIAS.FN_OBTENER_ASISTENCIA_POR_ID(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, id);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 Asistencias asistencia = mapResultSetToAsistencia(rs);
                 return Optional.of(asistencia);
@@ -76,24 +72,17 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
 
     @Override
     public List<Asistencias> findByCliente(String documentoCliente) throws SQLException {
-        String sql = "SELECT a.ID_ASISTENCIA, a.FECHA, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM ASISTENCIAS a " +
-                "JOIN CLIENTES c ON a.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE a.DOCUMENTO = ? " +
-                "ORDER BY a.FECHA DESC";
-
+        String sql = "{? = call PKG_ASISTENCIAS.FN_BUSCAR_ASISTENCIAS_POR_CLIENTE(?)}";
         List<Asistencias> asistencias = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoCliente);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documentoCliente);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 asistencias.add(mapResultSetToAsistencia(rs));
             }
@@ -108,24 +97,17 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
 
     @Override
     public List<Asistencias> findByFecha(LocalDate fecha) throws SQLException {
-        String sql = "SELECT a.ID_ASISTENCIA, a.FECHA, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM ASISTENCIAS a " +
-                "INNER JOIN CLIENTES c ON a.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE TRUNC(a.FECHA) = ? " +
-                "ORDER BY a.FECHA DESC";
-
+        String sql = "{? = call PKG_ASISTENCIAS.FN_BUSCAR_ASISTENCIAS_POR_FECHA(?)}";
         List<Asistencias> asistencias = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setDate(1, Date.valueOf(fecha));
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setDate(2, Date.valueOf(fecha));
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 asistencias.add(mapResultSetToAsistencia(rs));
             }
@@ -140,27 +122,20 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
 
     @Override
     public List<Asistencias> findByClienteAndFechaRange(String documentoCliente, LocalDate fechaInicio,
-                                                       LocalDate fechaFin) throws SQLException {
-        String sql = "SELECT a.ID_ASISTENCIA, a.FECHA, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM ASISTENCIAS a " +
-                "INNER JOIN CLIENTES c ON a.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE a.DOCUMENTO = ? AND a.FECHA BETWEEN ? AND ? " +
-                "ORDER BY a.FECHA DESC";
-
+                                                        LocalDate fechaFin) throws SQLException {
+        String sql = "{? = call PKG_ASISTENCIAS.FN_BUSCAR_ASISTENCIAS_POR_RANGO(?, ?, ?)}";
         List<Asistencias> asistencias = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoCliente);
-            ps.setDate(2, Date.valueOf(fechaInicio));
-            ps.setDate(3, Date.valueOf(fechaFin));
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documentoCliente);
+            cs.setDate(3, Date.valueOf(fechaInicio));
+            cs.setDate(4, Date.valueOf(fechaFin));
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 asistencias.add(mapResultSetToAsistencia(rs));
             }
@@ -175,18 +150,16 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
 
     @Override
     public int countAsistenciasByCliente(String documentoCliente) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM ASISTENCIAS WHERE DOCUMENTO = ?";
+        String sql = "{? = call PKG_ASISTENCIAS.FN_CONTAR_ASISTENCIAS_CLIENTE(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoCliente);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, Types.NUMERIC);
+            cs.setString(2, documentoCliente);
+            cs.execute();
 
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-            return 0;
+            return cs.getInt(1);
 
         } catch (SQLException e) {
             System.err.println("❌ Error al contar asistencias: " + e.getMessage());
@@ -196,21 +169,18 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
 
     @Override
     public int countAsistenciasByClienteAndMonth(String documentoCliente, int mes, int anio) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM ASISTENCIAS " +
-                "WHERE DOCUMENTO = ? AND EXTRACT(MONTH FROM FECHA) = ? AND EXTRACT(YEAR FROM FECHA) = ?";
+        String sql = "{? = call PKG_ASISTENCIAS.FN_CONTAR_ASISTENCIAS_CLIENTE_MES(?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoCliente);
-            ps.setInt(2, mes);
-            ps.setInt(3, anio);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, Types.NUMERIC);
+            cs.setString(2, documentoCliente);
+            cs.setInt(3, mes);
+            cs.setInt(4, anio);
+            cs.execute();
 
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-            return 0;
+            return cs.getInt(1);
 
         } catch (SQLException e) {
             System.err.println("❌ Error al contar asistencias del mes: " + e.getMessage());
@@ -220,21 +190,16 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
 
     @Override
     public List<Asistencias> findAll() throws SQLException {
-        String sql = "SELECT a.ID_ASISTENCIA, a.FECHA, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM ASISTENCIAS a " +
-                "INNER JOIN CLIENTES c ON a.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "ORDER BY a.FECHA DESC";
-
+        String sql = "{? = call PKG_ASISTENCIAS.FN_LISTAR_ASISTENCIAS()}";
         List<Asistencias> asistencias = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 asistencias.add(mapResultSetToAsistencia(rs));
             }
@@ -249,19 +214,17 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
 
     @Override
     public void update(Asistencias entity) throws SQLException {
-        String sql = "UPDATE ASISTENCIAS SET FECHA = ?, DOCUMENTO = ? WHERE ID_ASISTENCIA = ?";
+        String sql = "{call PKG_ASISTENCIAS.PR_ACTUALIZAR_ASISTENCIA(?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setDate(1, entity.getFecha() != null ? Date.valueOf(entity.getFecha()) : null);
-            ps.setString(2, entity.getCliente().getDocumento());
-            ps.setInt(3, entity.getIdAsistencia());
+            cs.setInt(1, entity.getIdAsistencia());
+            cs.setDate(2, entity.getFecha() != null ? Date.valueOf(entity.getFecha()) : null);
+            cs.setString(3, entity.getCliente().getDocumento());
 
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("✅ Asistencia actualizada: " + entity.getIdAsistencia());
-            }
+            cs.execute();
+            System.out.println("✅ Asistencia actualizada: " + entity.getIdAsistencia());
 
         } catch (SQLException e) {
             System.err.println("❌ Error al actualizar asistencia: " + e.getMessage());
@@ -271,17 +234,14 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
 
     @Override
     public void delete(Integer id) throws SQLException {
-        String sql = "DELETE FROM ASISTENCIAS WHERE ID_ASISTENCIA = ?";
+        String sql = "{call PKG_ASISTENCIAS.PR_ELIMINAR_ASISTENCIA(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("✅ Asistencia eliminada: " + id);
-            }
+            cs.setInt(1, id);
+            cs.execute();
+            System.out.println("✅ Asistencia eliminada: " + id);
 
         } catch (SQLException e) {
             System.err.println("❌ Error al eliminar asistencia: " + e.getMessage());

@@ -165,26 +165,34 @@ public class MenuController {
 
     private void handleClientes() {
         mostrarLoading(true);
+
+        // Solo tareas largas deberían ir en un hilo aparte
         new Thread(() -> {
             try {
-                Thread.sleep(300);
-                Parent gestionClientes = HelloApplication.loadFXML("GestionClientes");
+                Thread.sleep(300); // simula carga
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-                Platform.runLater(() -> {
+            // Toda manipulación de UI y carga de FXML debe ir en Platform.runLater
+            Platform.runLater(() -> {
+                try {
+                    Parent gestionClientes = HelloApplication.loadFXML("GestionClientes");
+
                     contentArea.getChildren().clear();
                     contentArea.getChildren().addAll(gestionClientes, loadingPane);
                     mostrarLoading(false);
-                });
-            } catch (Exception e) {
-                Platform.runLater(() -> {
+
+                } catch (Exception e) {
                     mostrarLoading(false);
                     mostrarAlerta(Alert.AlertType.ERROR, "Error",
                             "No se pudo cargar la gestión de clientes: " + e.getMessage());
                     e.printStackTrace();
-                });
-            }
+                }
+            });
         }).start();
     }
+
 
     private void handleMembresias() {
         mostrarLoading(true);
@@ -283,21 +291,25 @@ public class MenuController {
         new Thread(() -> {
             try {
                 Thread.sleep(300);
-                Parent gestionPersonal = HelloApplication.loadFXML("Personal");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-                Platform.runLater(() -> {
+            Platform.runLater(() -> {
+                try {
+                    Parent gestionPersonal = HelloApplication.loadFXML("Personal");
+
                     contentArea.getChildren().clear();
                     contentArea.getChildren().addAll(gestionPersonal, loadingPane);
                     mostrarLoading(false);
-                });
-            } catch (Exception e) {
-                Platform.runLater(() -> {
+
+                } catch (Exception e) {
                     mostrarLoading(false);
                     mostrarAlerta(Alert.AlertType.ERROR, "Error",
                             "No se pudo cargar la gestión de personal: " + e.getMessage());
                     e.printStackTrace();
-                });
-            }
+                }
+            });
         }).start();
     }
 

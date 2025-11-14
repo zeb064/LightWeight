@@ -7,6 +7,7 @@ module org.example.gimnasioproyect {
     requires javafx.graphics;
     requires telegrambots.meta;
     requires telegrambots;
+    requires ojdbc8;
 
     //requires org.example.gimnasioproyect;
     //requires org.example.gimnasioproyect;

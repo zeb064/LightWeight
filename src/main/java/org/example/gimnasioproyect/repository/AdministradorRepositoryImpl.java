@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.Utilidades.TipoPersonal;
 import org.example.gimnasioproyect.model.Administradores;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
@@ -57,19 +58,16 @@ public class AdministradorRepositoryImpl implements AdministradorRepository{
 
     @Override
     public Optional<Administradores> findByDocumento(String documento) throws SQLException {
-        String sql = "SELECT a.DOCUADMINISTRADOR, a.CARGO, " +
-                "p.ID_PERSONAL, p.NOMBRES, p.APELLIDOS, p.TELEFONO, p.CORREO, " +
-                "p.USUARIO_SISTEMA, p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION " +
-                "FROM ADMINISTRADORES a " +
-                "INNER JOIN PERSONAL p ON a.ID_PERSONAL = p.ID_PERSONAL " +
-                "WHERE a.DOCUADMINISTRADOR = ?";
+        String sql = "{? = call PKG_ADMINISTRADORES.FN_OBTENER_ADMINISTRADOR_POR_DOCUMENTO(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documento);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documento);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 Administradores administrador = mapResultSetToAdministrador(rs);
                 return Optional.of(administrador);
@@ -84,19 +82,16 @@ public class AdministradorRepositoryImpl implements AdministradorRepository{
 
     @Override
     public Optional<Administradores> findByUsuario(String usuario) throws SQLException {
-        String sql = "SELECT a.DOCUADMINISTRADOR, a.CARGO, " +
-                "p.ID_PERSONAL, p.NOMBRES, p.APELLIDOS, p.TELEFONO, p.CORREO, " +
-                "p.USUARIO_SISTEMA, p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION " +
-                "FROM ADMINISTRADORES a " +
-                "INNER JOIN PERSONAL p ON a.ID_PERSONAL = p.ID_PERSONAL " +
-                "WHERE p.USUARIO_SISTEMA = ?";
+        String sql = "{? = call PKG_ADMINISTRADORES.FN_OBTENER_ADMINISTRADOR_POR_USUARIO(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, usuario);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, usuario);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 Administradores administrador = mapResultSetToAdministrador(rs);
                 return Optional.of(administrador);
@@ -111,19 +106,16 @@ public class AdministradorRepositoryImpl implements AdministradorRepository{
 
     @Override
     public List<Administradores> findAll() throws SQLException {
-        String sql = "SELECT a.DOCUADMINISTRADOR, a.CARGO, " +
-                "p.ID_PERSONAL, p.NOMBRES, p.APELLIDOS, p.TELEFONO, p.CORREO, " +
-                "p.USUARIO_SISTEMA, p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION " +
-                "FROM ADMINISTRADORES a " +
-                "INNER JOIN PERSONAL p ON a.ID_PERSONAL = p.ID_PERSONAL " +
-                "ORDER BY p.NOMBRES, p.APELLIDOS";
-
+        String sql = "{? = call PKG_ADMINISTRADORES.FN_LISTAR_ADMINISTRADORES()}";
         List<Administradores> administradores = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 administradores.add(mapResultSetToAdministrador(rs));
             }
@@ -138,122 +130,51 @@ public class AdministradorRepositoryImpl implements AdministradorRepository{
 
     @Override
     public void update(Administradores entity) throws SQLException {
-        Connection conn = null;
-        try {
-            conn = this.connection.connect();
-            conn.setAutoCommit(false);
+        String sql = "{CALL PKG_ADMINISTRADORES.PR_ACTUALIZAR_ADMINISTRADOR(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
-            // 1. Actualizar PERSONAL
-            String sqlPersonal = "UPDATE PERSONAL SET NOMBRES = ?, APELLIDOS = ?, TELEFONO = ?, " +
-                    "CORREO = ?, USUARIO_SISTEMA = ?, CONTRASENA = ?, FECHA_CONTRATACION = ? " +
-                    "WHERE ID_PERSONAL = ?";
+        try (Connection conn = this.connection.connect();
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            try (PreparedStatement ps = conn.prepareStatement(sqlPersonal)) {
-                ps.setString(1, entity.getNombres());
-                ps.setString(2, entity.getApellidos());
-                ps.setString(3, entity.getTelefono());
-                ps.setString(4, entity.getCorreo());
-                ps.setString(5, entity.getUsuarioSistema());
-                ps.setString(6, entity.getContrasena());
-                ps.setDate(7, entity.getFechaContratacion() != null ?
-                        Date.valueOf(entity.getFechaContratacion()) : null);
-                ps.setInt(8, entity.getIdPersonal());
-                ps.executeUpdate();
+            cs.setInt(1, entity.getIdPersonal());
+            cs.setString(2, entity.getNombres());
+            cs.setString(3, entity.getApellidos());
+            cs.setString(4, entity.getTelefono());
+            cs.setString(5, entity.getCorreo());
+            cs.setString(6, entity.getUsuarioSistema());
+            cs.setString(7, entity.getContrasena());
+
+            if (entity.getFechaContratacion() != null) {
+                cs.setDate(8, Date.valueOf(entity.getFechaContratacion()));
+            } else {
+                cs.setNull(8, Types.DATE);
             }
 
-            // 2. Actualizar ADMINISTRADORES
-            String sqlAdmin = "UPDATE ADMINISTRADORES SET CARGO = ? WHERE DOCUADMINISTRADOR = ?";
+            cs.setString(9, entity.getDocuAdministrador());
+            cs.setString(10, entity.getCargo());
 
-            try (PreparedStatement ps = conn.prepareStatement(sqlAdmin)) {
-                ps.setString(1, entity.getCargo());
-                ps.setString(2, entity.getDocuAdministrador());
-                ps.executeUpdate();
-            }
-
-            conn.commit();
+            cs.execute();
             System.out.println("✅ Administrador actualizado: " + entity.getDocuAdministrador());
 
         } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    System.err.println("❌ Error en rollback: " + ex.getMessage());
-                }
-            }
             System.err.println("❌ Error al actualizar administrador: " + e.getMessage());
             throw e;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    System.err.println("❌ Error al cerrar conexión: " + e.getMessage());
-                }
-            }
         }
     }
 
     @Override
     public void delete(String documento) throws SQLException {
-        Connection conn = null;
-        try {
-            conn = this.connection.connect();
-            conn.setAutoCommit(false);
+        String sql = "{CALL PKG_ADMINISTRADORES.PR_ELIMINAR_ADMINISTRADOR(?)}";
 
-            // Primero obtener ID_PERSONAL
-            String sqlGetId = "SELECT ID_PERSONAL FROM ADMINISTRADORES WHERE DOCUADMINISTRADOR = ?";
-            Integer idPersonal = null;
+        try (Connection conn = this.connection.connect();
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            try (PreparedStatement ps = conn.prepareStatement(sqlGetId)) {
-                ps.setString(1, documento);
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    idPersonal = rs.getInt("ID_PERSONAL");
-                }
-            }
-
-            if (idPersonal == null) {
-                throw new SQLException("No se encontró el administrador");
-            }
-
-            // 1. Eliminar de ADMINISTRADORES
-            String sqlAdmin = "DELETE FROM ADMINISTRADORES WHERE DOCUADMINISTRADOR = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sqlAdmin)) {
-                ps.setString(1, documento);
-                ps.executeUpdate();
-            }
-
-            // 2. Eliminar de PERSONAL
-            String sqlPersonal = "DELETE FROM PERSONAL WHERE ID_PERSONAL = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sqlPersonal)) {
-                ps.setInt(1, idPersonal);
-                ps.executeUpdate();
-            }
-
-            conn.commit();
+            cs.setString(1, documento);
+            cs.execute();
             System.out.println("✅ Administrador eliminado: " + documento);
 
         } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    System.err.println("❌ Error en rollback: " + ex.getMessage());
-                }
-            }
             System.err.println("❌ Error al eliminar administrador: " + e.getMessage());
             throw e;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    System.err.println("❌ Error al cerrar conexión: " + e.getMessage());
-                }
-            }
         }
     }
 
