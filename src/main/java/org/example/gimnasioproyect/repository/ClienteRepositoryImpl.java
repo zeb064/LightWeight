@@ -200,7 +200,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
         }
     }
 
-    // Método auxiliar para mapear ResultSet a Cliente
+    // Metodo auxiliar para mapear ResultSet a Cliente
     private Clientes mapResultSetToCliente(ResultSet rs) throws SQLException {
         Clientes cliente = new Clientes();
         cliente.setDocumento(rs.getString("DOCUMENTO"));

@@ -213,7 +213,7 @@ public class FormularioClienteController {
         lblErrorFechaNacimiento.setText("");
     }
 
-    // Método para cargar datos en modo edición
+    // Metodo para cargar datos en modo edición
     public void cargarCliente(Clientes cliente) {
         this.modoEdicion = true;
         this.documentoOriginal = cliente.getDocumento();

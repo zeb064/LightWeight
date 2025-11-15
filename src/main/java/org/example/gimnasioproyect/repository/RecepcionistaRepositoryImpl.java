@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.Utilidades.TipoPersonal;
 import org.example.gimnasioproyect.model.Recepcionistas;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
@@ -57,19 +58,16 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
 
     @Override
     public Optional<Recepcionistas> findByDocumento(String documento) throws SQLException {
-        String sql = "SELECT r.DOCURECEPCIONISTA, r.HORARIO_TURNO, " +
-                "p.ID_PERSONAL, p.NOMBRES, p.APELLIDOS, p.TELEFONO, p.CORREO, " +
-                "p.USUARIO_SISTEMA, p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION " +
-                "FROM RECEPCIONISTAS r " +
-                "INNER JOIN PERSONAL p ON r.ID_PERSONAL = p.ID_PERSONAL " +
-                "WHERE r.DOCURECEPCIONISTA = ?";
+        String sql = "{? = call PKG_RECEPCIONISTAS.FN_OBTENER_RECEPCIONISTA_POR_DOCUMENTO(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documento);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documento);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 Recepcionistas recepcionista = mapResultSetToRecepcionista(rs);
                 return Optional.of(recepcionista);
@@ -84,19 +82,16 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
 
     @Override
     public Optional<Recepcionistas> findByUsuario(String usuario) throws SQLException {
-        String sql = "SELECT r.DOCURECEPCIONISTA, r.HORARIO_TURNO, " +
-                "p.ID_PERSONAL, p.NOMBRES, p.APELLIDOS, p.TELEFONO, p.CORREO, " +
-                "p.USUARIO_SISTEMA, p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION " +
-                "FROM RECEPCIONISTAS r " +
-                "INNER JOIN PERSONAL p ON r.ID_PERSONAL = p.ID_PERSONAL " +
-                "WHERE p.USUARIO_SISTEMA = ?";
+        String sql = "{? = call PKG_RECEPCIONISTAS.FN_OBTENER_RECEPCIONISTA_POR_USUARIO(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, usuario);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, usuario);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 Recepcionistas recepcionista = mapResultSetToRecepcionista(rs);
                 return Optional.of(recepcionista);
@@ -111,22 +106,17 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
 
     @Override
     public List<Recepcionistas> findByTurno(String turno) throws SQLException {
-        String sql = "SELECT r.DOCURECEPCIONISTA, r.HORARIO_TURNO, " +
-                "p.ID_PERSONAL, p.NOMBRES, p.APELLIDOS, p.TELEFONO, p.CORREO, " +
-                "p.USUARIO_SISTEMA, p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION " +
-                "FROM RECEPCIONISTAS r " +
-                "INNER JOIN PERSONAL p ON r.ID_PERSONAL = p.ID_PERSONAL " +
-                "WHERE UPPER(r.HORARIO_TURNO) = ? " +
-                "ORDER BY p.NOMBRES, p.APELLIDOS";
-
+        String sql = "{? = call PKG_RECEPCIONISTAS.FN_BUSCAR_RECEPCIONISTAS_POR_TURNO(?)}";
         List<Recepcionistas> recepcionistas = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, turno.toUpperCase());
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, turno);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 recepcionistas.add(mapResultSetToRecepcionista(rs));
             }
@@ -141,19 +131,16 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
 
     @Override
     public List<Recepcionistas> findAll() throws SQLException {
-        String sql = "SELECT r.DOCURECEPCIONISTA, r.HORARIO_TURNO, " +
-                "p.ID_PERSONAL, p.NOMBRES, p.APELLIDOS, p.TELEFONO, p.CORREO, " +
-                "p.USUARIO_SISTEMA, p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION " +
-                "FROM RECEPCIONISTAS r " +
-                "INNER JOIN PERSONAL p ON r.ID_PERSONAL = p.ID_PERSONAL " +
-                "ORDER BY p.NOMBRES, p.APELLIDOS";
-
+        String sql = "{? = call PKG_RECEPCIONISTAS.FN_LISTAR_RECEPCIONISTAS()}";
         List<Recepcionistas> recepcionistas = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 recepcionistas.add(mapResultSetToRecepcionista(rs));
             }
@@ -168,122 +155,51 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
 
     @Override
     public void update(Recepcionistas entity) throws SQLException {
-        Connection conn = null;
-        try {
-            conn = this.connection.connect();
-            conn.setAutoCommit(false);
+        String sql = "{call PKG_RECEPCIONISTAS.PR_ACTUALIZAR_RECEPCIONISTA(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
-            // 1. Actualizar PERSONAL
-            String sqlPersonal = "UPDATE PERSONAL SET NOMBRES = ?, APELLIDOS = ?, TELEFONO = ?, " +
-                    "CORREO = ?, USUARIO_SISTEMA = ?, CONTRASENA = ?, FECHA_CONTRATACION = ? " +
-                    "WHERE ID_PERSONAL = ?";
+        try (Connection conn = this.connection.connect();
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            try (PreparedStatement ps = conn.prepareStatement(sqlPersonal)) {
-                ps.setString(1, entity.getNombres());
-                ps.setString(2, entity.getApellidos());
-                ps.setString(3, entity.getTelefono());
-                ps.setString(4, entity.getCorreo());
-                ps.setString(5, entity.getUsuarioSistema());
-                ps.setString(6, entity.getContrasena());
-                ps.setDate(7, entity.getFechaContratacion() != null ?
-                        Date.valueOf(entity.getFechaContratacion()) : null);
-                ps.setInt(8, entity.getIdPersonal());
-                ps.executeUpdate();
+            cs.setInt(1, entity.getIdPersonal());
+            cs.setString(2, entity.getNombres());
+            cs.setString(3, entity.getApellidos());
+            cs.setString(4, entity.getTelefono());
+            cs.setString(5, entity.getCorreo());
+            cs.setString(6, entity.getUsuarioSistema());
+            cs.setString(7, entity.getContrasena());
+
+            if (entity.getFechaContratacion() != null) {
+                cs.setDate(8, Date.valueOf(entity.getFechaContratacion()));
+            } else {
+                cs.setNull(8, Types.DATE);
             }
 
-            // 2. Actualizar RECEPCIONISTAS
-            String sqlRecep = "UPDATE RECEPCIONISTAS SET HORARIO_TURNO = ? WHERE DOCURECEPCIONISTA = ?";
+            cs.setString(9, entity.getDocuRecepcionista());
+            cs.setString(10, entity.getHorarioTurno());
 
-            try (PreparedStatement ps = conn.prepareStatement(sqlRecep)) {
-                ps.setString(1, entity.getHorarioTurno());
-                ps.setString(2, entity.getDocuRecepcionista());
-                ps.executeUpdate();
-            }
-
-            conn.commit();
+            cs.execute();
             System.out.println("✅ Recepcionista actualizado: " + entity.getDocuRecepcionista());
 
         } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    System.err.println("❌ Error en rollback: " + ex.getMessage());
-                }
-            }
             System.err.println("❌ Error al actualizar recepcionista: " + e.getMessage());
             throw e;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    System.err.println("❌ Error al cerrar conexión: " + e.getMessage());
-                }
-            }
         }
     }
 
     @Override
     public void delete(String documento) throws SQLException {
-        Connection conn = null;
-        try {
-            conn = this.connection.connect();
-            conn.setAutoCommit(false);
+        String sql = "{call PKG_RECEPCIONISTAS.PR_ELIMINAR_RECEPCIONISTA(?)}";
 
-            // Primero obtener ID_PERSONAL
-            String sqlGetId = "SELECT ID_PERSONAL FROM RECEPCIONISTAS WHERE DOCURECEPCIONISTA = ?";
-            Integer idPersonal = null;
+        try (Connection conn = this.connection.connect();
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            try (PreparedStatement ps = conn.prepareStatement(sqlGetId)) {
-                ps.setString(1, documento);
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    idPersonal = rs.getInt("ID_PERSONAL");
-                }
-            }
-
-            if (idPersonal == null) {
-                throw new SQLException("No se encontró el recepcionista");
-            }
-
-            // 1. Eliminar de RECEPCIONISTAS
-            String sqlRecep = "DELETE FROM RECEPCIONISTAS WHERE DOCURECEPCIONISTA = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sqlRecep)) {
-                ps.setString(1, documento);
-                ps.executeUpdate();
-            }
-
-            // 2. Eliminar de PERSONAL
-            String sqlPersonal = "DELETE FROM PERSONAL WHERE ID_PERSONAL = ?";
-            try (PreparedStatement ps = conn.prepareStatement(sqlPersonal)) {
-                ps.setInt(1, idPersonal);
-                ps.executeUpdate();
-            }
-
-            conn.commit();
+            cs.setString(1, documento);
+            cs.execute();
             System.out.println("✅ Recepcionista eliminado: " + documento);
 
         } catch (SQLException e) {
-            if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException ex) {
-                    System.err.println("❌ Error en rollback: " + ex.getMessage());
-                }
-            }
             System.err.println("❌ Error al eliminar recepcionista: " + e.getMessage());
             throw e;
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.setAutoCommit(true);
-                    conn.close();
-                } catch (SQLException e) {
-                    System.err.println("❌ Error al cerrar conexión: " + e.getMessage());
-                }
-            }
         }
     }
 

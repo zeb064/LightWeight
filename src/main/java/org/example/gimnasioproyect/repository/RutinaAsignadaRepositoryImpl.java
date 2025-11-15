@@ -1,6 +1,7 @@
 package org.example.gimnasioproyect.repository;
 
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.model.Barrios;
 import org.example.gimnasioproyect.model.Clientes;
 import org.example.gimnasioproyect.model.RutinaAsignadas;
@@ -18,7 +19,7 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
     public RutinaAsignadaRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - RutinaAsignadaRepository");
+            System.out.println("Conexión a BD probada exitosamente - RutinaAsignadaRepository");
         } catch (SQLException e) {
             System.err.println("❌ Error al conectar: " + e.getMessage());
             throw e;
@@ -53,24 +54,16 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
 
     @Override
     public Optional<RutinaAsignadas> findById(Integer id) throws SQLException {
-        String sql = "SELECT rc.ID_RUTINA_CLIENTE, rc.FECHA_ASIGNACION, rc.FECHA_FINALIZACION, rc.ESTADO, " +
-                "r.ID_RUTINA, r.OBJETIVO, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM RUTINASCLIENTES rc " +
-                "INNER JOIN RUTINAS r ON rc.ID_RUTINA = r.ID_RUTINA " +
-                "INNER JOIN CLIENTES c ON rc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE rc.ID_RUTINA_CLIENTE = ?";
+        String sql = "{? = call PKG_RUTINASCLIENTES.FN_OBTENER_RUTINA_ASIGNADA_POR_ID(?)}";
 
         try (Connection conn = this.connection.connect();
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, id);
+            cs.execute();
 
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 RutinaAsignadas rutinaAsignada = mapResultSetToRutinaAsignada(rs);
                 return Optional.of(rutinaAsignada);
@@ -85,26 +78,17 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
 
     @Override
     public List<RutinaAsignadas> findByCliente(String documentoCliente) throws SQLException {
-        String sql = "SELECT rc.ID_RUTINA_CLIENTE, rc.FECHA_ASIGNACION, rc.FECHA_FINALIZACION, rc.ESTADO, " +
-                "r.ID_RUTINA, r.OBJETIVO, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM RUTINASCLIENTES rc " +
-                "INNER JOIN RUTINAS r ON rc.ID_RUTINA = r.ID_RUTINA " +
-                "INNER JOIN CLIENTES c ON rc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE rc.DOCUMENTO = ? " +
-                "ORDER BY rc.FECHA_ASIGNACION DESC";
-
+        String sql = "{? = call PKG_RUTINASCLIENTES.FN_BUSCAR_RUTINAS_POR_CLIENTE(?)}";
         List<RutinaAsignadas> rutinasAsignadas = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoCliente);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documentoCliente);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 rutinasAsignadas.add(mapResultSetToRutinaAsignada(rs));
             }
@@ -119,26 +103,17 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
 
     @Override
     public List<RutinaAsignadas> findRutinasActivasByCliente(String documentoCliente) throws SQLException {
-        String sql = "SELECT rc.ID_RUTINA_CLIENTE, rc.FECHA_ASIGNACION, rc.FECHA_FINALIZACION, rc.ESTADO, " +
-                "r.ID_RUTINA, r.OBJETIVO, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM RUTINASCLIENTES rc " +
-                "INNER JOIN RUTINAS r ON rc.ID_RUTINA = r.ID_RUTINA " +
-                "INNER JOIN CLIENTES c ON rc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE rc.DOCUMENTO = ? AND rc.ESTADO = 'ACTIVA' " +
-                "ORDER BY rc.FECHA_ASIGNACION DESC";
-
+        String sql = "{? = call PKG_RUTINASCLIENTES.FN_BUSCAR_RUTINAS_ACTIVAS_CLIENTE(?)}";
         List<RutinaAsignadas> rutinasAsignadas = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, documentoCliente);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, documentoCliente);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 rutinasAsignadas.add(mapResultSetToRutinaAsignada(rs));
             }
@@ -153,26 +128,17 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
 
     @Override
     public List<RutinaAsignadas> findByRutina(Integer idRutina) throws SQLException {
-        String sql = "SELECT rc.ID_RUTINA_CLIENTE, rc.FECHA_ASIGNACION, rc.FECHA_FINALIZACION, rc.ESTADO, " +
-                "r.ID_RUTINA, r.OBJETIVO, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM RUTINASCLIENTES rc " +
-                "INNER JOIN RUTINAS r ON rc.ID_RUTINA = r.ID_RUTINA " +
-                "INNER JOIN CLIENTES c ON rc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE rc.ID_RUTINA = ? " +
-                "ORDER BY rc.FECHA_ASIGNACION DESC";
-
+        String sql = "{? = call PKG_RUTINASCLIENTES.FN_BUSCAR_ASIGNACIONES_POR_RUTINA(?)}";
         List<RutinaAsignadas> rutinasAsignadas = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, idRutina);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, idRutina);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 rutinasAsignadas.add(mapResultSetToRutinaAsignada(rs));
             }
@@ -187,26 +153,17 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
 
     @Override
     public List<RutinaAsignadas> findByEstado(String estado) throws SQLException {
-        String sql = "SELECT rc.ID_RUTINA_CLIENTE, rc.FECHA_ASIGNACION, rc.FECHA_FINALIZACION, rc.ESTADO, " +
-                "r.ID_RUTINA, r.OBJETIVO, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM RUTINASCLIENTES rc " +
-                "INNER JOIN RUTINAS r ON rc.ID_RUTINA = r.ID_RUTINA " +
-                "INNER JOIN CLIENTES c ON rc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "WHERE UPPER(rc.ESTADO) = ? " +
-                "ORDER BY rc.FECHA_ASIGNACION DESC";
-
+        String sql = "{? = call PKG_RUTINASCLIENTES.FN_BUSCAR_RUTINAS_POR_ESTADO(?)}";
         List<RutinaAsignadas> rutinasAsignadas = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, estado.toUpperCase());
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, estado);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 rutinasAsignadas.add(mapResultSetToRutinaAsignada(rs));
             }
@@ -221,23 +178,16 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
 
     @Override
     public List<RutinaAsignadas> findAll() throws SQLException {
-        String sql = "SELECT rc.ID_RUTINA_CLIENTE, rc.FECHA_ASIGNACION, rc.FECHA_FINALIZACION, rc.ESTADO, " +
-                "r.ID_RUTINA, r.OBJETIVO, " +
-                "c.DOCUMENTO, c.NOMBRES, c.APELLIDOS, c.FECHA_NACIMIENTO, c.GENERO, " +
-                "c.TELEFONO, c.CORREO, c.DIRECCION, c.FECHA_REGISTRO, " +
-                "c.ID_BARRIO, b.NOM_BARRIO " +
-                "FROM RUTINASCLIENTES rc " +
-                "INNER JOIN RUTINAS r ON rc.ID_RUTINA = r.ID_RUTINA " +
-                "INNER JOIN CLIENTES c ON rc.DOCUMENTO = c.DOCUMENTO " +
-                "LEFT JOIN BARRIOS b ON c.ID_BARRIO = b.ID_BARRIO " +
-                "ORDER BY rc.ID_RUTINA_CLIENTE DESC";
-
+        String sql = "{? = call PKG_RUTINASCLIENTES.FN_LISTAR_RUTINAS_ASIGNADAS()}";
         List<RutinaAsignadas> rutinasAsignadas = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 rutinasAsignadas.add(mapResultSetToRutinaAsignada(rs));
             }
@@ -252,26 +202,22 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
 
     @Override
     public void update(RutinaAsignadas entity) throws SQLException {
-        String sql = "UPDATE RUTINASCLIENTES SET ID_RUTINA = ?, DOCUMENTO = ?, " +
-                "FECHA_ASIGNACION = ?, FECHA_FINALIZACION = ?, ESTADO = ? " +
-                "WHERE ID_RUTINA_CLIENTE = ?";
+        String sql = "{call PKG_RUTINASCLIENTES.PR_ACTUALIZAR_RUTINA_ASIGNADA(?, ?, ?, ?, ?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, entity.getRutina().getIdRutina());
-            ps.setString(2, entity.getCliente().getDocumento());
-            ps.setDate(3, entity.getFechaAsignacion() != null ?
+            cs.setInt(1, entity.getIdRutinaCliente());
+            cs.setInt(2, entity.getRutina().getIdRutina());
+            cs.setString(3, entity.getCliente().getDocumento());
+            cs.setDate(4, entity.getFechaAsignacion() != null ?
                     Date.valueOf(entity.getFechaAsignacion()) : null);
-            ps.setDate(4, entity.getFechaFinalizacion() != null ?
+            cs.setDate(5, entity.getFechaFinalizacion() != null ?
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
-            ps.setString(5, entity.getEstado());
-            ps.setInt(6, entity.getIdRutinaCliente());
+            cs.setString(6, entity.getEstado());
 
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("✅ Rutina asignada actualizada: " + entity.getIdRutinaCliente());
-            }
+            cs.execute();
+            System.out.println("✅ Rutina asignada actualizada: " + entity.getIdRutinaCliente());
 
         } catch (SQLException e) {
             System.err.println("❌ Error al actualizar rutina asignada: " + e.getMessage());
@@ -281,17 +227,14 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
 
     @Override
     public void delete(Integer id) throws SQLException {
-        String sql = "DELETE FROM RUTINASCLIENTES WHERE ID_RUTINA_CLIENTE = ?";
+        String sql = "{call PKG_RUTINASCLIENTES.PR_ELIMINAR_RUTINA_ASIGNADA(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("✅ Rutina asignada eliminada: " + id);
-            }
+            cs.setInt(1, id);
+            cs.execute();
+            System.out.println("✅ Rutina asignada eliminada: " + id);
 
         } catch (SQLException e) {
             System.err.println("❌ Error al eliminar rutina asignada: " + e.getMessage());

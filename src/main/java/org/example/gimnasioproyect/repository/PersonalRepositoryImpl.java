@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.Utilidades.TipoPersonal;
 import org.example.gimnasioproyect.model.Administradores;
 import org.example.gimnasioproyect.model.Entrenadores;
@@ -26,62 +27,17 @@ public class PersonalRepositoryImpl implements PersonalRepository {
     }
 
     @Override
-    public void update(Personal entity) throws SQLException {
-        String sql = "UPDATE PERSONAL SET NOMBRES = ?, APELLIDOS = ?, TELEFONO = ?, " +
-                "CORREO = ?, USUARIO_SISTEMA = ?, CONTRASENA = ?, FECHA_CONTRATACION = ? " +
-                "WHERE ID_PERSONAL = ?";
-
-        try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, entity.getNombres());
-            ps.setString(2, entity.getApellidos());
-            ps.setString(3, entity.getTelefono());
-            ps.setString(4, entity.getCorreo());
-            ps.setString(5, entity.getUsuarioSistema());
-            ps.setString(6, entity.getContrasena());
-            ps.setDate(7, entity.getFechaContratacion() != null ?
-                    Date.valueOf(entity.getFechaContratacion()) : null);
-            ps.setInt(8, entity.getIdPersonal());
-
-            int filasActualizadas = ps.executeUpdate();
-
-            if (filasActualizadas > 0) {
-                System.out.println("✅ Personal actualizado: " + entity.getUsuarioSistema());
-            } else {
-                throw new SQLException("No se encontró el personal con ID: " + entity.getIdPersonal());
-            }
-
-        } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar personal: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    @Override
-    public void delete(Integer integer) throws SQLException {
-
-    }
-
-    @Override
     public Optional<Personal> findByUsuario(String usuario) throws SQLException {
-        String sql = "SELECT p.ID_PERSONAL, p.NOMBRES, p.APELLIDOS, p.TELEFONO, p.CORREO, " +
-                "p.USUARIO_SISTEMA, p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION, " +
-                "e.DOCUENTRENADOR, e.ESPECIALIDAD, e.EXPERIENCIA, " +
-                "a.DOCUADMINISTRADOR, a.CARGO, " +
-                "r.DOCURECEPCIONISTA, r.HORARIO_TURNO " +
-                "FROM PERSONAL p " +
-                "LEFT JOIN ENTRENADORES e ON p.ID_PERSONAL = e.ID_PERSONAL " +
-                "LEFT JOIN ADMINISTRADORES a ON p.ID_PERSONAL = a.ID_PERSONAL " +
-                "LEFT JOIN RECEPCIONISTAS r ON p.ID_PERSONAL = r.ID_PERSONAL " +
-                "WHERE p.USUARIO_SISTEMA = ?";
+        String sql = "{? = call PKG_PERSONAL.FN_OBTENER_PERSONAL_POR_USUARIO(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, usuario);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, usuario);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 Personal personal = mapResultSetToPersonal(rs);
                 return Optional.of(personal);
@@ -96,24 +52,17 @@ public class PersonalRepositoryImpl implements PersonalRepository {
 
     @Override
     public Optional<Personal> autenticar(String usuario, String contrasena) throws SQLException {
-        String sql = "SELECT p.ID_PERSONAL, p.NOMBRES, p.APELLIDOS, p.TELEFONO, p.CORREO, " +
-                "p.USUARIO_SISTEMA, p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION, " +
-                "e.DOCUENTRENADOR, e.ESPECIALIDAD, e.EXPERIENCIA, " +
-                "a.DOCUADMINISTRADOR, a.CARGO, " +
-                "r.DOCURECEPCIONISTA, r.HORARIO_TURNO " +
-                "FROM PERSONAL p " +
-                "LEFT JOIN ENTRENADORES e ON p.ID_PERSONAL = e.ID_PERSONAL " +
-                "LEFT JOIN ADMINISTRADORES a ON p.ID_PERSONAL = a.ID_PERSONAL " +
-                "LEFT JOIN RECEPCIONISTAS r ON p.ID_PERSONAL = r.ID_PERSONAL " +
-                "WHERE p.USUARIO_SISTEMA = ? AND p.CONTRASENA = ?";
+        String sql = "{? = call PKG_PERSONAL.FN_AUTENTICAR_PERSONAL(?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, usuario);
-            ps.setString(2, contrasena);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, usuario);
+            cs.setString(3, contrasena);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 Personal personal = mapResultSetToPersonal(rs);
                 System.out.println("✅ Autenticación exitosa: " + usuario + " - Tipo: " + personal.getTipoPersonal());
@@ -130,34 +79,17 @@ public class PersonalRepositoryImpl implements PersonalRepository {
     }
 
     @Override
-    public void save(Personal entity) throws SQLException {
-
-    }
-
-    @Override
-    public Optional<Personal> findById(Integer integer) throws SQLException {
-        return Optional.empty();
-    }
-
-    @Override
     public List<Personal> findAll() throws SQLException {
-        String sql = "SELECT p.ID_PERSONAL, p.NOMBRES, p.APELLIDOS, p.TELEFONO, p.CORREO, " +
-                "p.USUARIO_SISTEMA, p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION, " +
-                "e.DOCUENTRENADOR, e.ESPECIALIDAD, e.EXPERIENCIA, " +
-                "a.DOCUADMINISTRADOR, a.CARGO, " +
-                "r.DOCURECEPCIONISTA, r.HORARIO_TURNO " +
-                "FROM PERSONAL p " +
-                "LEFT JOIN ENTRENADORES e ON p.ID_PERSONAL = e.ID_PERSONAL " +
-                "LEFT JOIN ADMINISTRADORES a ON p.ID_PERSONAL = a.ID_PERSONAL " +
-                "LEFT JOIN RECEPCIONISTAS r ON p.ID_PERSONAL = r.ID_PERSONAL " +
-                "ORDER BY p.TIPO_PERSONAL, p.NOMBRES, p.APELLIDOS";
-
+        String sql = "{? = call PKG_PERSONAL.FN_LISTAR_PERSONAL()}";
         List<Personal> personalList = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 personalList.add(mapResultSetToPersonal(rs));
             }
@@ -172,26 +104,17 @@ public class PersonalRepositoryImpl implements PersonalRepository {
 
     @Override
     public List<Personal> findByTipo(String tipoPersonal) throws SQLException {
-        String sql = "SELECT p.ID_PERSONAL, p.NOMBRES, p.APELLIDOS, p.TELEFONO, p.CORREO, " +
-                "p.USUARIO_SISTEMA, p.CONTRASENA, p.TIPO_PERSONAL, p.FECHA_CONTRATACION, " +
-                "e.DOCUENTRENADOR, e.ESPECIALIDAD, e.EXPERIENCIA, " +
-                "a.DOCUADMINISTRADOR, a.CARGO, " +
-                "r.DOCURECEPCIONISTA, r.HORARIO_TURNO " +
-                "FROM PERSONAL p " +
-                "LEFT JOIN ENTRENADORES e ON p.ID_PERSONAL = e.ID_PERSONAL " +
-                "LEFT JOIN ADMINISTRADORES a ON p.ID_PERSONAL = a.ID_PERSONAL " +
-                "LEFT JOIN RECEPCIONISTAS r ON p.ID_PERSONAL = r.ID_PERSONAL " +
-                "WHERE UPPER(p.TIPO_PERSONAL) = ? " +
-                "ORDER BY p.NOMBRES, p.APELLIDOS";
-
+        String sql = "{? = call PKG_PERSONAL.FN_BUSCAR_PERSONAL_POR_TIPO(?)}";
         List<Personal> personalList = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, tipoPersonal.toUpperCase());
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, tipoPersonal);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 personalList.add(mapResultSetToPersonal(rs));
             }
@@ -206,18 +129,17 @@ public class PersonalRepositoryImpl implements PersonalRepository {
 
     @Override
     public boolean existeUsuario(String usuario) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM PERSONAL WHERE USUARIO_SISTEMA = ?";
+        String sql = "{? = call PKG_PERSONAL.FN_EXISTE_USUARIO(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, usuario);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, Types.NUMERIC);
+            cs.setString(2, usuario);
+            cs.execute();
 
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-            return false;
+            int count = cs.getInt(1);
+            return count > 0;
 
         } catch (SQLException e) {
             System.err.println("❌ Error al verificar existencia de usuario: " + e.getMessage());
@@ -225,10 +147,49 @@ public class PersonalRepositoryImpl implements PersonalRepository {
         }
     }
 
-    /**
-     * Mapea el ResultSet a la instancia correcta de Personal según el tipo
-     * Usa polimorfismo para retornar Entrenador, Administrador o Recepcionista
-     */
+    @Override
+    public void update(Personal entity) throws SQLException {
+        String sql = "{call PKG_PERSONAL.PR_ACTUALIZAR_PERSONAL(?, ?, ?, ?, ?, ?, ?, ?)}";
+
+        try (Connection conn = this.connection.connect();
+             CallableStatement cs = conn.prepareCall(sql)) {
+
+            cs.setInt(1, entity.getIdPersonal());
+            cs.setString(2, entity.getNombres());
+            cs.setString(3, entity.getApellidos());
+            cs.setString(4, entity.getTelefono());
+            cs.setString(5, entity.getCorreo());
+            cs.setString(6, entity.getUsuarioSistema());
+            cs.setString(7, entity.getContrasena());
+            cs.setDate(8, entity.getFechaContratacion() != null ?
+                    Date.valueOf(entity.getFechaContratacion()) : null);
+
+            cs.execute();
+            System.out.println("✅ Personal actualizado: " + entity.getUsuarioSistema());
+
+        } catch (SQLException e) {
+            System.err.println("❌ Error al actualizar personal: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    public void save(Personal entity) throws SQLException {
+        // No implementado - Personal se crea a través de Entrenadores, Administradores o Recepcionistas
+    }
+
+    @Override
+    public Optional<Personal> findById(Integer integer) throws SQLException {
+        // No implementado - Se usa findByUsuario para buscar
+        return Optional.empty();
+    }
+
+    @Override
+    public void delete(Integer integer) throws SQLException {
+        // No implementado - Personal se elimina a través de las tablas específicas
+    }
+
+    // Mapea un ResultSet a una instancia de Personal (o sus subclases)
     private Personal mapResultSetToPersonal(ResultSet rs) throws SQLException {
         String tipoPersonal = rs.getString("TIPO_PERSONAL");
 

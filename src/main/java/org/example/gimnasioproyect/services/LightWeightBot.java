@@ -60,9 +60,7 @@ public class LightWeightBot extends TelegramLongPollingBot {
         }
     }
 
-    /**
-     * Procesa el comando /registrar DOCUMENTO
-     */
+    //Procesa el comando /registrar DOCUMENTO
     private void procesarComandoRegistrar(long chatId, String messageText, String firstName) {
         // Extraer documento del comando
         String[] partes = messageText.split(" ");
@@ -123,9 +121,7 @@ public class LightWeightBot extends TelegramLongPollingBot {
         }
     }
 
-    /**
-     * Procesa el comando /start
-     */
+    //Procesa el comando /start
     private void procesarComandoStart(long chatId, String firstName) {
         String mensaje =
                 "👋 ¡Hola " + firstName + "!\n\n" +
@@ -139,9 +135,7 @@ public class LightWeightBot extends TelegramLongPollingBot {
         enviarMensaje(chatId, mensaje);
     }
 
-    /**
-     * Procesa el comando /ayuda
-     */
+    //Procesa el comando /ayuda
     private void procesarComandoAyuda(long chatId) {
         String mensaje =
                 "📖 *Comandos disponibles:*\n\n" +
@@ -155,9 +149,7 @@ public class LightWeightBot extends TelegramLongPollingBot {
         enviarMensaje(chatId, mensaje);
     }
 
-    /**
-     * Envía un mensaje de texto
-     */
+    //Envía un mensaje de texto
     private void enviarMensaje(long chatId, String texto) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));

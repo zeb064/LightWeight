@@ -1,5 +1,6 @@
 package org.example.gimnasioproyect.repository;
 
+import oracle.jdbc.internal.OracleTypes;
 import org.example.gimnasioproyect.model.Rutinas;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
 
@@ -42,14 +43,16 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
 
     @Override
     public Optional<Rutinas> findById(Integer id) throws SQLException {
-        String sql = "SELECT ID_RUTINA, OBJETIVO FROM RUTINAS WHERE ID_RUTINA = ?";
+        String sql = "{? = call PKG_RUTINAS.FN_OBTENER_RUTINA_POR_ID(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setInt(2, id);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 Rutinas rutina = mapResultSetToRutina(rs);
                 return Optional.of(rutina);
@@ -64,14 +67,16 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
 
     @Override
     public List<Rutinas> findAll() throws SQLException {
-        String sql = "SELECT ID_RUTINA, OBJETIVO FROM RUTINAS ORDER BY ID_RUTINA";
-
+        String sql = "{? = call PKG_RUTINAS.FN_LISTAR_RUTINAS()}";
         List<Rutinas> rutinas = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 rutinas.add(mapResultSetToRutina(rs));
             }
@@ -86,17 +91,17 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
 
     @Override
     public List<Rutinas> findByObjetivo(String objetivo) throws SQLException {
-        String sql = "SELECT ID_RUTINA, OBJETIVO FROM RUTINAS " +
-                "WHERE UPPER(OBJETIVO) LIKE ? ORDER BY ID_RUTINA";
-
+        String sql = "{? = call PKG_RUTINAS.FN_BUSCAR_RUTINAS_POR_OBJETIVO(?)}";
         List<Rutinas> rutinas = new ArrayList<>();
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, "%" + objetivo.toUpperCase() + "%");
-            ResultSet rs = ps.executeQuery();
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, objetivo);
+            cs.execute();
 
+            ResultSet rs = (ResultSet) cs.getObject(1);
             while (rs.next()) {
                 rutinas.add(mapResultSetToRutina(rs));
             }
@@ -111,18 +116,16 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
 
     @Override
     public void update(Rutinas entity) throws SQLException {
-        String sql = "UPDATE RUTINAS SET OBJETIVO = ? WHERE ID_RUTINA = ?";
+        String sql = "{call PKG_RUTINAS.PR_ACTUALIZAR_RUTINA(?, ?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setString(1, entity.getObjetivo());
-            ps.setInt(2, entity.getIdRutina());
+            cs.setInt(1, entity.getIdRutina());
+            cs.setString(2, entity.getObjetivo());
 
-            int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("✅ Rutina actualizada: " + entity.getIdRutina());
-            }
+            cs.execute();
+            System.out.println("✅ Rutina actualizada: " + entity.getIdRutina());
 
         } catch (SQLException e) {
             System.err.println("❌ Error al actualizar rutina: " + e.getMessage());
@@ -132,17 +135,14 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
 
     @Override
     public void delete(Integer id) throws SQLException {
-        String sql = "DELETE FROM RUTINAS WHERE ID_RUTINA = ?";
+        String sql = "{call PKG_RUTINAS.PR_ELIMINAR_RUTINA(?)}";
 
         try (Connection conn = this.connection.connect();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             CallableStatement cs = conn.prepareCall(sql)) {
 
-            ps.setInt(1, id);
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("✅ Rutina eliminada: " + id);
-            }
+            cs.setInt(1, id);
+            cs.execute();
+            System.out.println("✅ Rutina eliminada: " + id);
 
         } catch (SQLException e) {
             System.err.println("❌ Error al eliminar rutina: " + e.getMessage());
