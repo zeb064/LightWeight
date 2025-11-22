@@ -15,9 +15,9 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
     public MensajeTelegramRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - MensajeTelegramRepository");
+            System.out.println("Conexión a BD probada exitosamente - MensajeTelegramRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -34,10 +34,10 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
             cs.setInt(3, mensaje.isActivo() ? 1 : 0);
 
             cs.execute();
-            System.out.println("✅ Mensaje Telegram guardado: " + mensaje.getTipoMensaje());
+            System.out.println("Mensaje Telegram guardado: " + mensaje.getTipoMensaje());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar mensaje: " + e.getMessage());
+            System.err.println("Error al guardar mensaje: " + e.getMessage());
             throw e;
         }
     }
@@ -60,7 +60,7 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar mensaje: " + e.getMessage());
+            System.err.println("Error al buscar mensaje: " + e.getMessage());
             throw e;
         }
     }
@@ -83,7 +83,7 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar mensaje por tipo: " + e.getMessage());
+            System.err.println("Error al buscar mensaje por tipo: " + e.getMessage());
             throw e;
         }
     }
@@ -105,7 +105,7 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar mensajes: " + e.getMessage());
+            System.err.println("Error al listar mensajes: " + e.getMessage());
             throw e;
         }
 
@@ -129,7 +129,7 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar mensajes activos: " + e.getMessage());
+            System.err.println("Error al listar mensajes activos: " + e.getMessage());
             throw e;
         }
 
@@ -149,10 +149,10 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
             cs.setInt(4, mensaje.isActivo() ? 1 : 0);
 
             cs.execute();
-            System.out.println("✅ Mensaje actualizado: " + mensaje.getTipoMensaje());
+            System.out.println("Mensaje actualizado: " + mensaje.getTipoMensaje());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar mensaje: " + e.getMessage());
+            System.err.println("Error al actualizar mensaje: " + e.getMessage());
             throw e;
         }
     }
@@ -166,10 +166,10 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
             cs.setInt(1, id);
             cs.execute();
-            System.out.println("✅ Mensaje eliminado: " + id);
+            System.out.println("Mensaje eliminado: " + id);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar mensaje: " + e.getMessage());
+            System.err.println("Error al eliminar mensaje: " + e.getMessage());
             throw e;
         }
     }
@@ -183,10 +183,10 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
             cs.setInt(1, id);
             cs.execute();
-            System.out.println("✅ Mensaje activado: " + id);
+            System.out.println("Mensaje activado: " + id);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al activar mensaje: " + e.getMessage());
+            System.err.println("Error al activar mensaje: " + e.getMessage());
             throw e;
         }
     }
@@ -200,10 +200,10 @@ public class MensajeTelegramRepositoryImpl implements MensajeTelegramRepository 
 
             cs.setInt(1, id);
             cs.execute();
-            System.out.println("✅ Mensaje desactivado: " + id);
+            System.out.println("Mensaje desactivado: " + id);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al desactivar mensaje: " + e.getMessage());
+            System.err.println("Error al desactivar mensaje: " + e.getMessage());
             throw e;
         }
     }

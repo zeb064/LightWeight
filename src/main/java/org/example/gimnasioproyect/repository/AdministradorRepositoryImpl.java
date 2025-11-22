@@ -16,9 +16,9 @@ public class AdministradorRepositoryImpl implements AdministradorRepository{
     public AdministradorRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - AdministradorRepository");
+            System.out.println("Conexión a BD probada exitosamente - AdministradorRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -43,10 +43,10 @@ public class AdministradorRepositoryImpl implements AdministradorRepository{
             cs.setString(9, entity.getCargo());
 
             cs.execute();
-            System.out.println("✅ Administrador registrado con paquete PL/SQL: " + entity.getDocuAdministrador());
+            System.out.println("Administrador registrado con paquete PL/SQL: " + entity.getDocuAdministrador());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al insertar administrador con paquete: " + e.getMessage());
+            System.err.println("Error al insertar administrador con paquete: " + e.getMessage());
             throw e;
         }
     }
@@ -75,7 +75,7 @@ public class AdministradorRepositoryImpl implements AdministradorRepository{
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar administrador: " + e.getMessage());
+            System.err.println("Error al buscar administrador: " + e.getMessage());
             throw e;
         }
     }
@@ -99,7 +99,7 @@ public class AdministradorRepositoryImpl implements AdministradorRepository{
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar administrador por usuario: " + e.getMessage());
+            System.err.println("Error al buscar administrador por usuario: " + e.getMessage());
             throw e;
         }
     }
@@ -121,7 +121,7 @@ public class AdministradorRepositoryImpl implements AdministradorRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar administradores: " + e.getMessage());
+            System.err.println("Error al listar administradores: " + e.getMessage());
             throw e;
         }
 
@@ -153,10 +153,10 @@ public class AdministradorRepositoryImpl implements AdministradorRepository{
             cs.setString(10, entity.getCargo());
 
             cs.execute();
-            System.out.println("✅ Administrador actualizado: " + entity.getDocuAdministrador());
+            System.out.println("Administrador actualizado: " + entity.getDocuAdministrador());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar administrador: " + e.getMessage());
+            System.err.println("Error al actualizar administrador: " + e.getMessage());
             throw e;
         }
     }
@@ -170,10 +170,10 @@ public class AdministradorRepositoryImpl implements AdministradorRepository{
 
             cs.setString(1, documento);
             cs.execute();
-            System.out.println("✅ Administrador eliminado: " + documento);
+            System.out.println("Administrador eliminado: " + documento);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar administrador: " + e.getMessage());
+            System.err.println("Error al eliminar administrador: " + e.getMessage());
             throw e;
         }
     }

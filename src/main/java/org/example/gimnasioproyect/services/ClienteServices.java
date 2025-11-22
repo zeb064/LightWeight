@@ -4,6 +4,8 @@ import org.example.gimnasioproyect.Utilidades.CalculadoraFechas;
 import org.example.gimnasioproyect.Utilidades.Validador;
 import org.example.gimnasioproyect.model.Clientes;
 import org.example.gimnasioproyect.repository.ClienteRepository;
+import org.example.gimnasioproyect.repository.MembresiaClienteRepository;
+import org.example.gimnasioproyect.repository.MembresiaClienteRepositoryImpl;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -12,8 +14,10 @@ import java.util.Optional;
 
 public class ClienteServices {
     private final ClienteRepository clienteRepository;
+    private final MembresiaClienteRepository membresiasClientes;
 
-    public ClienteServices(ClienteRepository clienteRepository) {
+    public ClienteServices(ClienteRepository clienteRepository, MembresiaClienteRepository membresiaClienteRepository) {
+        this.membresiasClientes = membresiaClienteRepository;
         this.clienteRepository = clienteRepository;
     }
 
@@ -74,6 +78,12 @@ public class ClienteServices {
         if (!clienteRepository.findByDocumento(documento).isPresent()) {
             throw new IllegalArgumentException("No existe un cliente con el documento: " + documento);
         }
+
+        if(membresiasClientes.findMembresiaActivaByCliente(documento).isPresent()) {
+            throw new IllegalArgumentException("El cliente con documento " + documento + " tiene membresías activas y no puede ser eliminado.");
+        }
+
+
 
         clienteRepository.delete(documento);
     }

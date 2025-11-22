@@ -27,14 +27,14 @@ public class NotificacionService {
         try {
             // Verificar que el cliente tenga chatId
             if (cliente.getChatId() == null || cliente.getChatId().trim().isEmpty()) {
-                System.out.println("⚠️ Cliente sin chatId de Telegram: " + cliente.getDocumento());
+                System.out.println("Cliente sin chatId de Telegram: " + cliente.getDocumento());
                 return false;
             }
 
             // Obtener plantilla
             Optional<MensajesTelegram> plantillaOpt = mensajeTelegramService.obtenerMensajePorTipo("BIENVENIDA");
             if (!plantillaOpt.isPresent()) {
-                System.err.println("❌ No se encontró la plantilla de BIENVENIDA");
+                System.err.println("No se encontró la plantilla de BIENVENIDA");
                 return false;
             }
 

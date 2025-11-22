@@ -200,6 +200,8 @@ public class EntrenadoresController {
             // Cargar especialidades en el ComboBox
             cargarEspecialidades(entrenadores);
 
+            lblResultados.setText("Mostrando " + entrenadores.size() + " clientes");
+
             // Actualizar estadísticas
             actualizarEstadisticas();
 

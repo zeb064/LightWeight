@@ -15,9 +15,9 @@ public class BarrioRepositoryImpl implements  BarrioRepository{
     public BarrioRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - BarrioRepository");
+            System.out.println("Conexión a BD probada exitosamente - BarrioRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -33,10 +33,10 @@ public class BarrioRepositoryImpl implements  BarrioRepository{
             cs.setString(2, entity.getNombreBarrio());
 
             cs.execute();
-            System.out.println("✅ Barrio guardado exitosamente: " + entity.getNombreBarrio());
+            System.out.println("Barrio guardado exitosamente: " + entity.getNombreBarrio());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar barrio: " + e.getMessage());
+            System.err.println("Error al guardar barrio: " + e.getMessage());
             throw e;
         }
     }
@@ -60,7 +60,7 @@ public class BarrioRepositoryImpl implements  BarrioRepository{
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar barrio: " + e.getMessage());
+            System.err.println("Error al buscar barrio: " + e.getMessage());
             throw e;
         }
     }
@@ -84,7 +84,7 @@ public class BarrioRepositoryImpl implements  BarrioRepository{
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar barrio por nombre: " + e.getMessage());
+            System.err.println("Error al buscar barrio por nombre: " + e.getMessage());
             throw e;
         }
     }
@@ -106,7 +106,7 @@ public class BarrioRepositoryImpl implements  BarrioRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar barrios: " + e.getMessage());
+            System.err.println("Error al listar barrios: " + e.getMessage());
             throw e;
         }
 
@@ -124,10 +124,10 @@ public class BarrioRepositoryImpl implements  BarrioRepository{
             cs.setString(2, entity.getNombreBarrio());
 
             cs.execute();
-            System.out.println("✅ Barrio actualizado: " + entity.getIdBarrio());
+            System.out.println("Barrio actualizado: " + entity.getIdBarrio());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar barrio: " + e.getMessage());
+            System.err.println("Error al actualizar barrio: " + e.getMessage());
             throw e;
         }
     }
@@ -141,10 +141,10 @@ public class BarrioRepositoryImpl implements  BarrioRepository{
 
             cs.setInt(1, id);
             cs.execute();
-            System.out.println("✅ Barrio eliminado: " + id);
+            System.out.println("Barrio eliminado: " + id);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar barrio: " + e.getMessage());
+            System.err.println("Error al eliminar barrio: " + e.getMessage());
             throw e;
         }
     }

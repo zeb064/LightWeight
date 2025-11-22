@@ -101,17 +101,20 @@ public class GestionClientesController {
         // Columna de estado con indicador visual
         colEstadoMembresia.setCellValueFactory(data -> {
             try {
-                Optional<MembresiaClientes> membresiaOpt =
-                        membresiaClienteService.obtenerMembresiaActiva(data.getValue().getDocumento());
+                String estado = membresiaClienteService.obtenerEstadoMembresia(
+                        data.getValue().getDocumento()
+                );
 
-                if (membresiaOpt.isPresent() && membresiaOpt.get().estaActiva()) {
-                    return new SimpleStringProperty("✓ Activa");
-                } else if (membresiaOpt.isPresent() && membresiaOpt.get().estaVencida()) {
-                    return new SimpleStringProperty("⚠ Vencida");
-                } else {
-                    return new SimpleStringProperty("✗ Sin Membresía");
+                switch (estado) {
+                    case "ACTIVA":
+                        return new SimpleStringProperty("✓ Activa");
+                    case "VENCIDA":
+                        return new SimpleStringProperty("⚠ Vencida");
+                    default:
+                        return new SimpleStringProperty("✗ Sin Membresía");
                 }
             } catch (SQLException e) {
+                e.printStackTrace();
                 return new SimpleStringProperty("Error");
             }
         });
@@ -229,6 +232,8 @@ public class GestionClientesController {
                 }
             });
 
+            lblResultados.setText("Mostrando " + clientes.size() + " clientes");
+
             // Actualizar estadísticas
             actualizarEstadisticas();
 
@@ -290,23 +295,29 @@ public class GestionClientesController {
     private void actualizarEstadisticas() {
         try {
             int total = listaClientes.size();
-
-            // Contar clientes con membresía activa
             int activos = 0;
+            int vencidos = 0;
+
+            // Contar por cada cliente único
             for (Clientes cliente : listaClientes) {
-                if (membresiaClienteService.tieneMembresiaActiva(cliente.getDocumento())) {
+                String estado = membresiaClienteService.obtenerEstadoMembresia(cliente.getDocumento());
+
+                if ("ACTIVA".equals(estado)) {
                     activos++;
+                } else if ("VENCIDA".equals(estado)) {
+                    vencidos++;
                 }
             }
 
-            int inactivos = total - activos;
+            int sinMembresia = total - activos - vencidos;
 
             lblTotalClientes.setText(String.valueOf(total));
             lblClientesActivos.setText(String.valueOf(activos));
-            lblClientesInactivos.setText(String.valueOf(inactivos));
+            lblClientesInactivos.setText(String.valueOf(sinMembresia));
 
         } catch (SQLException e) {
             e.printStackTrace();
+            mostrarError("Error", "No se pudieron actualizar las estadísticas: " + e.getMessage());
         }
     }
 
@@ -478,28 +489,6 @@ public class GestionClientesController {
             mostrarError("Error", "No se pudo abrir el detalle: " + e.getMessage());
             e.printStackTrace();
         }
-//        try {
-//            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/DetalleCliente.fxml"));
-//            Parent detalle = loader.load();
-//
-//            DetalleClienteController controller = loader.getController();
-//            controller.cargarCliente(cliente);
-//
-//            // Pasar referencia del contenedor padre
-//            if (tableClientes.getScene() != null && tableClientes.getScene().getRoot() instanceof StackPane) {
-//                StackPane parent = (StackPane) tableClientes.getScene().getRoot().getParent();
-//                if (parent != null) {
-//                    controller.setParentContainer(parent);
-//                    parent.getChildren().clear();
-//                    parent.getChildren().add(detalle);
-//                }
-//            }
-//
-//        } catch (IOException e) {
-//            mostrarError("Error", "No se pudo abrir el detalle: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-
     }
 
     private void eliminarCliente(Clientes cliente) {
@@ -512,10 +501,13 @@ public class GestionClientesController {
             if (response == ButtonType.OK) {
                 try {
                     clienteService.eliminarCliente(cliente.getDocumento());
-                    cargarDatos(); // Recargar tabla
+                    cargarDatos();
                     mostrarExito("Cliente eliminado correctamente");
+                } catch (IllegalArgumentException e) {
+                    mostrarError("No se puede eliminar el cliente", e.getMessage());
                 } catch (SQLException e) {
                     mostrarError("Error al eliminar", e.getMessage());
+                    e.printStackTrace();
                 }
             }
         });

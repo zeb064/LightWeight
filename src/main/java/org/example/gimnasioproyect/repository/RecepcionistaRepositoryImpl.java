@@ -16,9 +16,9 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
     public RecepcionistaRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - RecepcionistaRepository");
+            System.out.println("Conexión a BD probada exitosamente - RecepcionistaRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -43,10 +43,10 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
             cs.setString(9, entity.getHorarioTurno());
 
             cs.execute();
-            System.out.println("✅ Recepcionista registrado con paquete PL/SQL: " + entity.getDocuRecepcionista());
+            System.out.println("Recepcionista registrado con paquete PL/SQL: " + entity.getDocuRecepcionista());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al insertar recepcionista con paquete: " + e.getMessage());
+            System.err.println("Error al insertar recepcionista con paquete: " + e.getMessage());
             throw e;
         }
     }
@@ -75,7 +75,7 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar recepcionista: " + e.getMessage());
+            System.err.println("Error al buscar recepcionista: " + e.getMessage());
             throw e;
         }
     }
@@ -99,7 +99,7 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar recepcionista por usuario: " + e.getMessage());
+            System.err.println("Error al buscar recepcionista por usuario: " + e.getMessage());
             throw e;
         }
     }
@@ -122,7 +122,7 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar recepcionistas por turno: " + e.getMessage());
+            System.err.println("Error al buscar recepcionistas por turno: " + e.getMessage());
             throw e;
         }
 
@@ -146,7 +146,7 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar recepcionistas: " + e.getMessage());
+            System.err.println("Error al listar recepcionistas: " + e.getMessage());
             throw e;
         }
 
@@ -178,10 +178,10 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
             cs.setString(10, entity.getHorarioTurno());
 
             cs.execute();
-            System.out.println("✅ Recepcionista actualizado: " + entity.getDocuRecepcionista());
+            System.out.println("Recepcionista actualizado: " + entity.getDocuRecepcionista());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar recepcionista: " + e.getMessage());
+            System.err.println("Error al actualizar recepcionista: " + e.getMessage());
             throw e;
         }
     }
@@ -195,10 +195,10 @@ public class RecepcionistaRepositoryImpl implements RecepcionistaRepository{
 
             cs.setString(1, documento);
             cs.execute();
-            System.out.println("✅ Recepcionista eliminado: " + documento);
+            System.out.println("Recepcionista eliminado: " + documento);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar recepcionista: " + e.getMessage());
+            System.err.println("Error al eliminar recepcionista: " + e.getMessage());
             throw e;
         }
     }

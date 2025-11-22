@@ -16,9 +16,9 @@ public class EntrenadorRepositoryImpl implements EntrenadorRepository{
     public EntrenadorRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - EntrenadorRepository");
+            System.out.println("Conexión a BD probada exitosamente - EntrenadorRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -50,7 +50,7 @@ public class EntrenadorRepositoryImpl implements EntrenadorRepository{
             int idPersonal = cs.getInt(11);
             entity.setIdPersonal(idPersonal);
 
-            System.out.println("✅ Entrenador guardado con ID_PERSONAL = " + idPersonal);
+            System.out.println("Entrenador guardado con ID_PERSONAL = " + idPersonal);
         }
     }
 
@@ -78,7 +78,7 @@ public class EntrenadorRepositoryImpl implements EntrenadorRepository{
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar entrenador: " + e.getMessage());
+            System.err.println("Error al buscar entrenador: " + e.getMessage());
             throw e;
         }
     }
@@ -101,7 +101,7 @@ public class EntrenadorRepositoryImpl implements EntrenadorRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar entrenadores por especialidad: " + e.getMessage());
+            System.err.println("Error al buscar entrenadores por especialidad: " + e.getMessage());
             throw e;
         }
 
@@ -127,7 +127,7 @@ public class EntrenadorRepositoryImpl implements EntrenadorRepository{
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar entrenador por usuario: " + e.getMessage());
+            System.err.println("Error al buscar entrenador por usuario: " + e.getMessage());
             throw e;
         }
     }
@@ -149,7 +149,7 @@ public class EntrenadorRepositoryImpl implements EntrenadorRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar entrenadores: " + e.getMessage());
+            System.err.println("Error al listar entrenadores: " + e.getMessage());
             throw e;
         }
 
@@ -177,10 +177,10 @@ public class EntrenadorRepositoryImpl implements EntrenadorRepository{
             cs.setInt(11, entity.getExperiencia() != null ? entity.getExperiencia() : 0);
 
             cs.execute();
-            System.out.println("✅ Entrenador actualizado: " + entity.getDocuEntrenador());
+            System.out.println("Entrenador actualizado: " + entity.getDocuEntrenador());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar entrenador: " + e.getMessage());
+            System.err.println("Error al actualizar entrenador: " + e.getMessage());
             throw e;
         }
     }
@@ -194,10 +194,10 @@ public class EntrenadorRepositoryImpl implements EntrenadorRepository{
 
             cs.setString(1, documento);
             cs.execute();
-            System.out.println("✅ Entrenador eliminado: " + documento);
+            System.out.println("Entrenador eliminado: " + documento);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar entrenador: " + e.getMessage());
+            System.err.println("Error al eliminar entrenador: " + e.getMessage());
             throw e;
         }
     }

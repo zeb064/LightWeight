@@ -15,9 +15,9 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
     public RutinaRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - RutinaRepository");
+            System.out.println("Conexión a BD probada exitosamente - RutinaRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -33,10 +33,10 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
             cs.setString(1, entity.getObjetivo());
 
             cs.execute();
-            System.out.println("✅ Rutina guardada exitosamente: " + entity.getIdRutina());
+            System.out.println("Rutina guardada exitosamente: " + entity.getIdRutina());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar rutina: " + e.getMessage());
+            System.err.println("Error al guardar rutina: " + e.getMessage());
             throw e;
         }
     }
@@ -60,7 +60,7 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar rutina: " + e.getMessage());
+            System.err.println("Error al buscar rutina: " + e.getMessage());
             throw e;
         }
     }
@@ -82,7 +82,7 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar rutinas: " + e.getMessage());
+            System.err.println("Error al listar rutinas: " + e.getMessage());
             throw e;
         }
 
@@ -107,7 +107,7 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar rutinas por objetivo: " + e.getMessage());
+            System.err.println("Error al buscar rutinas por objetivo: " + e.getMessage());
             throw e;
         }
 
@@ -125,10 +125,10 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
             cs.setString(2, entity.getObjetivo());
 
             cs.execute();
-            System.out.println("✅ Rutina actualizada: " + entity.getIdRutina());
+            System.out.println("Rutina actualizada: " + entity.getIdRutina());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar rutina: " + e.getMessage());
+            System.err.println("Error al actualizar rutina: " + e.getMessage());
             throw e;
         }
     }
@@ -142,10 +142,10 @@ public class RutinaRepositoryImpl implements  RutinaRepository{
 
             cs.setInt(1, id);
             cs.execute();
-            System.out.println("✅ Rutina eliminada: " + id);
+            System.out.println("Rutina eliminada: " + id);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar rutina: " + e.getMessage());
+            System.err.println("Error al eliminar rutina: " + e.getMessage());
             throw e;
         }
     }

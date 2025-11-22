@@ -15,9 +15,9 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
     public MembresiaRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - MembresiaRepository");
+            System.out.println("Conexión a BD probada exitosamente - MembresiaRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -34,10 +34,10 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
             cs.setDouble(2, entity.getPrecioMembresia());
 
             cs.execute();
-            System.out.println("✅ Membresía guardada exitosamente: " + entity.getIdMembresia());
+            System.out.println("Membresía guardada exitosamente: " + entity.getIdMembresia());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar membresía: " + e.getMessage());
+            System.err.println("Error al guardar membresía: " + e.getMessage());
             throw e;
         }
     }
@@ -61,7 +61,7 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar membresía: " + e.getMessage());
+            System.err.println("Error al buscar membresía: " + e.getMessage());
             throw e;
         }
     }
@@ -83,7 +83,7 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar membresías: " + e.getMessage());
+            System.err.println("Error al listar membresías: " + e.getMessage());
             throw e;
         }
 
@@ -108,7 +108,7 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar membresías por tipo: " + e.getMessage());
+            System.err.println("Error al buscar membresías por tipo: " + e.getMessage());
             throw e;
         }
 
@@ -127,10 +127,10 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
             cs.setDouble(3, entity.getPrecioMembresia());
 
             cs.execute();
-            System.out.println("✅ Membresía actualizada: " + entity.getIdMembresia());
+            System.out.println("Membresía actualizada: " + entity.getIdMembresia());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar membresía: " + e.getMessage());
+            System.err.println("Error al actualizar membresía: " + e.getMessage());
             throw e;
         }
     }
@@ -144,10 +144,10 @@ public class MembresiaRepositoryImpl implements MembresiaRepository{
 
             cs.setInt(1, id);
             cs.execute();
-            System.out.println("✅ Membresía eliminada: " + id);
+            System.out.println("Membresía eliminada: " + id);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar membresía: " + e.getMessage());
+            System.err.println("Error al eliminar membresía: " + e.getMessage());
             throw e;
         }
     }

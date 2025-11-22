@@ -16,9 +16,9 @@ public class ClienteRepositoryImpl implements ClienteRepository {
     public ClienteRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - ClienteRepository");
+            System.out.println("Conexión a BD probada exitosamente - ClienteRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -44,10 +44,10 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             cs.setInt(10, entity.getBarrio() != null ? entity.getBarrio().getIdBarrio() : null);
 
             cs.execute();
-            System.out.println("✅ Cliente guardado exitosamente: " + entity.getDocumento());
+            System.out.println("Cliente guardado exitosamente: " + entity.getDocumento());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar cliente: " + e.getMessage());
+            System.err.println("Error al guardar cliente: " + e.getMessage());
             throw e;
         }
     }
@@ -76,7 +76,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar cliente: " + e.getMessage());
+            System.err.println("Error al buscar cliente: " + e.getMessage());
             throw e;
         }
     }
@@ -98,7 +98,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar clientes: " + e.getMessage());
+            System.err.println("Error al listar clientes: " + e.getMessage());
             throw e;
         }
 
@@ -123,7 +123,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar clientes por nombre: " + e.getMessage());
+            System.err.println("Error al buscar clientes por nombre: " + e.getMessage());
             throw e;
         }
 
@@ -148,7 +148,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar clientes por barrio: " + e.getMessage());
+            System.err.println("Error al buscar clientes por barrio: " + e.getMessage());
             throw e;
         }
 
@@ -175,10 +175,10 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             cs.setString(10, entity.getChatId());
 
             cs.execute();
-            System.out.println("✅ Cliente actualizado: " + entity.getDocumento());
+            System.out.println("Cliente actualizado: " + entity.getDocumento());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar cliente: " + e.getMessage());
+            System.err.println("Error al actualizar cliente: " + e.getMessage());
             throw e;
         }
     }
@@ -192,10 +192,19 @@ public class ClienteRepositoryImpl implements ClienteRepository {
 
             cs.setString(1, documento);
             cs.execute();
-            System.out.println("✅ Cliente eliminado: " + documento);
+            System.out.println("Cliente eliminado: " + documento);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar cliente: " + e.getMessage());
+            System.err.println("Error al eliminar cliente con documento " + documento );
+            if(e.getErrorCode() == 20015){
+                throw new IllegalArgumentException("No se puede eliminar el cliente porque tiene registros de asistencias.");
+            } else if (e.getErrorCode() == 20016) {
+                throw new IllegalArgumentException("No se puede eliminar el cliente porque tiene membresías activas o vencidas.");
+            } else if (e.getErrorCode() == 20017) {
+                throw new IllegalArgumentException("No se puede eliminar el cliente porque tiene rutinas asignadas.");
+            } else if (e.getErrorCode() == 20018) {
+                throw new IllegalArgumentException("No se puede eliminar el cliente porque tiene entrenadores asignados.");
+            }
             throw e;
         }
     }
@@ -226,12 +235,10 @@ public class ClienteRepositoryImpl implements ClienteRepository {
         if (!rs.wasNull()) {
             Barrios barrio = new Barrios();
             barrio.setIdBarrio(idBarrio);
-            try {
-                String nomBarrio = rs.getString("NOM_BARRIO");
-                barrio.setNombreBarrio(nomBarrio);
-            } catch (SQLException e) {
-                // El campo NOM_BARRIO no existe en el ResultSet del paquete
-            }
+
+            String nomBarrio = rs.getString("NOM_BARRIO");
+            barrio.setNombreBarrio(nomBarrio);
+
             cliente.setBarrio(barrio);
         }
         cliente.setChatId(rs.getString("CHAT_ID"));

@@ -52,10 +52,10 @@ public class HelloApplication extends Application {
         RecepcionistaRepository recepcionistaRepo = new RecepcionistaRepositoryImpl(dbConnection);
         MensajeTelegramRepository mensajeTelegramRepo = new MensajeTelegramRepositoryImpl(dbConnection);
         HistorialMensajeTelegramRepository historialMensajeTelegramRepo = new HistorialMensajeTelegramRepositoryImpl(dbConnection, clienteRepo, mensajeTelegramRepo);
-        System.out.println("✅ Repositorios inicializados");
+        System.out.println("Repositorios inicializados");
 
         //Services
-        ClienteServices clienteService = new ClienteServices(clienteRepo);
+        ClienteServices clienteService = new ClienteServices(clienteRepo, membresiaClienteRepo);
         BarrioService barrioService = new BarrioService(barrioRepo);
         MembresiaService membresiaService = new MembresiaService(membresiaRepo);
         MembresiaClienteService membresiaClienteService = new MembresiaClienteService(
@@ -93,7 +93,7 @@ public class HelloApplication extends Application {
                 historialMensajeTelegramRepo
         );
         LoginService loginService = new LoginService(personalRepo);
-        System.out.println("✅ Servicios inicializados");
+        System.out.println("Servicios inicializados");
 
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
@@ -103,7 +103,7 @@ public class HelloApplication extends Application {
                     notificacionService
             );
             botsApi.registerBot(bot);
-            System.out.println("✅ Bot de Telegram registrado y en funcionamiento");
+            System.out.println("Bot de Telegram registrado y en funcionamiento");
 
             // Iniciar tarea de revisión automática
             TareaRevisionMembresias tareaRevision = new TareaRevisionMembresias(
@@ -111,17 +111,12 @@ public class HelloApplication extends Application {
                     notificacionService
             );
             tareaRevision.iniciar();
-            System.out.println("✅ Tarea de revisión de membresías iniciada");
+            System.out.println("Tarea de revisión de membresías iniciada");
 
         } catch (TelegramApiException e) {
-            System.err.println("❌ Error al inicializar bot: " + e.getMessage());
+            System.err.println("Error al inicializar bot: " + e.getMessage());
             // Continuar sin bot si falla
         }
-
-//        FXMLLoader loader = new FXMLLoader(HelloApplication.class.getResource("Login.fxml"));
-//        Parent root = loader.load(); // ✅ Primero se carga el FXML
-
-        // Obtener controlador ya cargado
 
         ServiceFactory.getInstance().initializeServices(
                 clienteService,
@@ -156,17 +151,6 @@ public class HelloApplication extends Application {
         stage.setTitle("LightWeight - Login");
         stage.setScene(scene);
         stage.show();
-
-        //scene = new Scene(root); //FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("Menu.fxml"));
-        //        //Parent root = fxmlLoader.load();
-//        scene = new Scene(loadFXML("Menu"));
-//
-//        stage.setTitle("LightWeight  Gym");
-//        stage.sizeToScene();
-//        stage.setScene(scene);
-//        stage.show();
-
-
     }
 
     @Override

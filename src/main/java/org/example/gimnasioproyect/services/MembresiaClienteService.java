@@ -56,7 +56,7 @@ public class MembresiaClienteService {
             throw new IllegalArgumentException("El cliente ya tiene una membresía activa.");
         }
 
-        //Calcular fehca de finalización segun el tipo de membresía
+        //Calcular fecha de finalización segun el tipo de membresía
         Membresias membresia = membresiaOpt.get();
         LocalDate fechaFin = CalculadoraFechas.calcularFechaFinalizacion(fechaInicio, membresia.getTipoMembresia());
 
@@ -111,6 +111,35 @@ public class MembresiaClienteService {
     public Optional<MembresiaClientes> obtenerMembresiaActiva(String documentoCliente) throws SQLException {
         Validador.validarDocumento(documentoCliente);
         return membresiaClienteRepository.findMembresiaActivaByCliente(documentoCliente);
+    }
+
+    //Obtiene el estado de la membresía de un cliente: ACTIVA, VENCIDA, SIN_MEMBRESIA
+    public String obtenerEstadoMembresia(String documento) throws SQLException {
+        Validador.validarDocumento(documento);
+
+        // Obtener todas las membresías del cliente
+        List<MembresiaClientes> membresias = membresiaClienteRepository.findByCliente(documento);
+
+        if (membresias.isEmpty()) {
+            return "SIN_MEMBRESIA";
+        }
+
+        // Obtener la membresía más reciente
+        MembresiaClientes membresiaReciente = membresias.stream()
+                .max((m1, m2) -> m1.getFechaAsignacion().compareTo(m2.getFechaAsignacion()))
+                .orElse(null);
+
+        if (membresiaReciente == null) {
+            return "SIN_MEMBRESIA";
+        }
+
+        if (membresiaReciente.estaActiva()) {
+            return "ACTIVA";
+        } else if (membresiaReciente.estaVencida()) {
+            return "VENCIDA";
+        }
+
+        return "SIN_MEMBRESIA";
     }
 
     //Obtiene el historial de membresías de un cliente

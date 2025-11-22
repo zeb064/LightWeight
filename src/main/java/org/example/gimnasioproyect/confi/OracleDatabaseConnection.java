@@ -11,9 +11,9 @@ public class OracleDatabaseConnection implements IDatabaseConnection{
     static {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
-            System.out.println("✅ Driver JDBC de Oracle cargado correctamente");
+            System.out.println("Driver JDBC de Oracle cargado correctamente");
         } catch (ClassNotFoundException e) {
-            throw new ExceptionInInitializerError("❌ No se encontró el driver JDBC de Oracle");
+            throw new ExceptionInInitializerError("No se encontró el driver JDBC de Oracle");
         }
     }
 
@@ -30,10 +30,10 @@ public class OracleDatabaseConnection implements IDatabaseConnection{
                     config.getUser(),
                     config.getPassword()
             );
-            System.out.println("✅ Conexión establecida con Oracle");
+            System.out.println("Conexión establecida con Oracle");
             return conn;
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar con Oracle: " + e.getMessage());
+            System.err.println("Error al conectar con Oracle: " + e.getMessage());
             throw e;
         }
     }

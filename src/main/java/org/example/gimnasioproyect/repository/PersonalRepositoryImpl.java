@@ -19,9 +19,9 @@ public class PersonalRepositoryImpl implements PersonalRepository {
     public PersonalRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - PersonalRepository");
+            System.out.println("Conexión a BD probada exitosamente - PersonalRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -45,7 +45,7 @@ public class PersonalRepositoryImpl implements PersonalRepository {
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar personal por usuario: " + e.getMessage());
+            System.err.println("Error al buscar personal por usuario: " + e.getMessage());
             throw e;
         }
     }
@@ -65,15 +65,15 @@ public class PersonalRepositoryImpl implements PersonalRepository {
             ResultSet rs = (ResultSet) cs.getObject(1);
             if (rs.next()) {
                 Personal personal = mapResultSetToPersonal(rs);
-                System.out.println("✅ Autenticación exitosa: " + usuario + " - Tipo: " + personal.getTipoPersonal());
+                System.out.println("Autenticación exitosa: " + usuario + " - Tipo: " + personal.getTipoPersonal());
                 return Optional.of(personal);
             }
 
-            System.out.println("❌ Autenticación fallida para: " + usuario);
+            System.out.println("Autenticación fallida para: " + usuario);
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al autenticar: " + e.getMessage());
+            System.err.println("Error al autenticar: " + e.getMessage());
             throw e;
         }
     }
@@ -95,7 +95,7 @@ public class PersonalRepositoryImpl implements PersonalRepository {
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar personal: " + e.getMessage());
+            System.err.println("Error al listar personal: " + e.getMessage());
             throw e;
         }
 
@@ -120,7 +120,7 @@ public class PersonalRepositoryImpl implements PersonalRepository {
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar personal por tipo: " + e.getMessage());
+            System.err.println("Error al buscar personal por tipo: " + e.getMessage());
             throw e;
         }
 
@@ -142,7 +142,7 @@ public class PersonalRepositoryImpl implements PersonalRepository {
             return count > 0;
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al verificar existencia de usuario: " + e.getMessage());
+            System.err.println("Error al verificar existencia de usuario: " + e.getMessage());
             throw e;
         }
     }
@@ -165,10 +165,10 @@ public class PersonalRepositoryImpl implements PersonalRepository {
                     Date.valueOf(entity.getFechaContratacion()) : null);
 
             cs.execute();
-            System.out.println("✅ Personal actualizado: " + entity.getUsuarioSistema());
+            System.out.println("Personal actualizado: " + entity.getUsuarioSistema());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar personal: " + e.getMessage());
+            System.err.println("Error al actualizar personal: " + e.getMessage());
             throw e;
         }
     }

@@ -23,9 +23,9 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
         this.mensajeTelegramRepository = mensajeTelegramRepository;
 
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - HistorialMensajeTelegramRepository");
+            System.out.println("Conexión a BD probada exitosamente - HistorialMensajeTelegramRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -47,10 +47,10 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
             cs.setString(6, entity.getChatId());
 
             cs.execute();
-            System.out.println("✅ Historial guardado para cliente: " + entity.getClientes().getDocumento());
+            System.out.println("Historial guardado para cliente: " + entity.getClientes().getDocumento());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar historial: " + e.getMessage());
+            System.err.println("Error al guardar historial: " + e.getMessage());
             throw e;
         }
     }
@@ -73,7 +73,7 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar historial: " + e.getMessage());
+            System.err.println("Error al buscar historial: " + e.getMessage());
             throw e;
         }
     }
@@ -95,7 +95,7 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar historial: " + e.getMessage());
+            System.err.println("Error al listar historial: " + e.getMessage());
             throw e;
         }
 
@@ -120,7 +120,7 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar historial por cliente: " + e.getMessage());
+            System.err.println("Error al buscar historial por cliente: " + e.getMessage());
             throw e;
         }
 
@@ -145,7 +145,7 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar historial por fecha: " + e.getMessage());
+            System.err.println("Error al buscar historial por fecha: " + e.getMessage());
             throw e;
         }
 
@@ -170,7 +170,7 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar historial por estado: " + e.getMessage());
+            System.err.println("Error al buscar historial por estado: " + e.getMessage());
             throw e;
         }
 
@@ -195,7 +195,7 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar historial por tipo: " + e.getMessage());
+            System.err.println("Error al buscar historial por tipo: " + e.getMessage());
             throw e;
         }
 
@@ -213,10 +213,10 @@ public class HistorialMensajeTelegramRepositoryImpl implements HistorialMensajeT
             cs.setString(2, nuevoEstado);
             cs.execute();
 
-            System.out.println("✅ Estado actualizado para historial: " + id);
+            System.out.println("Estado actualizado para historial: " + id);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar estado: " + e.getMessage());
+            System.err.println("Error al actualizar estado: " + e.getMessage());
             throw e;
         }
     }

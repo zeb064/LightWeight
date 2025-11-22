@@ -219,6 +219,8 @@ public class PersonalController {
             listaPersonalFiltrada = FXCollections.observableArrayList(personal);
             tablePersonal.setItems(listaPersonalFiltrada);
 
+            lblResultados.setText("Mostrando " + personal.size() + " clientes");
+
             // Actualizar estadísticas
             actualizarEstadisticas();
 

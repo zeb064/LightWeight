@@ -32,7 +32,7 @@ public class TareaRevisionMembresias {
     //Inicia la tarea programada
     public void iniciar() {
         if (scheduler != null && !scheduler.isShutdown()) {
-            System.out.println("⚠️ La tarea de revisión ya está en ejecución");
+            System.out.println("La tarea de revisión ya está en ejecución");
             return;
         }
 
@@ -53,7 +53,7 @@ public class TareaRevisionMembresias {
                 TimeUnit.SECONDS
         );
 
-        System.out.println("✅ Tarea de revisión iniciada. Próxima ejecución en " +
+        System.out.println("Tarea de revisión iniciada. Próxima ejecución en " +
                 (delayInicial / 3600) + " horas");
     }
 
@@ -95,17 +95,17 @@ public class TareaRevisionMembresias {
             // 2. Revisar membresías vencidas
             revisarMembresiasVencidas();
 
-            System.out.println("\n✅ Revisión completada exitosamente\n");
+            System.out.println("\nRevisión completada exitosamente\n");
 
         } catch (Exception e) {
-            System.err.println("❌ Error durante la revisión: " + e.getMessage());
+            System.err.println("Error durante la revisión: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     // Revisa y notifica membresías próximas a vencer
     private void revisarMembresiasProximasAVencer(int dias) throws SQLException {
-        System.out.println("📅 Revisando membresías que vencen en " + dias + " días...");
+        System.out.println("Revisando membresías que vencen en " + dias + " días...");
 
         List<MembresiaClientes> membresias = membresiaClienteRepository.findMembresiasProximasAVencer(dias);
 
@@ -132,12 +132,12 @@ public class TareaRevisionMembresias {
             }
         }
 
-        System.out.println("✅ Notificaciones de vencimiento próximo enviadas: " + notificacionesEnviadas);
+        System.out.println("Notificaciones de vencimiento próximo enviadas: " + notificacionesEnviadas);
     }
 
     // Revisa y notifica membresías vencidas
     private void revisarMembresiasVencidas() throws SQLException {
-        System.out.println("❌ Revisando membresías vencidas...");
+        System.out.println("Revisando membresías vencidas...");
 
         List<MembresiaClientes> membresiasVencidas = membresiaClienteRepository.findMembresiasVencidas();
 
@@ -150,7 +150,7 @@ public class TareaRevisionMembresias {
             if (membresia.getFechaFinalizacion() != null &&
                     membresia.getFechaFinalizacion().equals(LocalDate.now())) {
 
-                System.out.println("  ❌ Notificando vencimiento a: " + cliente.getNombreCompleto());
+                System.out.println("Notificando vencimiento a: " + cliente.getNombreCompleto());
 
                 boolean enviado = notificacionService.enviarMensajeVencido(cliente, membresia);
 
@@ -160,10 +160,10 @@ public class TareaRevisionMembresias {
             }
         }
 
-        System.out.println("✅ Notificaciones de vencimiento enviadas: " + notificacionesEnviadas);
+        System.out.println("Notificaciones de vencimiento enviadas: " + notificacionesEnviadas);
     }
 
-    // Método para ejecutar la revisión manualmente
+    // Metodo para ejecutar la revisión manualmente
     public void ejecutarRevisionManual() {
         System.out.println("🔧 Ejecutando revisión manual...");
         ejecutarRevision();

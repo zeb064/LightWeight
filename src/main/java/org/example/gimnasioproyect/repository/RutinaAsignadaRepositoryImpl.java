@@ -21,7 +21,7 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
         try (Connection conn = this.connection.connect()) {
             System.out.println("Conexión a BD probada exitosamente - RutinaAsignadaRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -43,11 +43,11 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
             cs.setString(5, entity.getEstado());
 
             cs.execute();
-            System.out.println("✅ Rutina asignada exitosamente al cliente: " +
+            System.out.println("Rutina asignada exitosamente al cliente: " +
                     entity.getCliente().getDocumento());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar rutina asignada: " + e.getMessage());
+            System.err.println("Error al guardar rutina asignada: " + e.getMessage());
             throw e;
         }
     }
@@ -71,7 +71,7 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar rutina asignada: " + e.getMessage());
+            System.err.println("Error al buscar rutina asignada: " + e.getMessage());
             throw e;
         }
     }
@@ -94,7 +94,7 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar rutinas del cliente: " + e.getMessage());
+            System.err.println("Error al buscar rutinas del cliente: " + e.getMessage());
             throw e;
         }
 
@@ -119,7 +119,7 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar rutinas activas del cliente: " + e.getMessage());
+            System.err.println("Error al buscar rutinas activas del cliente: " + e.getMessage());
             throw e;
         }
 
@@ -144,7 +144,7 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar asignaciones de rutina: " + e.getMessage());
+            System.err.println("Error al buscar asignaciones de rutina: " + e.getMessage());
             throw e;
         }
 
@@ -169,7 +169,7 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar rutinas por estado: " + e.getMessage());
+            System.err.println("Error al buscar rutinas por estado: " + e.getMessage());
             throw e;
         }
 
@@ -193,7 +193,7 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar rutinas asignadas: " + e.getMessage());
+            System.err.println("Error al listar rutinas asignadas: " + e.getMessage());
             throw e;
         }
 
@@ -217,10 +217,10 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
             cs.setString(6, entity.getEstado());
 
             cs.execute();
-            System.out.println("✅ Rutina asignada actualizada: " + entity.getIdRutinaCliente());
+            System.out.println("Rutina asignada actualizada: " + entity.getIdRutinaCliente());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar rutina asignada: " + e.getMessage());
+            System.err.println("Error al actualizar rutina asignada: " + e.getMessage());
             throw e;
         }
     }
@@ -234,10 +234,10 @@ public class RutinaAsignadaRepositoryImpl implements RutinaAsignadaRepository{
 
             cs.setInt(1, id);
             cs.execute();
-            System.out.println("✅ Rutina asignada eliminada: " + id);
+            System.out.println("Rutina asignada eliminada: " + id);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar rutina asignada: " + e.getMessage());
+            System.err.println("Error al eliminar rutina asignada: " + e.getMessage());
             throw e;
         }
     }

@@ -47,10 +47,13 @@ public class DetalleRutinaRepositoryImpl implements DetalleRutinaRepository {
             cs.setInt(8, entity.getRutina().getIdRutina());
 
             cs.execute();
-            System.out.println("✅ Detalle de rutina guardado exitosamente");
+            System.out.println("Detalle de rutina guardado exitosamente");
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar detalle rutina: " + e.getMessage());
+            System.err.println("Error al guardar detalle rutina: " + e.getMessage());
+            if (e.getErrorCode() == 20013) {
+                throw new IllegalArgumentException("No se puede poner el mismo orden para el mismo día en una rutina.");
+            }
             throw e;
         }
     }

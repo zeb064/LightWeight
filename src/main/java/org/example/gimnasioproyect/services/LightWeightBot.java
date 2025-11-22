@@ -100,7 +100,7 @@ public class LightWeightBot extends TelegramLongPollingBot {
             cliente.setChatId(String.valueOf(chatId));
             clienteRepository.update(cliente);
 
-            System.out.println("✅ ChatId registrado para cliente: " + cliente.getDocumento());
+            System.out.println("ChatId registrado para cliente: " + cliente.getDocumento());
 
             // Obtener membresía activa
             Optional<MembresiaClientes> membresiaOpt =
@@ -113,10 +113,9 @@ public class LightWeightBot extends TelegramLongPollingBot {
             );
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al registrar chatId: " + e.getMessage());
+            System.err.println("Error al registrar chatId: " + e.getMessage());
             e.printStackTrace();
-            enviarMensaje(chatId,
-                    "❌ Ocurrió un error al procesar tu solicitud. " +
+            enviarMensaje(chatId,"Ocurrió un error al procesar tu solicitud. " +
                             "Por favor, intenta nuevamente más tarde.");
         }
     }
@@ -159,7 +158,7 @@ public class LightWeightBot extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            System.err.println("❌ Error al enviar mensaje: " + e.getMessage());
+            System.err.println("Error al enviar mensaje: " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -4,8 +4,8 @@ import java.time.LocalDate;
 
 public class MembresiaClientes {
     private Integer idMembresiaCliente;
-    private Membresias membresia;  // Composición
-    private Clientes cliente;       // Composición
+    private Membresias membresia;
+    private Clientes cliente;
     private LocalDate fechaAsignacion;
     private LocalDate fechaFinalizacion;
 

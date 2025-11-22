@@ -23,13 +23,13 @@ public class TelegramConfig {
     private void cargarConfiguracion() {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("telegram.properties")) {
             if (input == null) {
-                System.err.println("❌ No se encontró el archivo telegram.properties");
+                System.err.println("No se encontró el archivo telegram.properties");
                 return;
             }
             properties.load(input);
-            System.out.println("✅ Configuración de Telegram cargada correctamente");
+            System.out.println("Configuración de Telegram cargada correctamente");
         } catch (IOException e) {
-            System.err.println("❌ Error al cargar telegram.properties: " + e.getMessage());
+            System.err.println("Error al cargar telegram.properties: " + e.getMessage());
         }
     }
 

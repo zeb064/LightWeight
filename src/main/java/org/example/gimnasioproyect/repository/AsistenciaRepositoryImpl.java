@@ -18,9 +18,9 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
     public AsistenciaRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - AsistenciaRepository");
+            System.out.println("Conexión a BD probada exitosamente - AsistenciaRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -37,11 +37,11 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
             cs.setString(2, entity.getCliente().getDocumento());
 
             cs.execute();
-            System.out.println("✅ Asistencia registrada exitosamente para: " +
+            System.out.println("Asistencia registrada exitosamente para: " +
                     entity.getCliente().getDocumento());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar asistencia: " + e.getMessage());
+            System.err.println("Error al guardar asistencia: " + e.getMessage());
             throw e;
         }
     }
@@ -65,7 +65,7 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar asistencia: " + e.getMessage());
+            System.err.println("Error al buscar asistencia: " + e.getMessage());
             throw e;
         }
     }
@@ -88,7 +88,7 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar asistencias del cliente: " + e.getMessage());
+            System.err.println("Error al buscar asistencias del cliente: " + e.getMessage());
             throw e;
         }
 
@@ -113,7 +113,7 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar asistencias por fecha: " + e.getMessage());
+            System.err.println("Error al buscar asistencias por fecha: " + e.getMessage());
             throw e;
         }
 
@@ -141,7 +141,7 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar asistencias por rango: " + e.getMessage());
+            System.err.println("Error al buscar asistencias por rango: " + e.getMessage());
             throw e;
         }
 
@@ -162,7 +162,7 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
             return cs.getInt(1);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al contar asistencias: " + e.getMessage());
+            System.err.println("Error al contar asistencias: " + e.getMessage());
             throw e;
         }
     }
@@ -183,7 +183,7 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
             return cs.getInt(1);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al contar asistencias del mes: " + e.getMessage());
+            System.err.println("Error al contar asistencias del mes: " + e.getMessage());
             throw e;
         }
     }
@@ -205,7 +205,7 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar asistencias: " + e.getMessage());
+            System.err.println("Error al listar asistencias: " + e.getMessage());
             throw e;
         }
 
@@ -224,10 +224,10 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
             cs.setString(3, entity.getCliente().getDocumento());
 
             cs.execute();
-            System.out.println("✅ Asistencia actualizada: " + entity.getIdAsistencia());
+            System.out.println("Asistencia actualizada: " + entity.getIdAsistencia());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar asistencia: " + e.getMessage());
+            System.err.println("Error al actualizar asistencia: " + e.getMessage());
             throw e;
         }
     }
@@ -241,10 +241,10 @@ public class AsistenciaRepositoryImpl implements  AsistenciaRepository {
 
             cs.setInt(1, id);
             cs.execute();
-            System.out.println("✅ Asistencia eliminada: " + id);
+            System.out.println("Asistencia eliminada: " + id);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar asistencia: " + e.getMessage());
+            System.err.println("Error al eliminar asistencia: " + e.getMessage());
             throw e;
         }
     }

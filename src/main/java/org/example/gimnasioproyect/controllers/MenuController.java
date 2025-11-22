@@ -25,6 +25,9 @@ public class MenuController {
     @FXML private Button btnPerfil;
     @FXML private Button btnCerrarSesion;
     @FXML private Button btnNotificaciones;
+    private VBox opcionesAvanzadasContainer;
+    private Button btnMostrarMasOpciones;
+    private boolean opcionesAvanzadasVisibles = false;
 
     private LoginService loginService;
     private Personal usuarioActual;
@@ -96,13 +99,74 @@ public class MenuController {
         agregarMenuItem("📊  Dashboard", this::handleDashboard);
         agregarMenuItem("👥  Clientes", this::handleClientes);
         agregarMenuItem("💳  Membresías", this::handleMembresias);
-        agregarMenuItem("🏋️  Entrenadores", this::handleEntrenadores);
-        agregarMenuItem("📋  Rutinas", this::handleRutinas);
         agregarMenuItem("✅  Asistencias", this::handleAsistencias);
-        agregarMenuItem("👔  Personal", this::handlePersonal);
-        agregarMenuItem("📈  Reportes", this::handleReportes);
-        agregarMenuItem("📱  Plantillas Telegram", this::handlePlantillasTelegram);
-        agregarMenuItem("📨  Historial Notificaciones", this::handleHistorialNotificaciones);
+
+        btnMostrarMasOpciones = new Button("▼  Más opciones");
+        btnMostrarMasOpciones.getStyleClass().addAll("menu-item", "menu-item-expandible");
+        btnMostrarMasOpciones.setMaxWidth(Double.MAX_VALUE);
+        btnMostrarMasOpciones.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        btnMostrarMasOpciones.setOnAction(e -> toggleOpcionesAvanzadas());
+        menuContainer.getChildren().add(btnMostrarMasOpciones);
+
+        opcionesAvanzadasContainer = new VBox(5);
+        opcionesAvanzadasContainer.setManaged(false);
+        opcionesAvanzadasContainer.setVisible(false);
+        opcionesAvanzadasContainer.getStyleClass().add("opciones-avanzadas");
+
+        agregarMenuItemAvanzado("🏋️  Entrenadores", this::handleEntrenadores);
+        agregarMenuItemAvanzado("📋  Rutinas", this::handleRutinas);
+        agregarMenuItemAvanzado("👔  Personal", this::handlePersonal);
+        agregarMenuItemAvanzado("📈  Reportes", this::handleReportes);
+        agregarMenuItemAvanzado("📱  Plantillas Telegram", this::handlePlantillasTelegram);
+        agregarMenuItemAvanzado("📨  Historial Notificaciones", this::handleHistorialNotificaciones);
+
+        menuContainer.getChildren().add(opcionesAvanzadasContainer);
+    }
+
+    private void agregarMenuItemAvanzado(String texto, Runnable accion) {
+        Button btn = new Button(texto);
+        btn.getStyleClass().addAll("menu-item", "menu-item-secundario");
+        btn.setMaxWidth(Double.MAX_VALUE);
+        btn.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        btn.setOnAction(e -> accion.run());
+        opcionesAvanzadasContainer.getChildren().add(btn);
+    }
+
+    private void toggleOpcionesAvanzadas() {
+        opcionesAvanzadasVisibles = !opcionesAvanzadasVisibles;
+
+        if (opcionesAvanzadasVisibles) {
+            btnMostrarMasOpciones.setText("▲  Menos opciones");
+            expandirOpciones();
+        } else {
+            btnMostrarMasOpciones.setText("▼  Más opciones");
+            colapsarOpciones();
+        }
+    }
+
+    private void expandirOpciones() {
+        opcionesAvanzadasContainer.setVisible(true);
+        opcionesAvanzadasContainer.setManaged(true);
+
+        javafx.animation.FadeTransition fade = new javafx.animation.FadeTransition(
+                javafx.util.Duration.millis(300), opcionesAvanzadasContainer
+        );
+        fade.setFromValue(0.0);
+        fade.setToValue(1.0);
+        fade.play();
+    }
+
+    private void colapsarOpciones() {
+        javafx.animation.FadeTransition fade = new javafx.animation.FadeTransition(
+                javafx.util.Duration.millis(200), opcionesAvanzadasContainer
+        );
+        fade.setFromValue(1.0);
+        fade.setToValue(0.0);
+        fade.setOnFinished(e -> {
+            opcionesAvanzadasContainer.setVisible(false);
+            opcionesAvanzadasContainer.setManaged(false);
+        });
+        fade.play();
     }
 
     private void cargarMenuEntrenador() {
@@ -128,7 +192,6 @@ public class MenuController {
         btn.setOnAction(e -> accion.run());
         menuContainer.getChildren().add(btn);
     }
-
 
     private void mostrarLoading(boolean mostrar) {
         if (loadingPane != null) {

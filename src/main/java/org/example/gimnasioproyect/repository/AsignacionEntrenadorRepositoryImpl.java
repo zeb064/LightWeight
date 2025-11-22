@@ -19,9 +19,9 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
     public AsignacionEntrenadorRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - AsignacionEntrenadorRepository");
+            System.out.println("Conexión a BD probada exitosamente - AsignacionEntrenadorRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }
@@ -42,11 +42,14 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
 
             cs.execute();
-            System.out.println("✅ Entrenador asignado exitosamente al cliente: " +
+            System.out.println("Entrenador asignado exitosamente al cliente: " +
                     entity.getCliente().getDocumento());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar asignación entrenador: " + e.getMessage());
+            System.err.println("Error al guardar asignación entrenador: " + e.getMessage());
+            if(e.getErrorCode() == 20014 ){
+                throw new IllegalArgumentException("El entrenador no puede tener mas de 10 clientes asignador");
+            }
             throw e;
         }
     }
@@ -70,7 +73,7 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar asignación entrenador: " + e.getMessage());
+            System.err.println("Error al buscar asignación entrenador: " + e.getMessage());
             throw e;
         }
     }
@@ -94,7 +97,7 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar asignación activa: " + e.getMessage());
+            System.err.println("Error al buscar asignación activa: " + e.getMessage());
             throw e;
         }
     }
@@ -117,7 +120,7 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar asignaciones del cliente: " + e.getMessage());
+            System.err.println("Error al buscar asignaciones del cliente: " + e.getMessage());
             throw e;
         }
 
@@ -142,7 +145,7 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar clientes del entrenador: " + e.getMessage());
+            System.err.println("Error al buscar clientes del entrenador: " + e.getMessage());
             throw e;
         }
 
@@ -167,7 +170,7 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar clientes activos del entrenador: " + e.getMessage());
+            System.err.println("Error al buscar clientes activos del entrenador: " + e.getMessage());
             throw e;
         }
 
@@ -191,7 +194,7 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar asignaciones entrenador: " + e.getMessage());
+            System.err.println("Error al listar asignaciones entrenador: " + e.getMessage());
             throw e;
         }
 
@@ -214,10 +217,10 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
 
             cs.execute();
-            System.out.println("✅ Asignación entrenador actualizada: " + entity.getIdEntrenadorCliente());
+            System.out.println("Asignación entrenador actualizada: " + entity.getIdEntrenadorCliente());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar asignación entrenador: " + e.getMessage());
+            System.err.println("Error al actualizar asignación entrenador: " + e.getMessage());
             throw e;
         }
     }
@@ -231,10 +234,10 @@ public class AsignacionEntrenadorRepositoryImpl implements AsignacionEntrenadorR
 
             cs.setInt(1, id);
             cs.execute();
-            System.out.println("✅ Asignación entrenador eliminada: " + id);
+            System.out.println("Asignación entrenador eliminada: " + id);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar asignación entrenador: " + e.getMessage());
+            System.err.println("Error al eliminar asignación entrenador: " + e.getMessage());
             throw e;
         }
     }

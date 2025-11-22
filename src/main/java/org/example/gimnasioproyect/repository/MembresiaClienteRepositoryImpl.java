@@ -41,11 +41,11 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
 
             cs.execute();
-            System.out.println("✅ Membresía asignada exitosamente al cliente: " +
+            System.out.println("Membresía asignada exitosamente al cliente: " +
                     entity.getCliente().getDocumento());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al guardar membresía cliente: " + e.getMessage());
+            System.err.println("Error al guardar membresía cliente: " + e.getMessage());
             throw e;
         }
     }
@@ -69,7 +69,7 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar membresía cliente: " + e.getMessage());
+            System.err.println("Error al buscar membresía cliente: " + e.getMessage());
             throw e;
         }
     }
@@ -93,7 +93,7 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
             return Optional.empty();
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar membresía activa: " + e.getMessage());
+            System.err.println("Error al buscar membresía activa: " + e.getMessage());
             throw e;
         }
     }
@@ -116,7 +116,7 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar membresías del cliente: " + e.getMessage());
+            System.err.println("Error al buscar membresías del cliente: " + e.getMessage());
             throw e;
         }
 
@@ -141,7 +141,7 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar membresías próximas a vencer: " + e.getMessage());
+            System.err.println("Error al buscar membresías próximas a vencer: " + e.getMessage());
             throw e;
         }
 
@@ -165,7 +165,7 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al buscar membresías vencidas: " + e.getMessage());
+            System.err.println("Error al buscar membresías vencidas: " + e.getMessage());
             throw e;
         }
 
@@ -189,7 +189,7 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
             }
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al listar membresías cliente: " + e.getMessage());
+            System.err.println("Error al listar membresías cliente: " + e.getMessage());
             throw e;
         }
 
@@ -212,10 +212,10 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
                     Date.valueOf(entity.getFechaFinalizacion()) : null);
 
             cs.execute();
-            System.out.println("✅ Membresía cliente actualizada: " + entity.getIdMembresiaCliente());
+            System.out.println("Membresía cliente actualizada: " + entity.getIdMembresiaCliente());
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al actualizar membresía cliente: " + e.getMessage());
+            System.err.println("Error al actualizar membresía cliente: " + e.getMessage());
             throw e;
         }
     }
@@ -229,10 +229,10 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
 
             cs.setInt(1, id);
             cs.execute();
-            System.out.println("✅ Membresía cliente eliminada: " + id);
+            System.out.println("Membresía cliente eliminada: " + id);
 
         } catch (SQLException e) {
-            System.err.println("❌ Error al eliminar membresía cliente: " + e.getMessage());
+            System.err.println("Error al eliminar membresía cliente: " + e.getMessage());
             throw e;
         }
     }

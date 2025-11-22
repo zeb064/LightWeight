@@ -194,20 +194,20 @@
                         </Label>
 
                         <!-- Simulación de mensaje de Telegram -->
-                        <VBox spacing="10" style="-fx-background-color: #1e2124; -fx-padding: 15; -fx-background-radius: 10;">
+                        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
                             <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Text text="🤖" style="-fx-fill: white;">
+                                <Text text="🤖" style="-fx-fill: #2c3e50;">
                                     <font>
                                         <Font size="20.0"/>
                                     </font>
                                 </Text>
                                 <VBox>
-                                    <Text text="LightWeight Bot" style="-fx-fill: white;">
+                                    <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
                                         <font>
                                             <Font name="System Bold" size="13.0"/>
                                         </font>
                                     </Text>
-                                    <Text text="Bot" style="-fx-fill: #8e9297;">
+                                    <Text text="Bot" style="-fx-fill: #7f8c8d;">
                                         <font>
                                             <Font size="11.0"/>
                                         </font>
@@ -215,15 +215,15 @@
                                 </VBox>
                             </HBox>
 
-                            <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
+                            <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
 
                             <TextArea fx:id="txtVistaPreviaBienvenida" wrapText="true" editable="false"
                                       prefHeight="200"
-                                      style="-fx-control-inner-background: transparent; -fx-text-fill: white; -fx-background-color: transparent;">
+                                      style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
                             </TextArea>
 
                             <HBox spacing="5" alignment="CENTER_RIGHT">
-                                <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #8e9297;">
+                                <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
                                     <font>
                                         <Font size="10.0"/>
                                     </font>
@@ -320,20 +320,20 @@
                             </font>
                         </Label>
 
-                        <VBox spacing="10" style="-fx-background-color: #1e2124; -fx-padding: 15; -fx-background-radius: 10;">
+                        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
                             <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Text text="🤖" style="-fx-fill: white;">
+                                <Text text="🤖" style="-fx-fill: #2c3e50;">
                                     <font>
                                         <Font size="20.0"/>
                                     </font>
                                 </Text>
                                 <VBox>
-                                    <Text text="LightWeight Bot" style="-fx-fill: white;">
+                                    <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
                                         <font>
                                             <Font name="System Bold" size="13.0"/>
                                         </font>
                                     </Text>
-                                    <Text text="Bot" style="-fx-fill: #8e9297;">
+                                    <Text text="Bot" style="-fx-fill: #7f8c8d;">
                                         <font>
                                             <Font size="11.0"/>
                                         </font>
@@ -341,15 +341,15 @@
                                 </VBox>
                             </HBox>
 
-                            <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
+                            <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
 
                             <TextArea fx:id="txtVistaPreviaVenceProno" wrapText="true" editable="false"
                                       prefHeight="200"
-                                      style="-fx-control-inner-background: transparent; -fx-text-fill: white; -fx-background-color: transparent;">
+                                      style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
                             </TextArea>
 
                             <HBox spacing="5" alignment="CENTER_RIGHT">
-                                <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #8e9297;">
+                                <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
                                     <font>
                                         <Font size="10.0"/>
                                     </font>
@@ -440,20 +440,20 @@
                             </font>
                         </Label>
 
-                        <VBox spacing="10" style="-fx-background-color: #1e2124; -fx-padding: 15; -fx-background-radius: 10;">
+                        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
                             <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Text text="🤖" style="-fx-fill: white;">
+                                <Text text="🤖" style="-fx-fill: #2c3e50;">
                                     <font>
                                         <Font size="20.0"/>
                                     </font>
                                 </Text>
                                 <VBox>
-                                    <Text text="LightWeight Bot" style="-fx-fill: white;">
+                                    <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
                                         <font>
                                             <Font name="System Bold" size="13.0"/>
                                         </font>
                                     </Text>
-                                    <Text text="Bot" style="-fx-fill: #8e9297;">
+                                    <Text text="Bot" style="-fx-fill: #7f8c8d;">
                                         <font>
                                             <Font size="11.0"/>
                                         </font>
@@ -461,15 +461,15 @@
                                 </VBox>
                             </HBox>
 
-                            <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
+                            <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
 
                             <TextArea fx:id="txtVistaPreviaVencido" wrapText="true" editable="false"
                                       prefHeight="200"
-                                      style="-fx-control-inner-background: transparent; -fx-text-fill: white; -fx-background-color: transparent;">
+                                      style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
                             </TextArea>
 
                             <HBox spacing="5" alignment="CENTER_RIGHT">
-                                <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #8e9297;">
+                                <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
                                     <font>
                                         <Font size="10.0"/>
                                     </font>
