@@ -19,38 +19,40 @@ import java.util.Optional;
 
 public class GestionPlantillasController {
 
-    // === Labels de Estado ===
     @FXML private Text lblEstadoBot;
     @FXML private Text lblEstadoBotTexto;
     @FXML private Text lblHoraRevision;
     @FXML private Text lblDiasAnticipacion;
-
-    // === Tab: BIENVENIDA ===
     @FXML private CheckBox chkActivoBienvenida;
     @FXML private TextArea txtBienvenida;
     @FXML private TextArea txtVistaPreviaBienvenida;
-
-    // === Tab: VENCE_PRONTO ===
     @FXML private CheckBox chkActivoVenceProno;
     @FXML private TextArea txtVenceProno;
     @FXML private TextArea txtVistaPreviaVenceProno;
-
-    // === Tab: VENCIDO ===
     @FXML private CheckBox chkActivoVencido;
     @FXML private TextArea txtVencido;
     @FXML private TextArea txtVistaPreviaVencido;
+    @FXML private CheckBox chkActivoInactividad;
+    @FXML private TextArea txtInactividad;
+    @FXML private TextArea txtVistaPreviaInactividad;
+    @FXML private CheckBox chkActivoRutinaActualizada;
+    @FXML private TextArea txtRutinaActualizada;
+    @FXML private TextArea txtVistaPreviaRutinaActualizada;
+    @FXML private CheckBox chkActivoNuevoEntrenador;
+    @FXML private TextArea txtNuevoEntrenador;
+    @FXML private TextArea txtVistaPreviaNuevoEntrenador;
 
-    // === Servicios ===
     private MensajeTelegramService mensajeTelegramService;
     private TelegramBotService telegramBotService;
     private TelegramConfig telegramConfig;
 
-    // === IDs de Plantillas ===
     private Integer idBienvenida;
     private Integer idVenceProno;
     private Integer idVencido;
+    private Integer idInactividad;
+    private Integer idRutinaActualizada;
+    private Integer idNuevoEntrenador;
 
-    // === Plantillas Originales (para restaurar) ===
     private static final String PLANTILLA_ORIGINAL_BIENVENIDA =
             "¡Hola {nombre}! 👋\n\n" +
                     "Bienvenido a *LightWeight Gym* 💪\n\n" +
@@ -72,6 +74,29 @@ public class GestionPlantillasController {
                     "📅 *Fecha de vencimiento:* {fecha_fin}\n\n" +
                     "Para continuar entrenando, renueva tu membresía en recepción. 🏋️‍♂️\n\n" +
                     "¡Te esperamos! 💪";
+
+    private static final String PLANTILLA_ORIGINAL_INACTIVIDAD =
+            "😔 Hola {nombre},\n\n" +
+                    "Hemos notado que llevas *{dias_inactivo} días* sin asistir al gimnasio.\n" +
+                    "📅 *Última asistencia:* {ultima_asistencia}\n\n" +
+                    "¡Te extrañamos! 💪\n" +
+                    "Recuerda que la constancia es clave para alcanzar tus objetivos.\n\n" +
+                    "¿Algún problema con tu rutina? Habla con tu entrenador.";
+
+    private static final String PLANTILLA_ORIGINAL_RUTINA_ACTUALIZADA =
+            "🎯 ¡Hola {nombre}!\n\n" +
+                    "Tu entrenador *{nombre_entrenador}* ha actualizado tu rutina.\n\n" +
+                    "📋 *Nuevo objetivo:* {objetivo}\n\n" +
+                    "Usa /mirutina para ver los detalles completos.\n\n" +
+                    "¡Es hora de entrenar con tu nueva rutina! 💪";
+
+    private static final String PLANTILLA_ORIGINAL_NUEVO_ENTRENADOR =
+            "👨‍🏫 ¡Hola {nombre}!\n\n" +
+                    "Te hemos asignado un entrenador personal.\n\n" +
+                    "*Entrenador:* {nombre_entrenador}\n" +
+                    "*Especialidad:* {especialidad}\n\n" +
+                    "Usa /mientrenador para ver su información de contacto.\n\n" +
+                    "¡Prepárate para llevar tu entrenamiento al siguiente nivel! 💪";
 
     @FXML
     public void initialize() {
@@ -115,7 +140,6 @@ public class GestionPlantillasController {
 
     private void cargarPlantillas() {
         try {
-            // Cargar BIENVENIDA
             Optional<MensajesTelegram> bienvenidaOpt =
                     mensajeTelegramService.obtenerMensajePorTipo("BIENVENIDA");
 
@@ -130,7 +154,6 @@ public class GestionPlantillasController {
                 actualizarVistaPreviaBienvenida();
             }
 
-            // Cargar VENCE_PRONTO
             Optional<MensajesTelegram> vencePronoOpt =
                     mensajeTelegramService.obtenerMensajePorTipo("VENCE_PRONTO");
 
@@ -145,7 +168,6 @@ public class GestionPlantillasController {
                 actualizarVistaPreviaVenceProno();
             }
 
-            // Cargar VENCIDO
             Optional<MensajesTelegram> vencidoOpt =
                     mensajeTelegramService.obtenerMensajePorTipo("VENCIDO");
 
@@ -158,6 +180,50 @@ public class GestionPlantillasController {
             } else {
                 txtVencido.setText(PLANTILLA_ORIGINAL_VENCIDO);
                 actualizarVistaPreviaVencido();
+            }
+
+            Optional<MensajesTelegram> inactividadOpt =
+                    mensajeTelegramService.obtenerMensajePorTipo("INACTIVIDAD");
+
+            if (inactividadOpt.isPresent()) {
+                MensajesTelegram inactividad = inactividadOpt.get();
+                idInactividad = inactividad.getIdMensaje();
+                txtInactividad.setText(inactividad.getContenido());
+                chkActivoInactividad.setSelected(inactividad.isActivo());
+                actualizarVistaPreviaInactividad();
+            } else {
+                txtInactividad.setText(PLANTILLA_ORIGINAL_INACTIVIDAD);
+                actualizarVistaPreviaInactividad();
+            }
+
+            // Cargar RUTINA_ACTUALIZADA
+            Optional<MensajesTelegram> rutinaActualizadaOpt =
+                    mensajeTelegramService.obtenerMensajePorTipo("RUTINA_ACTUALIZADA");
+
+            if (rutinaActualizadaOpt.isPresent()) {
+                MensajesTelegram rutinaActualizada = rutinaActualizadaOpt.get();
+                idRutinaActualizada = rutinaActualizada.getIdMensaje();
+                txtRutinaActualizada.setText(rutinaActualizada.getContenido());
+                chkActivoRutinaActualizada.setSelected(rutinaActualizada.isActivo());
+                actualizarVistaPreviaRutinaActualizada();
+            } else {
+                txtRutinaActualizada.setText(PLANTILLA_ORIGINAL_RUTINA_ACTUALIZADA);
+                actualizarVistaPreviaRutinaActualizada();
+            }
+
+            // Cargar NUEVO_ENTRENADOR
+            Optional<MensajesTelegram> nuevoEntrenadorOpt =
+                    mensajeTelegramService.obtenerMensajePorTipo("NUEVO_ENTRENADOR");
+
+            if (nuevoEntrenadorOpt.isPresent()) {
+                MensajesTelegram nuevoEntrenador = nuevoEntrenadorOpt.get();
+                idNuevoEntrenador = nuevoEntrenador.getIdMensaje();
+                txtNuevoEntrenador.setText(nuevoEntrenador.getContenido());
+                chkActivoNuevoEntrenador.setSelected(nuevoEntrenador.isActivo());
+                actualizarVistaPreviaNuevoEntrenador();
+            } else {
+                txtNuevoEntrenador.setText(PLANTILLA_ORIGINAL_NUEVO_ENTRENADOR);
+                actualizarVistaPreviaNuevoEntrenador();
             }
 
         } catch (SQLException e) {
@@ -180,9 +246,23 @@ public class GestionPlantillasController {
         txtVencido.textProperty().addListener((obs, old, newVal) -> {
             actualizarVistaPreviaVencido();
         });
-    }
 
-    // ==================== HANDLERS: BIENVENIDA ====================
+        txtInactividad.textProperty().addListener((obs, old, newVal) -> {
+            actualizarVistaPreviaInactividad();
+        });
+
+        txtRutinaActualizada.textProperty().addListener((obs, old, newVal) -> {
+            actualizarVistaPreviaRutinaActualizada();
+        });
+
+        txtNuevoEntrenador.textProperty().addListener((obs, old, newVal) -> {
+            actualizarVistaPreviaNuevoEntrenador();
+        });
+
+//        txtInactividad.textProperty().addListener((obs, old, newVal) -> actualizarVistaPreviaInactividad());
+//        txtRutinaActualizada.textProperty().addListener((obs, old, newVal) -> actualizarVistaPreviaRutinaActualizada());
+//        txtNuevoEntrenador.textProperty().addListener((obs, old, newVal) -> actualizarVistaPreviaNuevoEntrenador());
+    }
 
     @FXML
     private void handleGuardarBienvenida() {
@@ -223,8 +303,6 @@ public class GestionPlantillasController {
         txtVistaPreviaBienvenida.setText(vistaPrevia);
     }
 
-    // ==================== HANDLERS: VENCE_PRONTO ====================
-
     @FXML
     private void handleGuardarVenceProno() {
         guardarPlantilla("VENCE_PRONTO", idVenceProno,
@@ -263,8 +341,6 @@ public class GestionPlantillasController {
         txtVistaPreviaVenceProno.setText(vistaPrevia);
     }
 
-    // ==================== HANDLERS: VENCIDO ====================
-
     @FXML
     private void handleGuardarVencido() {
         guardarPlantilla("VENCIDO", idVencido,
@@ -302,7 +378,119 @@ public class GestionPlantillasController {
         txtVistaPreviaVencido.setText(vistaPrevia);
     }
 
-    // ==================== MÉTODOS AUXILIARES ====================
+    @FXML
+    private void handleGuardarInactividad() {
+        guardarPlantilla("INACTIVIDAD", idInactividad,
+                txtInactividad.getText(), chkActivoInactividad.isSelected());
+    }
+
+    @FXML
+    private void handleRestaurarInactividad() {
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Restaurar Plantilla");
+        confirmacion.setHeaderText("¿Restaurar plantilla original?");
+        confirmacion.setContentText("Se perderán los cambios actuales");
+
+        confirmacion.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                txtInactividad.setText(PLANTILLA_ORIGINAL_INACTIVIDAD);
+                actualizarVistaPreviaInactividad();
+            }
+        });
+    }
+
+    @FXML
+    private void handleActualizarVistaPreviaInactividad() {
+        actualizarVistaPreviaInactividad();
+    }
+
+    private void actualizarVistaPreviaInactividad() {
+        Map<String, String> variables = new HashMap<>();
+        variables.put("nombre", "Pedro López");
+        variables.put("dias_inactivo", "7");
+        variables.put("ultima_asistencia", LocalDate.now().minusDays(7).toString());
+
+        String vistaPrevia = PlantillaProcesador.procesarPlantilla(
+                txtInactividad.getText(), variables);
+
+        txtVistaPreviaInactividad.setText(vistaPrevia);
+    }
+
+    @FXML
+    private void handleGuardarRutinaActualizada() {
+        guardarPlantilla("RUTINA_ACTUALIZADA", idRutinaActualizada,
+                txtRutinaActualizada.getText(), chkActivoRutinaActualizada.isSelected());
+    }
+
+    @FXML
+    private void handleRestaurarRutinaActualizada() {
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Restaurar Plantilla");
+        confirmacion.setHeaderText("¿Restaurar plantilla original?");
+        confirmacion.setContentText("Se perderán los cambios actuales");
+
+        confirmacion.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                txtRutinaActualizada.setText(PLANTILLA_ORIGINAL_RUTINA_ACTUALIZADA);
+                actualizarVistaPreviaRutinaActualizada();
+            }
+        });
+    }
+
+    @FXML
+    private void handleActualizarVistaPreviaRutinaActualizada() {
+        actualizarVistaPreviaRutinaActualizada();
+    }
+
+    private void actualizarVistaPreviaRutinaActualizada() {
+        Map<String, String> variables = new HashMap<>();
+        variables.put("nombre", "Ana Martínez");
+        variables.put("nombre_entrenador", "Carlos Rodríguez");
+        variables.put("objetivo", "Ganancia de masa muscular");
+
+        String vistaPrevia = PlantillaProcesador.procesarPlantilla(
+                txtRutinaActualizada.getText(), variables);
+
+        txtVistaPreviaRutinaActualizada.setText(vistaPrevia);
+    }
+
+    @FXML
+    private void handleGuardarNuevoEntrenador() {
+        guardarPlantilla("NUEVO_ENTRENADOR", idNuevoEntrenador,
+                txtNuevoEntrenador.getText(), chkActivoNuevoEntrenador.isSelected());
+    }
+
+    @FXML
+    private void handleRestaurarNuevoEntrenador() {
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Restaurar Plantilla");
+        confirmacion.setHeaderText("¿Restaurar plantilla original?");
+        confirmacion.setContentText("Se perderán los cambios actuales");
+
+        confirmacion.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                txtNuevoEntrenador.setText(PLANTILLA_ORIGINAL_NUEVO_ENTRENADOR);
+                actualizarVistaPreviaNuevoEntrenador();
+            }
+        });
+    }
+
+    @FXML
+    private void handleActualizarVistaPreviaNuevoEntrenador() {
+        actualizarVistaPreviaNuevoEntrenador();
+    }
+
+    private void actualizarVistaPreviaNuevoEntrenador() {
+        Map<String, String> variables = new HashMap<>();
+        variables.put("nombre", "Luis Fernández");
+        variables.put("nombre_entrenador", "María González");
+        variables.put("especialidad", "Entrenamiento funcional");
+
+        String vistaPrevia = PlantillaProcesador.procesarPlantilla(
+                txtNuevoEntrenador.getText(), variables);
+
+        txtVistaPreviaNuevoEntrenador.setText(vistaPrevia);
+    }
 
     private void guardarPlantilla(String tipo, Integer id, String contenido, boolean activo) {
         // Validaciones
@@ -356,16 +544,25 @@ public class GestionPlantillasController {
                         contenido.contains("{tipo_membresia}") &&
                         contenido.contains("{fecha_inicio}") &&
                         contenido.contains("{fecha_fin}");
-
             case "VENCE_PRONTO":
                 return contenido.contains("{nombre}") &&
                         contenido.contains("{dias}") &&
                         contenido.contains("{fecha_fin}");
-
             case "VENCIDO":
                 return contenido.contains("{nombre}") &&
                         contenido.contains("{fecha_fin}");
-
+            case "INACTIVIDAD_7_DIAS":
+                return contenido.contains("{nombre}") &&
+                        contenido.contains("{dias_inactivo}") &&
+                        contenido.contains("{ultima_asistencia}");
+            case "RUTINA_ACTUALIZADA":
+                return contenido.contains("{nombre}") &&
+                        contenido.contains("{nombre_entrenador}") &&
+                        contenido.contains("{objetivo}");
+            case "NUEVO_ENTRENADOR":
+                return contenido.contains("{nombre}") &&
+                        contenido.contains("{nombre_entrenador}") &&
+                        contenido.contains("{especialidad}");
             default:
                 return false;
         }

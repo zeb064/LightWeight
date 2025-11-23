@@ -25,20 +25,17 @@ import java.util.stream.Collectors;
 
 public class HistorialNotificacionesController {
 
-    // === Labels de Estadísticas ===
     @FXML private Text lblTotalEnviados;
     @FXML private Text lblExitosos;
     @FXML private Text lblFallidos;
     @FXML private Text lblHoy;
 
-    // === Filtros ===
     @FXML private TextField txtBuscarCliente;
     @FXML private ComboBox<String> cmbTipoMensaje;
     @FXML private ComboBox<String> cmbEstado;
     @FXML private DatePicker dpFechaDesde;
     @FXML private DatePicker dpFechaHasta;
 
-    // === Tabla ===
     @FXML private TableView<HistorialMensajeTelegram> tableHistorial;
     @FXML private TableColumn<HistorialMensajeTelegram, String> colFecha;
     @FXML private TableColumn<HistorialMensajeTelegram, String> colTipo;
@@ -50,12 +47,10 @@ public class HistorialNotificacionesController {
 
     @FXML private Label lblResultados;
 
-    // === Botones ===
     @FXML private Button btnVerDetalle;
     @FXML private Button btnReenviar;
     @FXML private Button btnExportar;
 
-    // === Servicios ===
     private HistorialNotificacionService historialService;
     private NotificacionService notificacionService;
     private TelegramBotService telegramBotService;
@@ -185,9 +180,14 @@ public class HistorialNotificacionesController {
     }
 
     private void configurarComboBoxes() {
-        // Tipo de Mensaje
         cmbTipoMensaje.setItems(FXCollections.observableArrayList(
-                "TODOS", "BIENVENIDA", "VENCE_PRONTO", "VENCIDO"
+                "TODOS",
+                "BIENVENIDA",
+                "VENCE_PRONTO",
+                "VENCIDO",
+                "INACTIVIDAD_7_DIAS",
+                "RUTINA_ACTUALIZADA",
+                "NUEVO_ENTRENADOR"
         ));
         cmbTipoMensaje.setValue("TODOS");
 
@@ -470,11 +470,16 @@ public class HistorialNotificacionesController {
                 return "⚠️ Próximo a Vencer";
             case "VENCIDO":
                 return "❌ Vencido";
+            case "INACTIVIDAD_7_DIAS":
+                return "😔 Inactividad";
+            case "RUTINA_ACTUALIZADA":
+                return "🎯 Rutina Actualizada";
+            case "NUEVO_ENTRENADOR":
+                return "👨‍🏫 Nuevo Entrenador";
             default:
                 return tipo;
         }
     }
-
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
         Alert alerta = new Alert(tipo);
         alerta.setTitle(titulo);
@@ -482,4 +487,5 @@ public class HistorialNotificacionesController {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
+
 }

@@ -78,29 +78,6 @@ public class AsistenciaService {
         return asistenciaRepository.findByCliente(documentoCliente);
     }
 
-//    //Obtiene las asistencias de hoy
-//    public List<Asistencias> obtenerAsistenciasHoy() throws SQLException {
-//        return asistenciaRepository.findByFecha(LocalDate.now());
-//    }
-
-    //Obtiene las asistencias por fecha específica
-//    public List<Asistencias> obtenerAsistenciasPorFecha(LocalDate fecha) throws SQLException {
-//        if (fecha == null) {
-//            throw new IllegalArgumentException("La fecha es obligatoria");
-//        }
-//        return asistenciaRepository.findByFecha(fecha);
-//    }
-//
-//    // Obtiene las asistencias de un cliente en un rango de fechas
-//    public List<Asistencias> obtenerAsistenciasPorRango(String documentoCliente,
-//                                                       LocalDate fechaInicio,
-//                                                       LocalDate fechaFin) throws SQLException {
-//        Validador.validarDocumento(documentoCliente);
-//        Validador.validarRangoFechas(fechaInicio, fechaFin);
-//
-//        return asistenciaRepository.findByClienteAndFechaRange(documentoCliente, fechaInicio, fechaFin);
-//    }
-
     //Elimina una asistencia del sistema
     public void eliminarAsistencia(Integer idAsistencia) throws SQLException {
         if (idAsistencia == null) {

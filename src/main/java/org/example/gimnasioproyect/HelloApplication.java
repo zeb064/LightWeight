@@ -5,16 +5,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 import org.example.gimnasioproyect.Utilidades.ServiceFactory;
-import org.example.gimnasioproyect.Utilidades.TipoPersonal;
 import org.example.gimnasioproyect.confi.DatabaseConfig;
 import org.example.gimnasioproyect.confi.OracleDatabaseConnection;
 import org.example.gimnasioproyect.controllers.LoginController;
-import org.example.gimnasioproyect.controllers.MenuController;
-import org.example.gimnasioproyect.model.Administradores;
-import org.example.gimnasioproyect.model.Personal;
 import org.example.gimnasioproyect.repository.*;
 import org.example.gimnasioproyect.services.*;
+import org.example.gimnasioproyect.services.LightWeightBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -22,6 +20,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import java.io.IOException;
 import java.sql.SQLException;
 
+//@Slf4j
 public class HelloApplication extends Application {
     private static Scene scene;
 
@@ -55,6 +54,16 @@ public class HelloApplication extends Application {
         System.out.println("Repositorios inicializados");
 
         //Services
+        MensajeTelegramService mensajeTelegramService = new MensajeTelegramService(
+                mensajeTelegramRepo
+        );
+        TelegramBotService telegramBotService = new TelegramBotService();
+        HistorialNotificacionService historialService = new HistorialNotificacionService(
+                historialMensajeTelegramRepo
+        );
+        NotificacionService notificacionService = new NotificacionService(
+                telegramBotService, mensajeTelegramService, historialMensajeTelegramRepo
+        );
         ClienteServices clienteService = new ClienteServices(clienteRepo, membresiaClienteRepo);
         BarrioService barrioService = new BarrioService(barrioRepo);
         MembresiaService membresiaService = new MembresiaService(membresiaRepo);
@@ -62,13 +71,13 @@ public class HelloApplication extends Application {
                 membresiaClienteRepo, clienteRepo, membresiaRepo
         );
         EntrenadorService entrenadorService = new EntrenadorService(
-                entrenadorRepo, asignacionEntrenadorRepo, clienteRepo, personalRepo
+                entrenadorRepo, asignacionEntrenadorRepo, clienteRepo, personalRepo, notificacionService
         );
         AsistenciaService asistenciaService = new AsistenciaService(
                 asistenciaRepo, clienteRepo, membresiaClienteRepo
         );
         RutinaService rutinaService = new RutinaService(
-                rutinaRepo, detalleRutinaRepo, rutinaAsignadaRepo, clienteRepo
+                rutinaRepo, detalleRutinaRepo, rutinaAsignadaRepo, clienteRepo, notificacionService
         );
         EstadisticaService estadisticaService = new EstadisticaService(
                 asistenciaRepo, membresiaClienteRepo, asignacionEntrenadorRepo,
@@ -81,17 +90,7 @@ public class HelloApplication extends Application {
         RecepcionistaService recepcionistaService = new RecepcionistaService(
                 recepcionistaRepo, personalRepo
         );
-        MensajeTelegramService mensajeTelegramService = new MensajeTelegramService(
-                mensajeTelegramRepo
-        );
-        TelegramBotService telegramBotService = new TelegramBotService(
-        );
-        NotificacionService notificacionService = new NotificacionService(
-                telegramBotService, mensajeTelegramService, historialMensajeTelegramRepo
-        );
-        HistorialNotificacionService historialService = new HistorialNotificacionService(
-                historialMensajeTelegramRepo
-        );
+
         LoginService loginService = new LoginService(personalRepo);
         System.out.println("Servicios inicializados");
 
@@ -100,7 +99,10 @@ public class HelloApplication extends Application {
             LightWeightBot bot = new LightWeightBot(
                     clienteRepo,
                     membresiaClienteService,
-                    notificacionService
+                    notificacionService,
+                    rutinaService,
+                    entrenadorService,
+                    estadisticaService
             );
             botsApi.registerBot(bot);
             System.out.println("Bot de Telegram registrado y en funcionamiento");
@@ -113,9 +115,17 @@ public class HelloApplication extends Application {
             tareaRevision.iniciar();
             System.out.println("Tarea de revisión de membresías iniciada");
 
-        } catch (TelegramApiException e) {
+            // Crear TareaRevisionInactividad
+            TareaRevisionInactividad tareaInactividad = new TareaRevisionInactividad(
+                    clienteRepo,
+                    asistenciaRepo,
+                    membresiaClienteRepo,
+                    notificacionService
+            );
+            tareaInactividad.iniciar();
+            System.out.println("Tarea de revisión de inactividad iniciada");
+        }   catch (TelegramApiException e){
             System.err.println("Error al inicializar bot: " + e.getMessage());
-            // Continuar sin bot si falla
         }
 
         ServiceFactory.getInstance().initializeServices(
@@ -155,7 +165,6 @@ public class HelloApplication extends Application {
 
     @Override
     public void stop() throws Exception {
-        // Detener la tarea de revisión al cerrar la aplicación
         if (ServiceFactory.getInstance().getTareaRevision() != null) {
             ServiceFactory.getInstance().getTareaRevision().detener();
         }

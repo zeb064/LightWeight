@@ -156,6 +156,29 @@ public class ClienteRepositoryImpl implements ClienteRepository {
     }
 
     @Override
+    public Optional<Clientes> findByChatId(String chatId) throws SQLException {
+        String sql = "{? = call PKG_CLIENTES.FN_BUSCAR_POR_CHAT_ID(?)}";
+
+        try (Connection conn = this.connection.connect();
+             CallableStatement cs = conn.prepareCall(sql)) {
+
+            cs.registerOutParameter(1, OracleTypes.CURSOR);
+            cs.setString(2, chatId);
+            cs.execute();
+
+            ResultSet rs = (ResultSet) cs.getObject(1);
+            if (rs.next()) {
+                return Optional.of(mapResultSetToCliente(rs));
+            }
+            return Optional.empty();
+
+        } catch (SQLException e) {
+            System.err.println("Error al buscar cliente por chatId: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
     public void update(Clientes entity) throws SQLException {
         String sql = "{call PKG_CLIENTES.PR_ACTUALIZAR_CLIENTE(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 

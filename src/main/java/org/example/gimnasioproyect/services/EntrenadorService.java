@@ -19,15 +19,18 @@ public class EntrenadorService {
     private final AsignacionEntrenadorRepository asignacionRepository;
     private final ClienteRepository clienteRepository;
     private final PersonalRepository personalRepository;
+    private final NotificacionService notificacionService;
 
     public EntrenadorService(EntrenadorRepository entrenadorRepository,
                              AsignacionEntrenadorRepository asignacionRepository,
                              ClienteRepository clienteRepository,
-                             PersonalRepository personalRepository) {
+                             PersonalRepository personalRepository,
+                             NotificacionService notificacionService) {
         this.entrenadorRepository = entrenadorRepository;
         this.asignacionRepository = asignacionRepository;
         this.clienteRepository = clienteRepository;
         this.personalRepository = personalRepository;
+        this.notificacionService = notificacionService;
     }
 
     // Registra un nuevo entrenador en el sistema
@@ -116,6 +119,19 @@ public class EntrenadorService {
         asignacion.setEntrenador(entrenadorOpt.get());
         asignacion.setCliente(clienteOpt.get());
         asignacion.setFechaAsignacion(LocalDate.now());
+
+        try {
+            if (clienteOpt.get().getChatId() != null && !clienteOpt.get().getChatId().trim().isEmpty()) {
+                notificacionService.enviarNotificacion(
+                        "NUEVO_ENTRENADOR",
+                        clienteOpt.get(),
+                        null,
+                        asignacion
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("⚠Error al enviar notificación de entrenador: " + e.getMessage());
+        }
 
         asignacionRepository.save(asignacion);
     }

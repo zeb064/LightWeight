@@ -83,8 +83,6 @@ public class ClienteServices {
             throw new IllegalArgumentException("El cliente con documento " + documento + " tiene membresías activas y no puede ser eliminado.");
         }
 
-
-
         clienteRepository.delete(documento);
     }
 
@@ -98,7 +96,6 @@ public class ClienteServices {
     }
 
     //Obtiene clientes por barrio
-
     public List<Clientes> obtenerClientesPorBarrio(Integer idBarrio) throws SQLException {
         if (idBarrio == null) {
             throw new IllegalArgumentException("El ID del barrio es obligatorio");
@@ -107,7 +104,6 @@ public class ClienteServices {
     }
 
     //Calcula la edad de un cliente
-
     public int calcularEdadCliente(String documento) throws SQLException {
         Optional<Clientes> clienteOpt = buscarClientePorDocumento(documento);
         if (!clienteOpt.isPresent()) {
@@ -118,8 +114,15 @@ public class ClienteServices {
         return CalculadoraFechas.calcularEdad(cliente.getFechaNacimiento());
     }
 
-    //Valida todos los datos requeridos de un cliente
+//    public Optional<Clientes>(String chat_id) throws SQLException {
+//        if (chat_id == null) {
+//            throw new IllegalArgumentException("El ID del barrio es obligatorio");
+//        } else {
+//            return clienteRepository.findByChatId(chat_id);
+//        }
+//    }
 
+    //Valida todos los datos requeridos de un cliente
     private void validarDatosCliente(Clientes cliente) {
         if (cliente == null) {
             throw new IllegalArgumentException("El cliente no puede ser nulo");

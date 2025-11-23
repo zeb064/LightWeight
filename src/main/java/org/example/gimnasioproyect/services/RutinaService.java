@@ -25,15 +25,18 @@ public class RutinaService {
     private final DetalleRutinaRepository detalleRutinaRepository;
     private final RutinaAsignadaRepository rutinaAsignadaRepository;
     private final ClienteRepository clienteRepository;
+    private final NotificacionService notificacionService;
 
     public RutinaService(RutinaRepository rutinaRepository,
                          DetalleRutinaRepository detalleRutinaRepository,
                          RutinaAsignadaRepository rutinaAsignadaRepository,
-                         ClienteRepository clienteRepository) {
+                         ClienteRepository clienteRepository,
+                         NotificacionService notificacionService) {
         this.rutinaRepository = rutinaRepository;
         this.detalleRutinaRepository = detalleRutinaRepository;
         this.rutinaAsignadaRepository = rutinaAsignadaRepository;
         this.clienteRepository = clienteRepository;
+        this.notificacionService = notificacionService;
     }
 
     //Crea una nueva rutina
@@ -112,6 +115,19 @@ public class RutinaService {
         rutinaAsignada.setCliente(clienteOpt.get());
         rutinaAsignada.setFechaAsignacion(fechaInicio);
         rutinaAsignada.setEstado(Constantes.RUTINA_ACTIVA);
+
+        try {
+            if (clienteOpt.get().getChatId() != null && !clienteOpt.get().getChatId().trim().isEmpty()) {
+                notificacionService.enviarNotificacion(
+                        "RUTINA_ACTUALIZADA",
+                        clienteOpt.get(),
+                        null,
+                        rutinaAsignada
+                );
+            }
+        } catch (Exception e) {
+            System.err.println("Error al enviar notificación de rutina: " + e.getMessage());
+        }
 
         rutinaAsignadaRepository.save(rutinaAsignada);
     }

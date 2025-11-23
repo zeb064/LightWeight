@@ -12,4 +12,6 @@ public interface ClienteRepository extends Repository<Clientes, String>{
     List<Clientes> findByNombre(String nombre) throws SQLException;
 
     List<Clientes> findByBarrio(Integer idBarrio) throws SQLException;
+
+    Optional<Clientes> findByChatId(String chatId) throws SQLException;
 }

@@ -1,6 +1,7 @@
 package org.example.gimnasioproyect.Utilidades;
 
 import org.example.gimnasioproyect.services.*;
+import org.example.gimnasioproyect.services.LightWeightBot;
 
 public class ServiceFactory {
     private static ServiceFactory instance;

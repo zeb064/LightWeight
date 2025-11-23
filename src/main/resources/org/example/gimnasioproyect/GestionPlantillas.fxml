@@ -38,7 +38,6 @@
 
         <Region HBox.hgrow="ALWAYS"/>
 
-        <!-- Botón Probar Bot -->
         <Button text="🧪 Probar Conexión" onAction="#handleProbarBot"
                 style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 10 20;">
             <font>
@@ -111,392 +110,765 @@
     </HBox>
 
     <!-- Pestañas de Plantillas -->
-    <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS"
-             style="-fx-background-color: #34495e; -fx-background-radius: 10;">
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE"
+                 style="-fx-background-color: #34495e; -fx-background-radius: 10;">
 
-        <!-- Tab: BIENVENIDA -->
-        <Tab text="🎉 Bienvenida">
-            <VBox spacing="15" style="-fx-padding: 20;">
-                <!-- Header de la plantilla -->
-                <HBox alignment="CENTER_LEFT" spacing="15">
-                    <VBox HBox.hgrow="ALWAYS">
-                        <Text text="Mensaje de Bienvenida" style="-fx-fill: #ecf0f1;">
-                            <font>
-                                <Font name="System Bold" size="16.0"/>
-                            </font>
-                        </Text>
-                        <Text text="Se envía cuando un cliente se registra en Telegram"
-                              style="-fx-fill: #95a5a6;">
-                            <font>
-                                <Font size="12.0"/>
-                            </font>
-                        </Text>
-                    </VBox>
+            <!-- ========== PLANTILLAS DE MEMBRESÍA ========== -->
 
-                    <!-- Switch Activar/Desactivar -->
-                    <HBox spacing="10" alignment="CENTER_RIGHT">
-                        <Label text="Activo" style="-fx-text-fill: #bdc3c7;"/>
-                        <CheckBox fx:id="chkActivoBienvenida" selected="true"/>
-                    </HBox>
-                </HBox>
-
-                <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
-
-                <!-- Editor -->
-                <HBox spacing="15" VBox.vgrow="ALWAYS">
-                    <!-- Área de edición -->
-                    <VBox spacing="10" HBox.hgrow="ALWAYS">
-                        <Label text="Contenido del Mensaje" style="-fx-text-fill: #ecf0f1;">
-                            <font>
-                                <Font name="System Bold" size="13.0"/>
-                            </font>
-                        </Label>
-                        <TextArea fx:id="txtBienvenida" wrapText="true" VBox.vgrow="ALWAYS"
-                                  style="-fx-control-inner-background: #2c3e50; -fx-text-fill: #ecf0f1; -fx-font-size: 13px; -fx-font-family: 'Courier New';">
-                        </TextArea>
-
-                        <!-- Variables disponibles -->
-                        <VBox spacing="5" style="-fx-background-color: rgba(52, 152, 219, 0.1); -fx-padding: 10; -fx-background-radius: 5;">
-                            <Text text="💡 Variables disponibles:" style="-fx-fill: #3498db;">
+            <!-- Tab 1: BIENVENIDA -->
+            <Tab text="🎉 Bienvenida">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <VBox HBox.hgrow="ALWAYS">
+                            <Text text="Mensaje de Bienvenida" style="-fx-fill: #ecf0f1;">
                                 <font>
-                                    <Font name="System Bold" size="12.0"/>
+                                    <Font name="System Bold" size="16.0"/>
                                 </font>
                             </Text>
-                            <Text text="{nombre} - Nombre completo del cliente" style="-fx-fill: #bdc3c7;">
+                            <Text text="Se envía cuando un cliente se registra en Telegram"
+                                  style="-fx-fill: #95a5a6;">
                                 <font>
-                                    <Font size="11.0"/>
-                                </font>
-                            </Text>
-                            <Text text="{tipo_membresia} - Tipo de membresía asignada" style="-fx-fill: #bdc3c7;">
-                                <font>
-                                    <Font size="11.0"/>
-                                </font>
-                            </Text>
-                            <Text text="{fecha_inicio} - Fecha de inicio de membresía" style="-fx-fill: #bdc3c7;">
-                                <font>
-                                    <Font size="11.0"/>
-                                </font>
-                            </Text>
-                            <Text text="{fecha_fin} - Fecha de finalización de membresía" style="-fx-fill: #bdc3c7;">
-                                <font>
-                                    <Font size="11.0"/>
+                                    <Font size="12.0"/>
                                 </font>
                             </Text>
                         </VBox>
-                    </VBox>
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Label text="Activo" style="-fx-text-fill: #bdc3c7;"/>
+                            <CheckBox fx:id="chkActivoBienvenida" selected="true"/>
+                        </HBox>
+                    </HBox>
 
-                    <!-- Vista Previa -->
-                    <VBox spacing="10" prefWidth="350">
-                        <Label text="Vista Previa" style="-fx-text-fill: #ecf0f1;">
-                            <font>
-                                <Font name="System Bold" size="13.0"/>
-                            </font>
-                        </Label>
+                    <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
 
-                        <!-- Simulación de mensaje de Telegram -->
-                        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
-                            <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Text text="🤖" style="-fx-fill: #2c3e50;">
-                                    <font>
-                                        <Font size="20.0"/>
-                                    </font>
-                                </Text>
-                                <VBox>
-                                    <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
-                                        <font>
-                                            <Font name="System Bold" size="13.0"/>
-                                        </font>
-                                    </Text>
-                                    <Text text="Bot" style="-fx-fill: #7f8c8d;">
-                                        <font>
-                                            <Font size="11.0"/>
-                                        </font>
-                                    </Text>
-                                </VBox>
-                            </HBox>
-
-                            <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
-
-                            <TextArea fx:id="txtVistaPreviaBienvenida" wrapText="true" editable="false"
-                                      prefHeight="200"
-                                      style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
+                    <HBox spacing="15" VBox.vgrow="ALWAYS">
+                        <VBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="Contenido del Mensaje" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
+                            <TextArea fx:id="txtBienvenida" wrapText="true" VBox.vgrow="ALWAYS"
+                                      style="-fx-control-inner-background: #2c3e50; -fx-text-fill: #ecf0f1; -fx-font-size: 13px; -fx-font-family: 'Courier New';">
                             </TextArea>
 
-                            <HBox spacing="5" alignment="CENTER_RIGHT">
-                                <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
+                            <VBox spacing="5" style="-fx-background-color: rgba(52, 152, 219, 0.1); -fx-padding: 10; -fx-background-radius: 5;">
+                                <Text text="💡 Variables disponibles:" style="-fx-fill: #3498db;">
                                     <font>
-                                        <Font size="10.0"/>
+                                        <Font name="System Bold" size="12.0"/>
                                     </font>
                                 </Text>
-                            </HBox>
+                                <Text text="{nombre} - Nombre completo del cliente" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{tipo_membresia} - Tipo de membresía asignada" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{fecha_inicio} - Fecha de inicio de membresía" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{fecha_fin} - Fecha de finalización de membresía" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                            </VBox>
                         </VBox>
 
-                        <Button text="🔄 Actualizar Vista Previa" onAction="#handleActualizarVistaPreviaBienvenida"
-                                maxWidth="Infinity"
-                                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;">
-                        </Button>
-                    </VBox>
-                </HBox>
+                        <VBox spacing="10" prefWidth="350">
+                            <Label text="Vista Previa" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
 
-                <!-- Botones de acción -->
-                <HBox spacing="10" alignment="CENTER_RIGHT">
-                    <Button text="Restaurar Original" onAction="#handleRestaurarBienvenida"
-                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
-                    </Button>
-                    <Button text="💾 Guardar Cambios" onAction="#handleGuardarBienvenida"
-                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
-                        <font>
-                            <Font name="System Bold" size="13.0"/>
-                        </font>
-                    </Button>
-                </HBox>
-            </VBox>
-        </Tab>
+                            <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Text text="🤖" style="-fx-fill: #2c3e50;">
+                                        <font>
+                                            <Font size="20.0"/>
+                                        </font>
+                                    </Text>
+                                    <VBox>
+                                        <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
+                                            <font>
+                                                <Font name="System Bold" size="13.0"/>
+                                            </font>
+                                        </Text>
+                                        <Text text="Bot" style="-fx-fill: #7f8c8d;">
+                                            <font>
+                                                <Font size="11.0"/>
+                                            </font>
+                                        </Text>
+                                    </VBox>
+                                </HBox>
 
-        <!-- Tab: VENCE_PRONTO -->
-        <Tab text="⚠️ Próximo a Vencer">
-            <VBox spacing="15" style="-fx-padding: 20;">
-                <HBox alignment="CENTER_LEFT" spacing="15">
-                    <VBox HBox.hgrow="ALWAYS">
-                        <Text text="Mensaje de Vencimiento Próximo" style="-fx-fill: #ecf0f1;">
-                            <font>
-                                <Font name="System Bold" size="16.0"/>
-                            </font>
-                        </Text>
-                        <Text text="Se envía cuando faltan X días para que venza la membresía"
-                              style="-fx-fill: #95a5a6;">
-                            <font>
-                                <Font size="12.0"/>
-                            </font>
-                        </Text>
-                    </VBox>
-                    <HBox spacing="10" alignment="CENTER_RIGHT">
-                        <Label text="Activo" style="-fx-text-fill: #bdc3c7;"/>
-                        <CheckBox fx:id="chkActivoVenceProno" selected="true"/>
+                                <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
+
+                                <TextArea fx:id="txtVistaPreviaBienvenida" wrapText="true" editable="false"
+                                          prefHeight="200"
+                                          style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
+                                </TextArea>
+
+                                <HBox spacing="5" alignment="CENTER_RIGHT">
+                                    <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
+                                        <font>
+                                            <Font size="10.0"/>
+                                        </font>
+                                    </Text>
+                                </HBox>
+                            </VBox>
+
+                            <Button text="🔄 Actualizar Vista Previa" onAction="#handleActualizarVistaPreviaBienvenida"
+                                    maxWidth="Infinity"
+                                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;">
+                            </Button>
+                        </VBox>
                     </HBox>
-                </HBox>
 
-                <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
-
-                <HBox spacing="15" VBox.vgrow="ALWAYS">
-                    <VBox spacing="10" HBox.hgrow="ALWAYS">
-                        <Label text="Contenido del Mensaje" style="-fx-text-fill: #ecf0f1;">
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Restaurar Original" onAction="#handleRestaurarBienvenida"
+                                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                        </Button>
+                        <Button text="💾 Guardar Cambios" onAction="#handleGuardarBienvenida"
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
                             <font>
                                 <Font name="System Bold" size="13.0"/>
                             </font>
-                        </Label>
-                        <TextArea fx:id="txtVenceProno" wrapText="true" VBox.vgrow="ALWAYS"
-                                  style="-fx-control-inner-background: #2c3e50; -fx-text-fill: #ecf0f1; -fx-font-size: 13px; -fx-font-family: 'Courier New';">
-                        </TextArea>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </Tab>
 
-                        <VBox spacing="5" style="-fx-background-color: rgba(230, 126, 34, 0.1); -fx-padding: 10; -fx-background-radius: 5;">
-                            <Text text="💡 Variables disponibles:" style="-fx-fill: #e67e22;">
+            <!-- Tab 2: VENCE_PRONTO -->
+            <Tab text="⚠️ Próximo a Vencer">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <VBox HBox.hgrow="ALWAYS">
+                            <Text text="Mensaje de Vencimiento Próximo" style="-fx-fill: #ecf0f1;">
                                 <font>
-                                    <Font name="System Bold" size="12.0"/>
+                                    <Font name="System Bold" size="16.0"/>
                                 </font>
                             </Text>
-                            <Text text="{nombre} - Nombre completo del cliente" style="-fx-fill: #bdc3c7;">
+                            <Text text="Se envía cuando faltan X días para que venza la membresía"
+                                  style="-fx-fill: #95a5a6;">
                                 <font>
-                                    <Font size="11.0"/>
-                                </font>
-                            </Text>
-                            <Text text="{dias} - Días restantes para el vencimiento" style="-fx-fill: #bdc3c7;">
-                                <font>
-                                    <Font size="11.0"/>
-                                </font>
-                            </Text>
-                            <Text text="{fecha_fin} - Fecha de vencimiento" style="-fx-fill: #bdc3c7;">
-                                <font>
-                                    <Font size="11.0"/>
+                                    <Font size="12.0"/>
                                 </font>
                             </Text>
                         </VBox>
-                    </VBox>
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Label text="Activo" style="-fx-text-fill: #bdc3c7;"/>
+                            <CheckBox fx:id="chkActivoVenceProno" selected="true"/>
+                        </HBox>
+                    </HBox>
 
-                    <VBox spacing="10" prefWidth="350">
-                        <Label text="Vista Previa" style="-fx-text-fill: #ecf0f1;">
-                            <font>
-                                <Font name="System Bold" size="13.0"/>
-                            </font>
-                        </Label>
+                    <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
 
-                        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
-                            <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Text text="🤖" style="-fx-fill: #2c3e50;">
-                                    <font>
-                                        <Font size="20.0"/>
-                                    </font>
-                                </Text>
-                                <VBox>
-                                    <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
-                                        <font>
-                                            <Font name="System Bold" size="13.0"/>
-                                        </font>
-                                    </Text>
-                                    <Text text="Bot" style="-fx-fill: #7f8c8d;">
-                                        <font>
-                                            <Font size="11.0"/>
-                                        </font>
-                                    </Text>
-                                </VBox>
-                            </HBox>
-
-                            <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
-
-                            <TextArea fx:id="txtVistaPreviaVenceProno" wrapText="true" editable="false"
-                                      prefHeight="200"
-                                      style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
+                    <HBox spacing="15" VBox.vgrow="ALWAYS">
+                        <VBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="Contenido del Mensaje" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
+                            <TextArea fx:id="txtVenceProno" wrapText="true" VBox.vgrow="ALWAYS"
+                                      style="-fx-control-inner-background: #2c3e50; -fx-text-fill: #ecf0f1; -fx-font-size: 13px; -fx-font-family: 'Courier New';">
                             </TextArea>
 
-                            <HBox spacing="5" alignment="CENTER_RIGHT">
-                                <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
+                            <VBox spacing="5" style="-fx-background-color: rgba(230, 126, 34, 0.1); -fx-padding: 10; -fx-background-radius: 5;">
+                                <Text text="💡 Variables disponibles:" style="-fx-fill: #e67e22;">
                                     <font>
-                                        <Font size="10.0"/>
+                                        <Font name="System Bold" size="12.0"/>
                                     </font>
                                 </Text>
-                            </HBox>
+                                <Text text="{nombre} - Nombre completo del cliente" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{dias} - Días restantes para el vencimiento" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{fecha_fin} - Fecha de vencimiento" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                            </VBox>
                         </VBox>
 
-                        <Button text="🔄 Actualizar Vista Previa" onAction="#handleActualizarVistaPreviaVenceProno"
-                                maxWidth="Infinity"
-                                style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;">
-                        </Button>
-                    </VBox>
-                </HBox>
+                        <VBox spacing="10" prefWidth="350">
+                            <Label text="Vista Previa" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
 
-                <HBox spacing="10" alignment="CENTER_RIGHT">
-                    <Button text="Restaurar Original" onAction="#handleRestaurarVenceProno"
-                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
-                    </Button>
-                    <Button text="💾 Guardar Cambios" onAction="#handleGuardarVenceProno"
-                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
-                        <font>
-                            <Font name="System Bold" size="13.0"/>
-                        </font>
-                    </Button>
-                </HBox>
-            </VBox>
-        </Tab>
+                            <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Text text="🤖" style="-fx-fill: #2c3e50;">
+                                        <font>
+                                            <Font size="20.0"/>
+                                        </font>
+                                    </Text>
+                                    <VBox>
+                                        <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
+                                            <font>
+                                                <Font name="System Bold" size="13.0"/>
+                                            </font>
+                                        </Text>
+                                        <Text text="Bot" style="-fx-fill: #7f8c8d;">
+                                            <font>
+                                                <Font size="11.0"/>
+                                            </font>
+                                        </Text>
+                                    </VBox>
+                                </HBox>
 
-        <!-- Tab: VENCIDO -->
-        <Tab text="❌ Vencido">
-            <VBox spacing="15" style="-fx-padding: 20;">
-                <HBox alignment="CENTER_LEFT" spacing="15">
-                    <VBox HBox.hgrow="ALWAYS">
-                        <Text text="Mensaje de Membresía Vencida" style="-fx-fill: #ecf0f1;">
-                            <font>
-                                <Font name="System Bold" size="16.0"/>
-                            </font>
-                        </Text>
-                        <Text text="Se envía cuando la membresía ha vencido"
-                              style="-fx-fill: #95a5a6;">
-                            <font>
-                                <Font size="12.0"/>
-                            </font>
-                        </Text>
-                    </VBox>
-                    <HBox spacing="10" alignment="CENTER_RIGHT">
-                        <Label text="Activo" style="-fx-text-fill: #bdc3c7;"/>
-                        <CheckBox fx:id="chkActivoVencido" selected="true"/>
+                                <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
+
+                                <TextArea fx:id="txtVistaPreviaVenceProno" wrapText="true" editable="false"
+                                          prefHeight="200"
+                                          style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
+                                </TextArea>
+
+                                <HBox spacing="5" alignment="CENTER_RIGHT">
+                                    <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
+                                        <font>
+                                            <Font size="10.0"/>
+                                        </font>
+                                    </Text>
+                                </HBox>
+                            </VBox>
+
+                            <Button text="🔄 Actualizar Vista Previa" onAction="#handleActualizarVistaPreviaVenceProno"
+                                    maxWidth="Infinity"
+                                    style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;">
+                            </Button>
+                        </VBox>
                     </HBox>
-                </HBox>
 
-                <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
-
-                <HBox spacing="15" VBox.vgrow="ALWAYS">
-                    <VBox spacing="10" HBox.hgrow="ALWAYS">
-                        <Label text="Contenido del Mensaje" style="-fx-text-fill: #ecf0f1;">
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Restaurar Original" onAction="#handleRestaurarVenceProno"
+                                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                        </Button>
+                        <Button text="💾 Guardar Cambios" onAction="#handleGuardarVenceProno"
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
                             <font>
                                 <Font name="System Bold" size="13.0"/>
                             </font>
-                        </Label>
-                        <TextArea fx:id="txtVencido" wrapText="true" VBox.vgrow="ALWAYS"
-                                  style="-fx-control-inner-background: #2c3e50; -fx-text-fill: #ecf0f1; -fx-font-size: 13px; -fx-font-family: 'Courier New';">
-                        </TextArea>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </Tab>
 
-                        <VBox spacing="5" style="-fx-background-color: rgba(231, 76, 60, 0.1); -fx-padding: 10; -fx-background-radius: 5;">
-                            <Text text="💡 Variables disponibles:" style="-fx-fill: #e74c3c;">
+            <!-- Tab 3: VENCIDO -->
+            <Tab text="❌ Vencido">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <VBox HBox.hgrow="ALWAYS">
+                            <Text text="Mensaje de Membresía Vencida" style="-fx-fill: #ecf0f1;">
                                 <font>
-                                    <Font name="System Bold" size="12.0"/>
+                                    <Font name="System Bold" size="16.0"/>
                                 </font>
                             </Text>
-                            <Text text="{nombre} - Nombre completo del cliente" style="-fx-fill: #bdc3c7;">
+                            <Text text="Se envía cuando la membresía ha vencido"
+                                  style="-fx-fill: #95a5a6;">
                                 <font>
-                                    <Font size="11.0"/>
-                                </font>
-                            </Text>
-                            <Text text="{fecha_fin} - Fecha de vencimiento" style="-fx-fill: #bdc3c7;">
-                                <font>
-                                    <Font size="11.0"/>
+                                    <Font size="12.0"/>
                                 </font>
                             </Text>
                         </VBox>
-                    </VBox>
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Label text="Activo" style="-fx-text-fill: #bdc3c7;"/>
+                            <CheckBox fx:id="chkActivoVencido" selected="true"/>
+                        </HBox>
+                    </HBox>
 
-                    <VBox spacing="10" prefWidth="350">
-                        <Label text="Vista Previa" style="-fx-text-fill: #ecf0f1;">
-                            <font>
-                                <Font name="System Bold" size="13.0"/>
-                            </font>
-                        </Label>
+                    <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
 
-                        <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
-                            <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Text text="🤖" style="-fx-fill: #2c3e50;">
-                                    <font>
-                                        <Font size="20.0"/>
-                                    </font>
-                                </Text>
-                                <VBox>
-                                    <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
-                                        <font>
-                                            <Font name="System Bold" size="13.0"/>
-                                        </font>
-                                    </Text>
-                                    <Text text="Bot" style="-fx-fill: #7f8c8d;">
-                                        <font>
-                                            <Font size="11.0"/>
-                                        </font>
-                                    </Text>
-                                </VBox>
-                            </HBox>
-
-                            <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
-
-                            <TextArea fx:id="txtVistaPreviaVencido" wrapText="true" editable="false"
-                                      prefHeight="200"
-                                      style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
+                    <HBox spacing="15" VBox.vgrow="ALWAYS">
+                        <VBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="Contenido del Mensaje" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
+                            <TextArea fx:id="txtVencido" wrapText="true" VBox.vgrow="ALWAYS"
+                                      style="-fx-control-inner-background: #2c3e50; -fx-text-fill: #ecf0f1; -fx-font-size: 13px; -fx-font-family: 'Courier New';">
                             </TextArea>
 
-                            <HBox spacing="5" alignment="CENTER_RIGHT">
-                                <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
+                            <VBox spacing="5" style="-fx-background-color: rgba(231, 76, 60, 0.1); -fx-padding: 10; -fx-background-radius: 5;">
+                                <Text text="💡 Variables disponibles:" style="-fx-fill: #e74c3c;">
                                     <font>
-                                        <Font size="10.0"/>
+                                        <Font name="System Bold" size="12.0"/>
                                     </font>
                                 </Text>
-                            </HBox>
+                                <Text text="{nombre} - Nombre completo del cliente" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{fecha_fin} - Fecha de vencimiento" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                            </VBox>
                         </VBox>
 
-                        <Button text="🔄 Actualizar Vista Previa" onAction="#handleActualizarVistaPreviaVencido"
-                                maxWidth="Infinity"
-                                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;">
-                        </Button>
-                    </VBox>
-                </HBox>
+                        <VBox spacing="10" prefWidth="350">
+                            <Label text="Vista Previa" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
 
-                <HBox spacing="10" alignment="CENTER_RIGHT">
-                    <Button text="Restaurar Original" onAction="#handleRestaurarVencido"
-                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
-                    </Button>
-                    <Button text="💾 Guardar Cambios" onAction="#handleGuardarVencido"
-                            style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
-                        <font>
-                            <Font name="System Bold" size="13.0"/>
-                        </font>
-                    </Button>
-                </HBox>
-            </VBox>
-        </Tab>
-    </TabPane>
+                            <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Text text="🤖" style="-fx-fill: #2c3e50;">
+                                        <font>
+                                            <Font size="20.0"/>
+                                        </font>
+                                    </Text>
+                                    <VBox>
+                                        <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
+                                            <font>
+                                                <Font name="System Bold" size="13.0"/>
+                                            </font>
+                                        </Text>
+                                        <Text text="Bot" style="-fx-fill: #7f8c8d;">
+                                            <font>
+                                                <Font size="11.0"/>
+                                            </font>
+                                        </Text>
+                                    </VBox>
+                                </HBox>
+
+                                <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
+
+                                <TextArea fx:id="txtVistaPreviaVencido" wrapText="true" editable="false"
+                                          prefHeight="200"
+                                          style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
+                                </TextArea>
+
+                                <HBox spacing="5" alignment="CENTER_RIGHT">
+                                    <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
+                                        <font>
+                                            <Font size="10.0"/>
+                                        </font>
+                                    </Text>
+                                </HBox>
+                            </VBox>
+
+                            <Button text="🔄 Actualizar Vista Previa" onAction="#handleActualizarVistaPreviaVencido"
+                                    maxWidth="Infinity"
+                                    style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;">
+                            </Button>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Restaurar Original" onAction="#handleRestaurarVencido"
+                                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                        </Button>
+                        <Button text="💾 Guardar Cambios" onAction="#handleGuardarVencido"
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                            <font>
+                                <Font name="System Bold" size="13.0"/>
+                            </font>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <!-- ========== PLANTILLAS DE ENGAGEMENT ========== -->
+
+            <!-- Tab 4: INACTIVIDAD_7_DIAS -->
+            <Tab text="😔 Inactividad">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <VBox HBox.hgrow="ALWAYS">
+                            <Text text="Mensaje de Inactividad (7 días)" style="-fx-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="16.0"/>
+                                </font>
+                            </Text>
+                            <Text text="Se envía cuando un cliente lleva 7 días sin asistir"
+                                  style="-fx-fill: #95a5a6;">
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Text>
+                        </VBox>
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Label text="Activo" style="-fx-text-fill: #bdc3c7;"/>
+                            <CheckBox fx:id="chkActivoInactividad" selected="true"/>
+                        </HBox>
+                    </HBox>
+
+                    <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
+
+                    <HBox spacing="15" VBox.vgrow="ALWAYS">
+                        <VBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="Contenido del Mensaje" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
+                            <TextArea fx:id="txtInactividad" wrapText="true" VBox.vgrow="ALWAYS"
+                                      style="-fx-control-inner-background: #2c3e50; -fx-text-fill: #ecf0f1; -fx-font-size: 13px; -fx-font-family: 'Courier New';">
+                            </TextArea>
+
+                            <VBox spacing="5" style="-fx-background-color: rgba(149, 165, 166, 0.1); -fx-padding: 10; -fx-background-radius: 5;">
+                                <Text text="💡 Variables disponibles:" style="-fx-fill: #95a5a6;">
+                                    <font>
+                                        <Font name="System Bold" size="12.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{nombre} - Nombre completo del cliente" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{dias_inactivo} - Número de días sin asistir" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{ultima_asistencia} - Fecha de la última asistencia" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                            </VBox>
+                        </VBox>
+
+                        <VBox spacing="10" prefWidth="350">
+                            <Label text="Vista Previa" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
+
+                            <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Text text="🤖" style="-fx-fill: #2c3e50;">
+                                        <font>
+                                            <Font size="20.0"/>
+                                        </font>
+                                    </Text>
+                                    <VBox>
+                                        <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
+                                            <font>
+                                                <Font name="System Bold" size="13.0"/>
+                                            </font>
+                                        </Text>
+                                        <Text text="Bot" style="-fx-fill: #7f8c8d;">
+                                            <font>
+                                                <Font size="11.0"/>
+                                            </font>
+                                        </Text>
+                                    </VBox>
+                                </HBox>
+
+                                <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
+
+                                <TextArea fx:id="txtVistaPreviaInactividad" wrapText="true" editable="false"
+                                          prefHeight="200"
+                                          style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
+                                </TextArea>
+
+                                <HBox spacing="5" alignment="CENTER_RIGHT">
+                                    <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
+                                        <font>
+                                            <Font size="10.0"/>
+                                        </font>
+                                    </Text>
+                                </HBox>
+                            </VBox>
+
+                            <Button text="🔄 Actualizar Vista Previa" onAction="#handleActualizarVistaPreviaInactividad"
+                                    maxWidth="Infinity"
+                                    style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;">
+                            </Button>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Restaurar Original" onAction="#handleRestaurarInactividad"
+                                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                        </Button>
+                        <Button text="💾 Guardar Cambios" onAction="#handleGuardarInactividad"
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                            <font>
+                                <Font name="System Bold" size="13.0"/>
+                            </font>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <!-- Tab 5: RUTINA_ACTUALIZADA -->
+            <Tab text="🎯 Rutina Actualizada">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <VBox HBox.hgrow="ALWAYS">
+                            <Text text="Mensaje de Rutina Actualizada" style="-fx-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="16.0"/>
+                                </font>
+                            </Text>
+                            <Text text="Se envía cuando un entrenador asigna/actualiza una rutina"
+                                  style="-fx-fill: #95a5a6;">
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Text>
+                        </VBox>
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Label text="Activo" style="-fx-text-fill: #bdc3c7;"/>
+                            <CheckBox fx:id="chkActivoRutinaActualizada" selected="true"/>
+                        </HBox>
+                    </HBox>
+
+                    <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
+
+                    <HBox spacing="15" VBox.vgrow="ALWAYS">
+                        <VBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="Contenido del Mensaje" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
+                            <TextArea fx:id="txtRutinaActualizada" wrapText="true" VBox.vgrow="ALWAYS"
+                                      style="-fx-control-inner-background: #2c3e50; -fx-text-fill: #ecf0f1; -fx-font-size: 13px; -fx-font-family: 'Courier New';">
+                            </TextArea>
+
+                            <VBox spacing="5" style="-fx-background-color: rgba(52, 152, 219, 0.1); -fx-padding: 10; -fx-background-radius: 5;">
+                                <Text text="💡 Variables disponibles:" style="-fx-fill: #3498db;">
+                                    <font>
+                                        <Font name="System Bold" size="12.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{nombre} - Nombre completo del cliente" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{nombre_entrenador} - Nombre del entrenador" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{objetivo} - Objetivo de la rutina" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                            </VBox>
+                        </VBox>
+
+                        <VBox spacing="10" prefWidth="350">
+                            <Label text="Vista Previa" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
+
+                            <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Text text="🤖" style="-fx-fill: #2c3e50;">
+                                        <font>
+                                            <Font size="20.0"/>
+                                        </font>
+                                    </Text>
+                                    <VBox>
+                                        <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
+                                            <font>
+                                                <Font name="System Bold" size="13.0"/>
+                                            </font>
+                                        </Text>
+                                        <Text text="Bot" style="-fx-fill: #7f8c8d;">
+                                            <font>
+                                                <Font size="11.0"/>
+                                            </font>
+                                        </Text>
+                                    </VBox>
+                                </HBox>
+
+                                <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
+
+                                <TextArea fx:id="txtVistaPreviaRutinaActualizada" wrapText="true" editable="false"
+                                          prefHeight="200"
+                                          style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
+                                </TextArea>
+
+                                <HBox spacing="5" alignment="CENTER_RIGHT">
+                                    <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
+                                        <font>
+                                            <Font size="10.0"/>
+                                        </font>
+                                    </Text>
+                                </HBox>
+                            </VBox>
+
+                            <Button text="🔄 Actualizar Vista Previa" onAction="#handleActualizarVistaPreviaRutinaActualizada"
+                                    maxWidth="Infinity"
+                                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;">
+                            </Button>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Restaurar Original" onAction="#handleRestaurarRutinaActualizada"
+                                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                        </Button>
+                        <Button text="💾 Guardar Cambios" onAction="#handleGuardarRutinaActualizada"
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                            <font>
+                                <Font name="System Bold" size="13.0"/>
+                            </font>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+            <!-- Tab 6: NUEVO_ENTRENADOR -->
+            <Tab text="👨‍🏫 Nuevo Entrenador">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <VBox HBox.hgrow="ALWAYS">
+                            <Text text="Mensaje de Nuevo Entrenador" style="-fx-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="16.0"/>
+                                </font>
+                            </Text>
+                            <Text text="Se envía cuando se asigna un entrenador personal al cliente"
+                                  style="-fx-fill: #95a5a6;">
+                                <font>
+                                    <Font size="12.0"/>
+                                </font>
+                            </Text>
+                        </VBox>
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Label text="Activo" style="-fx-text-fill: #bdc3c7;"/>
+                            <CheckBox fx:id="chkActivoNuevoEntrenador" selected="true"/>
+                        </HBox>
+                    </HBox>
+
+                    <Separator style="-fx-background-color: rgba(255, 255, 255, 0.1);"/>
+
+                    <HBox spacing="15" VBox.vgrow="ALWAYS">
+                        <VBox spacing="10" HBox.hgrow="ALWAYS">
+                            <Label text="Contenido del Mensaje" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
+                            <TextArea fx:id="txtNuevoEntrenador" wrapText="true" VBox.vgrow="ALWAYS"
+                                      style="-fx-control-inner-background: #2c3e50; -fx-text-fill: #ecf0f1; -fx-font-size: 13px; -fx-font-family: 'Courier New';">
+                            </TextArea>
+
+                            <VBox spacing="5" style="-fx-background-color: rgba(155, 89, 182, 0.1); -fx-padding: 10; -fx-background-radius: 5;">
+                                <Text text="💡 Variables disponibles:" style="-fx-fill: #9b59b6;">
+                                    <font>
+                                        <Font name="System Bold" size="12.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{nombre} - Nombre completo del cliente" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{nombre_entrenador} - Nombre del entrenador asignado" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                                <Text text="{especialidad} - Especialidad del entrenador" style="-fx-fill: #bdc3c7;">
+                                    <font>
+                                        <Font size="11.0"/>
+                                    </font>
+                                </Text>
+                            </VBox>
+                        </VBox>
+
+                        <VBox spacing="10" prefWidth="350">
+                            <Label text="Vista Previa" style="-fx-text-fill: #ecf0f1;">
+                                <font>
+                                    <Font name="System Bold" size="13.0"/>
+                                </font>
+                            </Label>
+
+                            <VBox spacing="10" style="-fx-background-color: #ecf0f1; -fx-padding: 15; -fx-background-radius: 10;">
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Text text="🤖" style="-fx-fill: #2c3e50;">
+                                        <font>
+                                            <Font size="20.0"/>
+                                        </font>
+                                    </Text>
+                                    <VBox>
+                                        <Text text="LightWeight Bot" style="-fx-fill: #2c3e50;">
+                                            <font>
+                                                <Font name="System Bold" size="13.0"/>
+                                            </font>
+                                        </Text>
+                                        <Text text="Bot" style="-fx-fill: #7f8c8d;">
+                                            <font>
+                                                <Font size="11.0"/>
+                                            </font>
+                                        </Text>
+                                    </VBox>
+                                </HBox>
+
+                                <Separator style="-fx-background-color: rgba(44, 62, 80, 0.2);"/>
+
+                                <TextArea fx:id="txtVistaPreviaNuevoEntrenador" wrapText="true" editable="false"
+                                          prefHeight="200"
+                                          style="-fx-control-inner-background: transparent; -fx-text-fill: #2c3e50; -fx-background-color: transparent;">
+                                </TextArea>
+
+                                <HBox spacing="5" alignment="CENTER_RIGHT">
+                                    <Text text="Vista previa con datos de ejemplo" style="-fx-fill: #95a5a6;">
+                                        <font>
+                                            <Font size="10.0"/>
+                                        </font>
+                                    </Text>
+                                </HBox>
+                            </VBox>
+
+                            <Button text="🔄 Actualizar Vista Previa" onAction="#handleActualizarVistaPreviaNuevoEntrenador"
+                                    maxWidth="Infinity"
+                                    style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand;">
+                            </Button>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Restaurar Original" onAction="#handleRestaurarNuevoEntrenador"
+                                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                        </Button>
+                        <Button text="💾 Guardar Cambios" onAction="#handleGuardarNuevoEntrenador"
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 15;">
+                            <font>
+                                <Font name="System Bold" size="13.0"/>
+                            </font>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </Tab>
+
+        </TabPane>
+    </ScrollPane>
 
 </VBox>
