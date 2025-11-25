@@ -18,9 +18,9 @@ public class MembresiaClienteRepositoryImpl implements MembresiaClienteRepositor
     public MembresiaClienteRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - MembresiaClienteRepository");
+            System.out.println("Conexión a BD probada exitosamente - MembresiaClienteRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }

@@ -24,7 +24,7 @@
 
             <!-- Logo y Título -->
             <HBox alignment="CENTER_LEFT" spacing="10" HBox.hgrow="ALWAYS">
-                <Text styleClass="header-logo" text="🏋️">
+                <Text styleClass="header-logo" text="🏋">
                     <font>
                         <Font size="28.0" />
                     </font>
@@ -132,11 +132,7 @@
                     </font>
                 </Text>
 
-                <StackPane fx:id="loadingPane"
-                           styleClass="loading-overlay"
-                           visible="false"
-                           maxWidth="Infinity"
-                           maxHeight="Infinity">
+                <StackPane fx:id="loadingPane" maxHeight="Infinity" maxWidth="Infinity" styleClass="loading-overlay" visible="false">
 
                     <VBox alignment="CENTER" spacing="15">
                         <ProgressIndicator styleClass="custom-progress" />

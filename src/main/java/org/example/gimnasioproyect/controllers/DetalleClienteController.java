@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -56,7 +57,8 @@ public class DetalleClienteController {
     @FXML private Label lblUltimaAsistencia;
 
     // Rutinas
-    @FXML private ListView<String> listRutinas;
+    @FXML private VBox containerRutinas;
+    @FXML private Button btnAsignarRutina;
 
     private Clientes cliente;
     private StackPane parentContainer;
@@ -235,19 +237,85 @@ public class DetalleClienteController {
     }
 
     private void cargarRutinas() throws SQLException {
-        List<RutinaAsignadas> rutinasActivas = rutinaService.obtenerRutinasActivasCliente(cliente.getDocumento());
+        List<RutinaAsignadas> todasLasRutinas = rutinaService.obtenerHistorialRutinas(cliente.getDocumento());
 
-        listRutinas.getItems().clear();
+        containerRutinas.getChildren().clear();
 
-        if (rutinasActivas.isEmpty()) {
-            listRutinas.getItems().add("Sin rutinas asignadas");
+        if (todasLasRutinas.isEmpty()) {
+            Text sinRutinas = new Text("Sin rutinas asignadas");
+            sinRutinas.setStyle("-fx-fill: #7f8c8d; -fx-font-style: italic;");
+            containerRutinas.getChildren().add(sinRutinas);
         } else {
-            for (RutinaAsignadas ra : rutinasActivas) {
-                String item = "📝 " + ra.getRutina().getObjetivo() +
-                        " (Desde: " + FormateadorFechas.formatearFecha(ra.getFechaAsignacion()) + ")";
-                listRutinas.getItems().add(item);
+            todasLasRutinas.sort((r1, r2) -> {
+                if (r1.estaActiva() && !r2.estaActiva()) return -1;
+                if (!r1.estaActiva() && r2.estaActiva()) return 1;
+                return r2.getFechaAsignacion().compareTo(r1.getFechaAsignacion());
+            });
+
+            for (RutinaAsignadas ra : todasLasRutinas) {
+                VBox rutinaCard = crearCardRutina(ra);
+                containerRutinas.getChildren().add(rutinaCard);
             }
+            btnAsignarRutina.setText("🔄 Cambiar rutina");
         }
+    }
+
+    private VBox crearCardRutina(RutinaAsignadas ra) {
+        VBox card = new VBox(5.0);
+
+        if (ra.estaActiva()) {
+            // Rutina activa - fondo verde oscuro
+            card.setStyle("-fx-background-color: #1e4620; -fx-background-radius: 5; -fx-padding: 10; -fx-border-color: #27ae60; -fx-border-width: 1; -fx-border-radius: 5;");
+        } else {
+            // Rutina finalizada - fondo gris oscuro
+            card.setStyle("-fx-background-color: #2c2c2c; -fx-background-radius: 5; -fx-padding: 10; -fx-border-color: #555555; -fx-border-width: 1; -fx-border-radius: 5;");
+        }
+
+        // Línea 1: Nombre de la rutina con estado
+        HBox headerBox = new HBox(10.0);
+        headerBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+
+        Text icono = new Text(ra.estaActiva() ? "✓" : "✗");
+        icono.setStyle("-fx-fill: " + (ra.estaActiva() ? "#27ae60" : "#95a5a6") + "; -fx-font-size: 16px; -fx-font-weight: bold;");
+
+        Text nombre = new Text(ra.getRutina().getObjetivo());
+        nombre.setStyle("-fx-fill: " + (ra.estaActiva() ? "#27ae60" : "#bdc3c7") + "; -fx-font-size: 14px; -fx-font-weight: bold;");
+
+        Text estado = new Text(ra.getEstado());
+        estado.setStyle("-fx-fill: " + (ra.estaActiva() ? "#27ae60" : "#7f8c8d") + "; -fx-font-size: 11px; -fx-font-weight: bold;");
+
+        headerBox.getChildren().addAll(icono, nombre, estado);
+
+        // Línea 2: Fechas
+        HBox fechasBox = new HBox(15.0);
+        fechasBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        fechasBox.setStyle("-fx-padding: 0 0 0 26;"); // Alinear con el texto (offset del ícono)
+
+        Text labelInicio = new Text("Inicio:");
+        labelInicio.setStyle("-fx-fill: #95a5a6; -fx-font-size: 11px;");
+
+        Text fechaInicio = new Text(FormateadorFechas.formatearFecha(ra.getFechaAsignacion()));
+        fechaInicio.setStyle("-fx-fill: #ecf0f1; -fx-font-size: 11px; -fx-font-weight: bold;");
+
+        fechasBox.getChildren().addAll(labelInicio, fechaInicio);
+
+        // Si está finalizada, agregar fecha de finalización
+        if (!ra.estaActiva() && ra.getFechaFinalizacion() != null) {
+            Text separador = new Text("→");
+            separador.setStyle("-fx-fill: #7f8c8d; -fx-font-size: 11px;");
+
+            Text labelFin = new Text("Fin:");
+            labelFin.setStyle("-fx-fill: #95a5a6; -fx-font-size: 11px;");
+
+            Text fechaFin = new Text(FormateadorFechas.formatearFecha(ra.getFechaFinalizacion()));
+            fechaFin.setStyle("-fx-fill: #ecf0f1; -fx-font-size: 11px; -fx-font-weight: bold;");
+
+            fechasBox.getChildren().addAll(separador, labelFin, fechaFin);
+        }
+
+        card.getChildren().addAll(headerBox, fechasBox);
+
+        return card;
     }
 
     // Handlers de botones
@@ -352,14 +420,72 @@ public class DetalleClienteController {
 
     @FXML
     private void handleAsignarEntrenador() {
-        // TODO: Asignar entrenador
-        System.out.println("Asignar entrenador");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/AsignarEntrenador.fxml"));
+            Parent root = loader.load();
+
+            AsignarEntrenadorController controller = loader.getController();
+            controller.setCliente(cliente);
+
+            // Callback para recargar datos al éxito
+            controller.setOnSuccess(success -> {
+                if (success) {
+                    try {
+                        cargarCliente(cliente); // Recargar datos del cliente
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            // Crear ventana modal
+            Stage stage = new Stage();
+            stage.setTitle("Gestionar Entrenador");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.setResizable(false);
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.initOwner(lblNombreCliente.getScene().getWindow());
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            mostrarError("Error", "No se pudo abrir el diálogo: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleAsignarRutina() {
-        // TODO: Asignar rutina
-        System.out.println("Asignar rutina");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/AsignarRutina.fxml"));
+            Parent root = loader.load();
+
+            AsignarRutinaController controller = loader.getController();
+            controller.setCliente(cliente);
+
+            // Callback para recargar datos al éxito
+            controller.setOnSuccess(success -> {
+                if (success) {
+                    try {
+                        cargarCliente(cliente); // Recargar datos del cliente
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+            // Crear ventana modal
+            Stage stage = new Stage();
+            stage.setTitle("Asignar Rutina");
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.setResizable(false);
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.initOwner(lblNombreCliente.getScene().getWindow());
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            mostrarError("Error", "No se pudo abrir el diálogo: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML

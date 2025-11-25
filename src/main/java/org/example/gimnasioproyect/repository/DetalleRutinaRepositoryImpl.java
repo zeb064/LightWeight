@@ -16,9 +16,9 @@ public class DetalleRutinaRepositoryImpl implements DetalleRutinaRepository {
     public DetalleRutinaRepositoryImpl(OracleDatabaseConnection connection) throws SQLException {
         this.connection = connection;
         try (Connection conn = this.connection.connect()) {
-            System.out.println("🎯 Conexión a BD probada exitosamente - DetalleRutinaRepository");
+            System.out.println("Conexión a BD probada exitosamente - DetalleRutinaRepository");
         } catch (SQLException e) {
-            System.err.println("❌ Error al conectar: " + e.getMessage());
+            System.err.println("Error al conectar: " + e.getMessage());
             throw e;
         }
     }

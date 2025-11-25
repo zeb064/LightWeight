@@ -257,10 +257,10 @@
                 onAction="#handleReenviar" disable="true"
                 style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;">
         </Button>
-        <Button fx:id="btnExportar" text="📊 Exportar"
-                onAction="#handleExportar"
-                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;">
-        </Button>
+<!--        <Button fx:id="btnExportar" text="📊 Exportar"-->
+<!--                onAction="#handleExportar"-->
+<!--                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 15;">-->
+<!--        </Button>-->
     </HBox>
 
 </VBox>

@@ -19,12 +19,10 @@
     -shadow: rgba(0, 0, 0, 0.2);
 }
 
-/* ===== DASHBOARD ===== */
 .dashboard-root {
     -fx-background-color: -bg-secondary;
 }
 
-/* Header */
 .header {
     -fx-background-color: -bg-primary;
     -fx-border-color: transparent transparent -border-color transparent;
@@ -174,14 +172,13 @@
     -fx-background-color: rgba(52, 152, 219, 0.2);
 }
 
-/* Opciones avanzadas */
+
 .opciones-avanzadas {
     -fx-padding: 5 0 0 10;
     -fx-background-color: rgba(0, 0, 0, 0.1);
     -fx-background-radius: 8;
 }
 
-/* Items secundarios (menos importantes) */
 .menu-item-secundario {
     -fx-font-size: 12px;
     -fx-padding: 10 15;
