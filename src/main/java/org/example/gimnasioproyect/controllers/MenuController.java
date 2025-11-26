@@ -76,6 +76,9 @@ public class MenuController {
         this.usuarioActual = personal;
         lblNombreUsuario.setText(personal.getNombreCompleto());
         lblTipoUsuario.setText(personal.getTipoPersonal().toString());
+
+        contentArea.getScene().getRoot().setUserData(this);
+
         cargarMenu(personal.getTipoPersonal());
     }
 
@@ -202,34 +205,9 @@ public class MenuController {
         }
     }
 
-    @FXML
-    private void handleDashboard() {
-        mostrarLoading(true);
-        new Thread(() -> {
-            try {
-                Thread.sleep(300);
-                Parent dashboard = HelloApplication.loadFXML("Dashboard");
-
-                Platform.runLater(() -> {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().addAll(dashboard, loadingPane);
-                    mostrarLoading(false);
-                });
-            } catch (Exception e) {
-                Platform.runLater(() -> {
-                    mostrarLoading(false);
-                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
-                            "No se pudo cargar el dashboard: " + e.getMessage());
-                    e.printStackTrace();
-                });
-            }
-        }).start();
-    }
-
     private void handleClientes() {
         mostrarLoading(true);
 
-        // Solo tareas largas deberían ir en un hilo aparte
         new Thread(() -> {
             try {
                 Thread.sleep(300); // simula carga
@@ -237,14 +215,10 @@ public class MenuController {
                 e.printStackTrace();
             }
 
-            // Toda manipulación de UI y carga de FXML debe ir en Platform.runLater
             Platform.runLater(() -> {
                 try {
                     Parent gestionClientes = HelloApplication.loadFXML("GestionClientes");
-
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().addAll(gestionClientes, loadingPane);
-                    mostrarLoading(false);
+                    cargarContenido(gestionClientes); // ✅ Usar el nuevo método
 
                 } catch (Exception e) {
                     mostrarLoading(false);
@@ -256,6 +230,24 @@ public class MenuController {
         }).start();
     }
 
+    @FXML
+    private void handleDashboard() {
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent dashboard = HelloApplication.loadFXML("Dashboard");
+                cargarContenido(dashboard); // ✅
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar el dashboard: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
+    }
 
     private void handleMembresias() {
         mostrarLoading(true);
@@ -263,12 +255,7 @@ public class MenuController {
             try {
                 Thread.sleep(300);
                 Parent gestionMembresias = HelloApplication.loadFXML("GestionMembresias");
-
-                Platform.runLater(() -> {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().addAll(gestionMembresias, loadingPane);
-                    mostrarLoading(false);
-                });
+                cargarContenido(gestionMembresias); // ✅
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     mostrarLoading(false);
@@ -286,12 +273,7 @@ public class MenuController {
             try {
                 Thread.sleep(300);
                 Parent gestionEntrenadores = HelloApplication.loadFXML("Entrenadores");
-
-                Platform.runLater(() -> {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().addAll(gestionEntrenadores, loadingPane);
-                    mostrarLoading(false);
-                });
+                cargarContenido(gestionEntrenadores); // ✅
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     mostrarLoading(false);
@@ -309,12 +291,7 @@ public class MenuController {
             try {
                 Thread.sleep(300);
                 Parent gestionRutinas = HelloApplication.loadFXML("Rutinas");
-
-                Platform.runLater(() -> {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().addAll(gestionRutinas, loadingPane);
-                    mostrarLoading(false);
-                });
+                cargarContenido(gestionRutinas); // ✅
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     mostrarLoading(false);
@@ -332,12 +309,7 @@ public class MenuController {
             try {
                 Thread.sleep(300);
                 Parent gestionAsistencias = HelloApplication.loadFXML("Asistencias");
-
-                Platform.runLater(() -> {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().addAll(gestionAsistencias, loadingPane);
-                    mostrarLoading(false);
-                });
+                cargarContenido(gestionAsistencias); // ✅
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     mostrarLoading(false);
@@ -361,11 +333,7 @@ public class MenuController {
             Platform.runLater(() -> {
                 try {
                     Parent gestionPersonal = HelloApplication.loadFXML("Personal");
-
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().addAll(gestionPersonal, loadingPane);
-                    mostrarLoading(false);
-
+                    cargarContenido(gestionPersonal); // ✅
                 } catch (Exception e) {
                     mostrarLoading(false);
                     mostrarAlerta(Alert.AlertType.ERROR, "Error",
@@ -382,12 +350,7 @@ public class MenuController {
             try {
                 Thread.sleep(300);
                 Parent reportes = HelloApplication.loadFXML("Reportes");
-
-                Platform.runLater(() -> {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().addAll(reportes, loadingPane);
-                    mostrarLoading(false);
-                });
+                cargarContenido(reportes); // ✅
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     mostrarLoading(false);
@@ -408,17 +371,11 @@ public class MenuController {
                 Parent misClientes = loader.load();
 
                 Platform.runLater(() -> {
-                    // Obtener el controlador
                     MisClientesController controller = loader.getController();
 
-                    // Pasar el entrenador logueado
                     if (usuarioActual instanceof Entrenadores) {
                         controller.setEntrenador((Entrenadores) usuarioActual);
-
-                        // Cargar en el contentArea
-                        contentArea.getChildren().clear();
-                        contentArea.getChildren().addAll(misClientes, loadingPane);
-                        mostrarLoading(false);
+                        cargarContenido(misClientes); // ✅
                     } else {
                         mostrarLoading(false);
                         mostrarAlerta(Alert.AlertType.ERROR, "Error", "Usuario no es un entrenador");
@@ -445,16 +402,9 @@ public class MenuController {
                 Parent miPerfil = loader.load();
 
                 Platform.runLater(() -> {
-                    // Obtener el controlador
                     MiPerfilController controller = loader.getController();
-
-                    // Pasar el usuario logueado
                     controller.setPersonal(usuarioActual);
-
-                    // Cargar en el contentArea
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().addAll(miPerfil, loadingPane);
-                    mostrarLoading(false);
+                    cargarContenido(miPerfil); // ✅
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
@@ -474,12 +424,7 @@ public class MenuController {
             try {
                 Thread.sleep(300);
                 Parent telegram = HelloApplication.loadFXML("GestionPlantillas");
-
-                Platform.runLater(() -> {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().addAll(telegram, loadingPane);
-                    mostrarLoading(false);
-                });
+                cargarContenido(telegram); // ✅
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     mostrarLoading(false);
@@ -498,12 +443,7 @@ public class MenuController {
             try {
                 Thread.sleep(300);
                 Parent historialNotificaciones = HelloApplication.loadFXML("HistorialNotificaciones");
-
-                Platform.runLater(() -> {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().addAll(historialNotificaciones, loadingPane);
-                    mostrarLoading(false);
-                });
+                cargarContenido(historialNotificaciones);
             } catch (Exception e) {
                 Platform.runLater(() -> {
                     mostrarLoading(false);
@@ -514,7 +454,6 @@ public class MenuController {
             }
         }).start();
     }
-
     @FXML
     private void handleNotificaciones() {
         handleHistorialNotificaciones();
@@ -561,6 +500,45 @@ public class MenuController {
                     "Ocurrió un error al cerrar sesión: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Carga contenido asegurando que el loadingPane siempre esté presente
+     */
+    private void cargarContenido(Parent contenido) {
+        Platform.runLater(() -> {
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(contenido);
+
+            // Siempre re-agregar el loadingPane encima
+            if (loadingPane != null) {
+                contentArea.getChildren().add(loadingPane);
+                loadingPane.toFront();
+            }
+
+            mostrarLoading(false);
+        });
+    }
+
+    /**
+     * Método público para navegación desde otros controladores
+     */
+    public void navegarA(String fxmlName) {
+        mostrarLoading(true);
+        new Thread(() -> {
+            try {
+                Thread.sleep(300);
+                Parent contenido = HelloApplication.loadFXML(fxmlName);
+                cargarContenido(contenido);
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    mostrarLoading(false);
+                    mostrarAlerta(Alert.AlertType.ERROR, "Error",
+                            "No se pudo cargar la vista: " + e.getMessage());
+                    e.printStackTrace();
+                });
+            }
+        }).start();
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {

@@ -339,15 +339,6 @@ public class DetalleClienteController {
             mostrarError("Error", "No se pudo volver: " + e.getMessage());
             e.printStackTrace();
         }
-//        try {
-//            Parent gestionClientes = HelloApplication.loadFXML("GestionClientes");
-//            if (parentContainer != null) {
-//                parentContainer.getChildren().clear();
-//                parentContainer.getChildren().add(gestionClientes);
-//            }
-//        } catch (IOException e) {
-//            mostrarError("Error", "No se pudo volver: " + e.getMessage());
-//        }
     }
 
     @FXML
@@ -490,8 +481,31 @@ public class DetalleClienteController {
 
     @FXML
     private void handleVerHistorialAsistencias() {
-        // TODO: Ver historial completo
-        System.out.println("Ver historial de asistencias");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/HistorialAsistencias.fxml"));
+            Parent root = loader.load();
+
+            HistorialAsistenciasController controller = loader.getController();
+            controller.setCliente(cliente);
+
+            // Crear ventana modal
+            Stage stage = new Stage();
+            stage.setTitle("Historial de Asistencias - " + cliente.getNombreCompleto());
+
+            stage.setScene(new javafx.scene.Scene(root, 600, 500));
+
+            stage.setResizable(true);
+            stage.setMinWidth(500);
+            stage.setMinHeight(400);
+
+            stage.initModality(javafx.stage.Modality.APPLICATION_MODAL);
+            stage.initOwner(lblNombreCliente.getScene().getWindow());
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            mostrarError("Error", "No se pudo abrir el historial: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML

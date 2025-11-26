@@ -293,23 +293,38 @@ public class EstadisticaService {
         return conteoActivas;
     }
 
-    /**
-     * Versión con límite (top N) de clientes activos por tipo
-     */
-    public Map<String, Integer> obtenerClientesActivosPorTipoMembresia(int limite) throws SQLException {
-        Map<String, Integer> conteoActivas = obtenerClientesActivosPorTipoMembresia();
+//    /**
+//     * Versión con límite (top N) de clientes activos por tipo
+//     */
+//    public Map<String, Integer> obtenerClientesActivosPorTipoMembresia(int limite) throws SQLException {
+//        Map<String, Integer> conteoActivas = obtenerClientesActivosPorTipoMembresia();
+//
+//        // Ordenar y limitar
+//        return conteoActivas.entrySet()
+//                .stream()
+//                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+//                .limit(limite)
+//                .collect(Collectors.toMap(
+//                        Map.Entry::getKey,
+//                        Map.Entry::getValue,
+//                        (e1, e2) -> e1,
+//                        LinkedHashMap::new
+//                ));
+//    }
 
-        // Ordenar y limitar
-        return conteoActivas.entrySet()
+    //obtiene los ingresos del mes actual por membresías
+    public double obtenerIngresosMesActual() throws SQLException {
+        LocalDate hoy = LocalDate.now();
+        int mesActual = hoy.getMonthValue();
+        int anioActual = hoy.getYear();
+
+        return membresiaClienteRepository.findAll()
                 .stream()
-                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
-                .limit(limite)
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
-                        (e1, e2) -> e1,
-                        LinkedHashMap::new
-                ));
+                .filter(mc -> mc.getFechaFinalizacion() != null &&
+                        mc.getFechaFinalizacion().getMonthValue() == mesActual &&
+                        mc.getFechaFinalizacion().getYear() == anioActual)
+                .mapToDouble(mc -> mc.getMembresia().getPrecioMembresia())
+                .sum();
     }
 
     // Obtiene los ingresos totales por membresías activas

@@ -118,7 +118,7 @@ public class DashboardController {
         lblAsistenciasHoy.setText(String.valueOf(asistenciasHoy));
 
         // Ingresos del Mes
-        double ingresos = estadisticaService.obtenerIngresoTotalMembresias();
+        double ingresos = estadisticaService.obtenerIngresosMesActual();
         lblIngresosMes.setText("$" + String.format("%,.0f", ingresos));
     }
 
