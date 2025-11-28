@@ -22,7 +22,6 @@ import java.util.Map;
 public class NotificacionFactory {
 
     // Cache de estrategias para no crear instancias repetidamente
-    // Como las estrategias no tienen estado, podemos reutilizarlas (Patrón Singleton ligero)
     private static final Map<String, EstrategiaNotificacion<?>> ESTRATEGIAS = new HashMap<>();
 
     // Bloque estático: se ejecuta una sola vez cuando se carga la clase
@@ -57,7 +56,7 @@ public class NotificacionFactory {
             throw new IllegalArgumentException("El tipo de mensaje no puede ser nulo o vacío");
         }
 
-        // Buscar la estrategia (case-insensitive para mayor flexibilidad)
+        // Buscar la estrategia en el mapa
         String tipoNormalizado = tipoMensaje.trim().toUpperCase();
         EstrategiaNotificacion<?> estrategia = ESTRATEGIAS.get(tipoNormalizado);
 

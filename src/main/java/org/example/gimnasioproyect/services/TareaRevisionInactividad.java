@@ -63,7 +63,7 @@ public class TareaRevisionInactividad {
         // Calcular el delay inicial hasta la próxima ejecución
         long delayInicial = calcularDelayHastaProximaEjecucion();
 
-        System.out.println("🕐 Tarea de revisión de inactividad programada a las " +
+        System.out.println("Tarea de revisión de inactividad programada a las " +
                 HORA_EJECUCION + ":" + String.format("%02d", MINUTO_EJECUCION) + " cada día");
 
         // Programar la tarea
@@ -84,7 +84,7 @@ public class TareaRevisionInactividad {
     public void detener() {
         if (scheduler != null && !scheduler.isShutdown()) {
             scheduler.shutdown();
-            System.out.println("⏹️ Tarea de revisión de inactividad detenida");
+            System.out.println("Tarea de revisión de inactividad detenida");
         }
     }
 
@@ -109,9 +109,9 @@ public class TareaRevisionInactividad {
      * Ejecuta la revisión de clientes inactivos.
      */
     private void ejecutarRevision() {
-        System.out.println("\n🔍 ===============================================");
-        System.out.println("🔍 Iniciando revisión de inactividad - " + LocalDateTime.now());
-        System.out.println("🔍 ===============================================\n");
+        System.out.println("\n===============================================");
+        System.out.println("Iniciando revisión de inactividad - " + LocalDateTime.now());
+        System.out.println("===============================================\n");
 
         try {
             revisarClientesInactivos();
@@ -127,7 +127,7 @@ public class TareaRevisionInactividad {
      * Revisa y notifica a clientes inactivos.
      */
     private void revisarClientesInactivos() throws SQLException {
-        System.out.println("📋 Buscando clientes inactivos (más de " + DIAS_INACTIVIDAD + " días)...");
+        System.out.println("Buscando clientes inactivos (más de " + DIAS_INACTIVIDAD + " días)...");
 
         // Obtener todos los clientes con membresía activa
         List<MembresiaClientes> membresiasActivas = membresiaClienteRepository.findAll()
@@ -166,7 +166,7 @@ public class TareaRevisionInactividad {
                             "INACTIVIDAD_7_DIAS",
                             cliente,
                             membresia,
-                            null  // null = nunca ha asistido
+                            null
                     );
 
                     if (enviado) {
@@ -185,7 +185,7 @@ public class TareaRevisionInactividad {
 
                     // Notificar si está inactivo exactamente 7 días (para no enviar todos los días)
                     if (diasInactivo == DIAS_INACTIVIDAD) {
-                        System.out.println("  📢 Cliente inactivo " + diasInactivo + " días: " +
+                        System.out.println(" Cliente inactivo " + diasInactivo + " días: " +
                                 cliente.getNombreCompleto() +
                                 " (última: " + ultimaAsistencia + ")");
 

@@ -43,7 +43,7 @@ public class NotificacionRutinaActualizada implements EstrategiaNotificacion<Rut
             variables.put("objetivo", "Entrenamiento general");
         }
 
-        // Nombre del entrenador (si está disponible en el cliente)
+        // Nombre del entrenador
         // Como RutinaAsignadas no tiene referencia directa al entrenador,
         // usaremos "tu entrenador" genérico
         variables.put("nombre_entrenador", "tu entrenador");

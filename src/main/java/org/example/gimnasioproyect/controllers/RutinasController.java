@@ -172,6 +172,8 @@ public class RutinasController {
             listaRutinasFiltrada = FXCollections.observableArrayList(rutinas);
             tableRutinas.setItems(listaRutinasFiltrada);
 
+            lblResultados.setText("Mostrando " + rutinas.size() + " rutinas");
+
             // Actualizar estadísticas
             actualizarEstadisticas();
 

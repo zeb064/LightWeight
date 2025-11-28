@@ -440,6 +440,7 @@ public class FormularioPersonalController {
         // Determinar tipo y cargar datos comunes
         String tipo = personal.getTipoPersonal().toString();
         cmbTipoPersonal.setValue(tipo);
+        onTipoPersonalChanged();
         cmbTipoPersonal.setDisable(true);
 
         // Datos comunes

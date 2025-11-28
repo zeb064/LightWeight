@@ -367,6 +367,7 @@ public class PersonalController {
     }
 
     private void editarPersonal(Personal personal) {
+
         abrirFormulario(personal);
     }
 
