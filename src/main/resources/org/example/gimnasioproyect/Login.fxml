@@ -12,81 +12,84 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="600.0" prefWidth="900.0" styleClass="root" stylesheets="@Login.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.gimnasioproyect.controllers.LoginController">
+<StackPane prefHeight="600.0" prefWidth="900.0" styleClass="root" stylesheets="@Login.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.gimnasioproyect.controllers.LoginController">
 
+    <!-- Fondo con imagen de gimnasio -->
+    <AnchorPane styleClass="background-gradient" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
-    <!-- Fondo con gradiente -->
-    <VBox alignment="CENTER" styleClass="background-gradient" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <!-- Overlay oscuro para mejor legibilidad -->
+        <VBox alignment="CENTER" styleClass="background-overlay" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
 
-        <!-- Card de Login -->
-        <VBox alignment="CENTER" maxHeight="500" maxWidth="400" spacing="25" styleClass="login-card">
+            <!-- Card de Login -->
+            <VBox alignment="CENTER" maxHeight="500" maxWidth="400" spacing="25" styleClass="login-card">
 
-            <!-- Logo y Título -->
-            <VBox alignment="CENTER" spacing="10">
-                <Text styleClass="logo-icon" text="🏋">
+                <!-- Logo y Título -->
+                <VBox alignment="CENTER" spacing="10">
+                    <Text styleClass="logo-icon" text="🏋">
+                        <font>
+                            <Font size="60.0" />
+                        </font>
+                    </Text>
+                    <Text styleClass="app-title" text="LightWeight">
+                        <font>
+                            <Font name="System Bold" size="32.0" />
+                        </font>
+                    </Text>
+                    <Text styleClass="app-subtitle" text="Sistema de Gestión de Gimnasio">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Text>
+                </VBox>
+
+                <!-- Formulario -->
+                <VBox spacing="15">
+                    <!-- Campo Usuario -->
+                    <VBox spacing="5">
+                        <Label styleClass="field-label" text="Usuario">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Label>
+                        <TextField fx:id="txtUsuario" prefHeight="40" promptText="Ingrese su usuario" styleClass="custom-text-field" />
+                    </VBox>
+
+                    <!-- Campo Contraseña -->
+                    <VBox spacing="5">
+                        <Label styleClass="field-label" text="Contraseña">
+                            <font>
+                                <Font name="System Bold" size="13.0" />
+                            </font>
+                        </Label>
+                        <PasswordField fx:id="txtContrasena" prefHeight="40" promptText="Ingrese su contraseña" styleClass="custom-text-field" />
+                    </VBox>
+
+                    <!-- Mensaje de error -->
+                    <Label fx:id="lblError" styleClass="error-label" text="" wrapText="true" />
+
+                    <!-- Botón de Login -->
+                    <Button fx:id="btnLogin" maxWidth="Infinity" onAction="#handleLogin" prefHeight="45" styleClass="btn-primary" text="Iniciar Sesión">
+                        <font>
+                            <Font name="System Bold" size="14.0" />
+                        </font>
+                    </Button>
+
+                    <!-- Link olvidé contraseña (opcional) -->
+                    <HBox alignment="CENTER" />
+                </VBox>
+
+                <!-- Footer -->
+                <Text styleClass="footer-text" text="© 2025 LightWeight - Todos los derechos reservados">
                     <font>
-                        <Font size="60.0" />
-                    </font>
-                </Text>
-                <Text styleClass="app-title" text="LightWeight">
-                    <font>
-                        <Font name="System Bold" size="32.0" />
-                    </font>
-                </Text>
-                <Text styleClass="app-subtitle" text="Sistema de Gestión de Gimnasio">
-                    <font>
-                        <Font size="14.0" />
+                        <Font size="11.0" />
                     </font>
                 </Text>
             </VBox>
-
-            <!-- Formulario -->
-            <VBox spacing="15">
-                <!-- Campo Usuario -->
-                <VBox spacing="5">
-                    <Label styleClass="field-label" text="Usuario">
-                        <font>
-                            <Font name="System Bold" size="13.0" />
-                        </font>
-                    </Label>
-                    <TextField fx:id="txtUsuario" prefHeight="40" promptText="Ingrese su usuario" styleClass="custom-text-field" />
-                </VBox>
-
-                <!-- Campo Contraseña -->
-                <VBox spacing="5">
-                    <Label styleClass="field-label" text="Contraseña">
-                        <font>
-                            <Font name="System Bold" size="13.0" />
-                        </font>
-                    </Label>
-                    <PasswordField fx:id="txtContrasena" prefHeight="40" promptText="Ingrese su contraseña" styleClass="custom-text-field" />
-                </VBox>
-
-                <!-- Mensaje de error -->
-                <Label fx:id="lblError" styleClass="error-label" text="" wrapText="true" />
-
-                <!-- Botón de Login -->
-                <Button fx:id="btnLogin" maxWidth="Infinity" onAction="#handleLogin" prefHeight="45" styleClass="btn-primary" text="Iniciar Sesión">
-                    <font>
-                        <Font name="System Bold" size="14.0" />
-                    </font>
-                </Button>
-
-                <!-- Link olvidé contraseña (opcional) -->
-                <HBox alignment="CENTER" />
-            </VBox>
-
-            <!-- Footer -->
-            <Text styleClass="footer-text" text="© 2025 LightWeight - Todos los derechos reservados">
-                <font>
-                    <Font size="11.0" />
-                </font>
-            </Text>
         </VBox>
-    </VBox>
+    </AnchorPane>
 
     <!-- Indicador de carga (oculto por defecto) -->
-    <StackPane fx:id="loadingPane" styleClass="loading-overlay" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <StackPane fx:id="loadingPane" styleClass="loading-overlay" visible="false">
         <VBox alignment="CENTER" spacing="15">
             <ProgressIndicator styleClass="custom-progress" />
             <Label styleClass="loading-text" text="Iniciando sesión...">
@@ -97,4 +100,4 @@
         </VBox>
     </StackPane>
 
-</AnchorPane>
+</StackPane>
