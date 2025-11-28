@@ -360,12 +360,23 @@ public class GestionClientesController {
                 StackPane contentArea = encontrarContentArea(tableClientes.getScene().getRoot());
 
                 if (contentArea != null) {
+                    StackPane loadingPane = null;
+                    for (javafx.scene.Node node : contentArea.getChildren()) {
+                        if (node.getId() != null && node.getId().equals("loadingPane")) {
+                            loadingPane = (StackPane) node;
+                            break;
+                        }
+                    }
                     System.out.println("✅ ContentArea encontrado!");
                     controller.setParentContainer(contentArea);
                     contentArea.getChildren().clear();
                     contentArea.getChildren().add(formulario);
+                    if (loadingPane != null) {
+                        contentArea.getChildren().add(loadingPane);
+                        loadingPane.toFront();
+                    }
                 } else {
-                    System.err.println("❌ No se encontró el contentArea");
+                    System.err.println("No se encontró el contentArea");
                     mostrarError("Error de navegación", "No se pudo encontrar el contenedor principal");
                 }
             }
@@ -466,28 +477,37 @@ public class GestionClientesController {
     private void verDetalleCliente(Clientes cliente) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gimnasioproyect/DetalleCliente.fxml"));
-            Parent detalleView = loader.load();
+            Parent detalleCliente = loader.load();
 
             DetalleClienteController controller = loader.getController();
-            controller.cargarCliente(cliente);
 
             // Buscar el contentArea
-            if (tableClientes.getScene() != null) {
-                Parent root = tableClientes.getScene().getRoot();
-                StackPane contentArea = (StackPane) root.lookup("#contentArea");
+            StackPane contentArea = (StackPane) tableClientes.getScene().getRoot().lookup("#contentArea");
 
-                if (contentArea != null) {
-                    controller.setParentContainer(contentArea);
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().add(detalleView);
-                } else {
-                    mostrarError("Error", "No se pudo encontrar el área de contenido");
+            if (contentArea != null) {
+                // IMPORTANTE: Guardar el loadingPane antes de limpiar
+                StackPane loadingPane = null;
+                for (javafx.scene.Node node : contentArea.getChildren()) {
+                    if (node.getId() != null && node.getId().equals("loadingPane")) {
+                        loadingPane = (StackPane) node;
+                        break;
+                    }
+                }
+
+                controller.setParentContainer(contentArea);
+                controller.cargarCliente(cliente);
+
+                contentArea.getChildren().clear();
+                contentArea.getChildren().add(detalleCliente);
+
+                // Re-agregar el loadingPane
+                if (loadingPane != null) {
+                    contentArea.getChildren().add(loadingPane);
+                    loadingPane.toFront();
                 }
             }
-
         } catch (IOException e) {
             mostrarError("Error", "No se pudo abrir el detalle: " + e.getMessage());
-            e.printStackTrace();
         }
     }
 

@@ -77,9 +77,54 @@ public class MenuController {
         lblNombreUsuario.setText(personal.getNombreCompleto());
         lblTipoUsuario.setText(personal.getTipoPersonal().toString());
 
-        contentArea.getScene().getRoot().setUserData(this);
+        // ✅ Guardar referencia después de que todo esté cargado
+        Platform.runLater(() -> {
+            if (contentArea != null && contentArea.getScene() != null) {
+                javafx.scene.Node root = contentArea.getScene().getRoot();
+                root.setUserData(this);
+                System.out.println("✅ MenuController guardado en root");
+            }
+        });
 
         cargarMenu(personal.getTipoPersonal());
+    }
+
+    public static MenuController obtenerMenuController(javafx.scene.Node node) {
+        if (node == null || node.getScene() == null) {
+            return null;
+        }
+
+        javafx.scene.Node root = node.getScene().getRoot();
+
+        // Buscar en el root
+        if (root.getUserData() instanceof MenuController) {
+            return (MenuController) root.getUserData();
+        }
+
+        // Buscar en el contentArea si existe
+        if (root.lookup("#contentArea") != null) {
+            javafx.scene.Node contentArea = root.lookup("#contentArea");
+            if (contentArea.getUserData() instanceof MenuController) {
+                return (MenuController) contentArea.getUserData();
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Obtiene la instancia del MenuController desde el StackPane contentArea
+     */
+    public static MenuController getInstance(StackPane contentArea) {
+        if (contentArea != null && contentArea.getScene() != null) {
+            javafx.scene.Node root = contentArea.getScene().getRoot();
+            Object userData = root.getUserData();
+
+            if (userData instanceof MenuController) {
+                return (MenuController) userData;
+            }
+        }
+        return null;
     }
 
     private void cargarMenu(TipoPersonal tipoPersonal) {

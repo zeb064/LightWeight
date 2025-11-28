@@ -308,11 +308,24 @@ public class PersonalController {
                 StackPane contentArea = (StackPane) root.lookup("#contentArea");
 
                 if (contentArea != null) {
+                    StackPane loadingPane = null;
+                    for (javafx.scene.Node node : contentArea.getChildren()) {
+                        if (node.getId() != null && node.getId().equals("loadingPane")) {
+                            loadingPane = (StackPane) node;
+                            break;
+                        }
+                    }
+                    System.out.println("✅ ContentArea encontrado!");
                     controller.setParentContainer(contentArea);
                     contentArea.getChildren().clear();
                     contentArea.getChildren().add(formulario);
+                    if (loadingPane != null) {
+                        contentArea.getChildren().add(loadingPane);
+                        loadingPane.toFront();
+                    }
                 } else {
-                    mostrarError("Error", "No se pudo encontrar el área de contenido");
+                    System.err.println("No se encontró el contentArea");
+                    mostrarError("Error de navegación", "No se pudo encontrar el contenedor principal");
                 }
             }
 

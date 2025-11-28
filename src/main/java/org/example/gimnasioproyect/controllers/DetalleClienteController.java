@@ -322,22 +322,74 @@ public class DetalleClienteController {
     @FXML
     private void handleVolver() {
         try {
-            javafx.scene.Parent gestionClientes = HelloApplication.loadFXML("GestionClientes");
+            // Intentar obtener MenuController
+            MenuController menuController = MenuController.obtenerMenuController(lblNombreCliente);
 
-            if (parentContainer != null) {
-                parentContainer.getChildren().clear();
-                parentContainer.getChildren().add(gestionClientes);
+            if (menuController != null) {
+                System.out.println("✅ MenuController encontrado, usando navegarA()");
+                menuController.navegarA("GestionClientes");
             } else {
-                // Plan B: buscar el contentArea
-                StackPane contentArea = (StackPane) lblNombreCliente.getScene().getRoot().lookup("#contentArea");
-                if (contentArea != null) {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().add(gestionClientes);
+                System.out.println("⚠️ MenuController no encontrado, usando método manual");
+                handleVolverManual();
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Error en handleVolver: " + e.getMessage());
+            e.printStackTrace();
+            mostrarError("Error", "No se pudo volver: " + e.getMessage());
+        }
+    }
+
+    private MenuController obtenerMenuController() {
+        return MenuController.obtenerMenuController(lblNombreCliente);
+    }
+
+    // El método handleVolverManual() queda igual, pero agrégale logs
+    private void handleVolverManual() throws IOException {
+        System.out.println("📋 Ejecutando handleVolverManual()");
+
+        Parent gestionClientes = HelloApplication.loadFXML("GestionClientes");
+
+        if (parentContainer != null) {
+            System.out.println("✅ Usando parentContainer");
+            parentContainer.getChildren().clear();
+            parentContainer.getChildren().add(gestionClientes);
+
+            // Buscar loadingPane y agregarlo
+            StackPane loadingPane = buscarLoadingPane();
+            if (loadingPane != null) {
+                System.out.println("✅ LoadingPane encontrado y agregado");
+                parentContainer.getChildren().add(loadingPane);
+                loadingPane.toFront();
+            } else {
+                System.out.println("⚠️ LoadingPane no encontrado");
+            }
+        } else {
+            System.out.println("⚠️ parentContainer es null, buscando contentArea");
+            StackPane contentArea = (StackPane) lblNombreCliente.getScene().getRoot().lookup("#contentArea");
+            if (contentArea != null) {
+                System.out.println("✅ contentArea encontrado");
+                contentArea.getChildren().clear();
+                contentArea.getChildren().add(gestionClientes);
+
+                // Buscar loadingPane
+                StackPane loadingPane = buscarLoadingPane();
+                if (loadingPane != null) {
+                    System.out.println("✅ LoadingPane encontrado y agregado");
+                    contentArea.getChildren().add(loadingPane);
+                    loadingPane.toFront();
                 }
             }
-        } catch (IOException e) {
-            mostrarError("Error", "No se pudo volver: " + e.getMessage());
-            e.printStackTrace();
+        }
+    }
+
+    // Metodo auxiliar para buscar el loadingPane
+    private StackPane buscarLoadingPane() {
+        try {
+            javafx.scene.Node root = lblNombreCliente.getScene().getRoot();
+            return (StackPane) root.lookup("#loadingPane");
+        } catch (Exception e) {
+            System.err.println("❌ Error buscando loadingPane: " + e.getMessage());
+            return null;
         }
     }
 
